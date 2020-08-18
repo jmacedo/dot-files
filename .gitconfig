@@ -1,0 +1,40 @@
+[user]
+	email = jm.oliveira.jr@gmail.com
+	name = J. Macedo
+[color]
+	branch = auto
+	diff = auto
+	status = auto
+	ui = true
+[color "branch"]
+	current = yellow reverse
+	local = yellow
+	remote = green
+[color "diff"]
+	meta = yellow
+	frag = magenta bold
+	old = red bold
+	new = green bold
+	commit = yellow bold
+	whitespace = red reverse
+[color "status"]
+	added = green
+	changed = yellow
+	untracked = cyan
+[alias]
+	ci = commit
+	st = status
+	br = branch
+	ch = checkout
+	changes = log --no-merges --pretty=format:\"%h %Cgreen%s%Creset %cr by %cn\" --name-status
+[push]
+	default = current
+[url "git@github.com:"]
+	insteadOf = https://github.com/
+[color "diff-highlight"]
+	oldNormal = red bold
+	oldHighlight = red bold 52
+	newNormal = green bold
+	newHighlight = green bold 22
+[diff-so-fancy]
+	markEmptyLines = false
