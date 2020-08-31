@@ -11,10 +11,9 @@ else
     echo -e "Diretório de usuário '/home/jose' não foi encontrado, ou os arquivos de configuração já foram escritos.\n"
 fi
 
-echo -e "\n\n>> Atualizando a lista de repositórios\n\n"
-sudo apt update
-
 echo -e "\n\n>> Adicionando repositórios de terceiros ao sources.list\n\n"
+
+sudo apt install -y software-properties-common
 sudo add-apt-repository ppa:linuxuprising/java
 
 echo -e "\n\n>> Atualizando a lista de repositórios\n\n"
@@ -31,14 +30,15 @@ sudo apt -y dist-upgrade
 
 echo -e "\n\n>> Instalando programas\n\n"
 sudo apt install -y \
-software-properties-common \
 gparted \
 vlc \
 vim \
 unrar \
 snap \
-snapd-xdg-open \
-oracle-java14-installer
+snapd
+
+echo -e "\n\n>> Instalando Java 14 (necessita intervenção humana):\n"
+sudo apt install oracle-java14-installer
 
 # Instalação via SNAP do Postman
 sudo snap install postman
