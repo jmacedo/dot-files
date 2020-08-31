@@ -20,7 +20,7 @@ echo -e "\n\n>> Atualizando a lista de repositórios\n\n"
 sudo apt update
 
 echo -e "\n\n>> Excluindo programas indesejados\n\n"
-sudo apt -y purge thunderbird* rhythmbox*
+sudo apt -y purge thunderbird rhythmbox
 
 echo -e "\n\n>> Atualizando os programas pré-instalados\n\n"
 sudo apt -y upgrade
