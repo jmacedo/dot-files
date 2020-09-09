@@ -34,6 +34,7 @@ gparted \
 vlc \
 vim \
 unrar \
+terminator \
 snap \
 snapd
 
@@ -43,7 +44,7 @@ sudo apt install oracle-java14-installer
 # Instalação via SNAP do Postman
 sudo snap install postman
 
-sudo apt autoremove
+sudo apt -y autoremove
 sudo apt autoclean
 
 echo -e "\n\nProgramas instalados:\n"
@@ -52,6 +53,7 @@ echo -e "- vlc\n"
 echo -e "- Postman\n"
 echo -e "- VIM\n"
 echo -e "- unrar\n"
+echo -e "- terminator\n"
 echo -e "- snap\n"
 echo -e "- Java 14\n"
 
