@@ -39,7 +39,7 @@ snap \
 snapd
 
 echo -e "\n\n>> Instalando Java 14 (necessita intervenção humana):\n"
-sudo apt install oracle-java14-installer
+sudo apt install oracle-java15-installer
 
 # Instalação via SNAP do Postman
 sudo snap install postman
