@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIR_HOME="/home/jose"
+DIR_HOME="/home/$USER"
 
 if [ -d $DIR_HOME ] && [ ! -f "$DIR_HOME/.gitconfig" ]; then
     cat "./.bashrc" >> "$DIR_HOME/.bashrc"
@@ -8,7 +8,7 @@ if [ -d $DIR_HOME ] && [ ! -f "$DIR_HOME/.gitconfig" ]; then
     cp -f ".gitconfig" $DIR_HOME
     cp -Rf "./.ssh" $DIR_HOME
 else
-    echo -e "Diretório de usuário '/home/jose' não foi encontrado, ou os arquivos de configuração já foram escritos.\n"
+    echo -e "Diretório de usuário '$DIR_HOME' não foi encontrado, ou os arquivos de configuração já foram escritos.\n"
 fi
 
 echo -e "\n\n>> Adicionando repositórios de terceiros ao sources.list\n\n"
@@ -38,7 +38,7 @@ terminator \
 snap \
 snapd
 
-echo -e "\n\n>> Instalando Java 14 (necessita intervenção humana):\n"
+echo -e "\n\n>> Instalando Java 15 (necessita intervenção humana):\n"
 sudo apt install oracle-java15-installer
 
 # Instalação via SNAP do Postman
@@ -55,11 +55,4 @@ echo -e "- VIM\n"
 echo -e "- unrar\n"
 echo -e "- terminator\n"
 echo -e "- snap\n"
-echo -e "- Java 14\n"
-
-echo -e "\n\nFalta instalar:\n"
-echo -e "- VSCode\n"
-echo -e "- Dropbox\n"
-echo -e "- Google Chrome\n"
-echo -e "- PHPStorm \n"
-echo -e "- Mysql Workbench \n"
+echo -e "- Java 15\n"
