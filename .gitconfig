@@ -1,6 +1,7 @@
 [user]
 	email = jm.oliveira.jr@gmail.com
 	name = J. Macedo
+	username = jmacedo
 [color]
 	branch = auto
 	diff = auto
@@ -29,8 +30,6 @@
 	changes = log --no-merges --pretty=format:\"%h %Cgreen%s%Creset %cr by %cn\" --name-status
 [push]
 	default = current
-[url "git@github.com:"]
-	insteadOf = https://github.com/
 [color "diff-highlight"]
 	oldNormal = red bold
 	oldHighlight = red bold 52
