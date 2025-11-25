@@ -1,0 +1,68 @@
+live_config_reload = true
+#working_directory = "~/"
+
+[window]
+  decorations = "None"
+  opacity = 0.9
+  blur = true
+  startup_mode = "Maximized"
+  title = "Terminal"
+  dynamic_title = true
+  decorations_theme_variant = "Dark"
+  padding = { x = 5, y = 10 }
+
+[scrolling]
+  history = 10000
+  multiplier = 2
+
+[font]
+  normal = { family = "SauceCodePro Nerd Font Mono", style = "Regular" }
+  bold = { style = "Bold"}
+  italic = { style = "Italic"}
+  bold_italic = { style = "Bold Italic" }
+  size = 12
+  offset = { x = 0, y = 0 }
+
+[colors.primary]
+  background = "#181818" # Background color
+  foreground = "#d8d8d8" # Font color
+
+[colors]
+  cursor = { text = "#d8d8d8", cursor = "#d8d8d8" }
+  vi_mode_cursor = { text = "#d8d8d8", cursor = "#d8d8d8" }
+
+[selection]
+  save_to_clipboard = true
+
+[cursor]
+  style = { shape = "Underline", blinking = "Always" }
+  vi_mode_style = { shape = "Block", blinking = "Off" }
+  blink_interval = 400
+  blink_timeout = 10
+  unfocused_hollow = true
+  thickness = 0.30
+
+[terminal]
+#shell = { program = "/usr/bin/env bash", args = ["--login"] }
+  osc52 = "CopyPaste"
+
+[mouse]
+  hide_when_typing = false
+  bindings = [
+    { mouse = "Middle", mods = "Control", action = "Paste" }
+  ]
+
+[keyboard]
+  bindings = [
+    { key = "y", mods = "Control", action = "Copy" },
+    { key = "v", mods = "Control", action = "Paste" },
+    { key = "ArrowUp", mods = "Control", action = "ScrollPageUp" },
+    { key = "ArrowDown", mods = "Control", action = "ScrollPageDown" },
+    { key = "ArrowUp", mods = "Shift", action = "ScrollPageUp" },
+    { key = "ArrowDown", mods = "Shift", action = "ScrollPageDown" },
+    { key = "+", mods = "Control", action = "IncreaseFontSize" },
+    { key = "-", mods = "Control", action = "DecreaseFontSize" },
+    { key = "NumpadEnter", mods = "Control", action = "ResetFontSize" },
+    { key = "F11", mods = "Control", action = "ToggleFullscreen" },
+    { key = "q", mods = "Control", action = "Quit" },
+  ]
