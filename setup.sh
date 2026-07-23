@@ -168,9 +168,23 @@ ya pkg add yazi-rs/plugins:smart-enter
 
 #> NVIM
 
+# nvim app
 nvim_dir=~/Apps/nvim
 mkdir -p "$nvim_dir"
 cd "$nvim_dir"
 curl -LO https://github.com/neovim/neovim/releases/download/v0.12.4/nvim-linux-x86_64.tar.gz
 tar xzvf nvim-linux-x86_64.tar.gz
+rm -f nvim-linux-x86_64.tar.gz
 sudo ln -sf "$nvim_dir/nvim-linux-x86_64/bin/nvim" /usr/bin/nvim
+cd "$current_pwd"
+
+# tree-sitter cli
+tree_sitter_cli_dirname="tree-sitter-cli-linux-x64"
+tree_sitter_cli_dir="~/Apps/$tree_sitter_cli_dirname"
+mkdir -p "$tree_sitter_cli_dir"
+cd "$tree_sitter_cli_dir"
+curl -LO "https://github.com/tree-sitter/tree-sitter/releases/download/v0.26.11/$tree_sitter_cli_dirname.zip"
+unzip "$tree_sitter_cli_dirname.zip"
+rm -f "$tree_sitter_cli_dirname.zip"
+sudo ln -sf "$tree_sitter_cli_dir/tree-sitter /usr/bin/tree-sitter"
+
