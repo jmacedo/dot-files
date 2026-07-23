@@ -6,6 +6,7 @@ bashrc_file="~/.bashrc";
 bash_aliases_file="~/.bash_aliases";
 bash_export_vars_file="~/.bash_export_vars";
 zshrc_file="~/.zshrc";
+current_pwd="$(pwd)"
 
 #: UPGRADE
 
@@ -116,7 +117,6 @@ fi
 cp -f .zshrc $zshrc_file
 
 external_themes="~/.oh-my-zsh/custom/external_themes"
-current_pwd="$(pwd)"
 mkdir -p  "$external_themes"
 cd "$external_themes"
 git clone "https://github.com/dvigo/modern-dark-pro-capsule-ohmyzsh.git"
@@ -165,3 +165,12 @@ ya pkg add yazi-rs/flavors:catppuccin-mocha
 ya pkg add yazi-rs/plugins:git
 ya pkg add yazi-rs/plugins:mount
 ya pkg add yazi-rs/plugins:smart-enter
+
+#> NVIM
+
+nvim_dir=~/Apps/nvim
+mkdir -p "$nvim_dir"
+cd "$nvim_dir"
+curl -LO https://github.com/neovim/neovim/releases/download/v0.12.4/nvim-linux-x86_64.tar.gz
+tar xzvf nvim-linux-x86_64.tar.gz
+sudo ln -sf "$nvim_dir/nvim-linux-x86_64/bin/nvim" /usr/bin/nvim
