@@ -1,4 +1,27 @@
 export XDG_DATA_HOME="$HOME/.local/share"
+
+#: ZOXIDE
+
 zoxide_data_dir="$XDG_DATA_HOME/zoxide"
 mkdir -p $zoxide_data_dir
 export _ZO_DATA_DIR="$zoxide_data_dir"
+
+#: MODERN DARK PRO CAPSULE THEME CONFIGURATION
+
+export MODERN_DARK_PRO_NERD_FONTS=true
+export MODERN_DARK_PRO_SHOW_CLOCK=true
+export MODERN_DARK_PRO_SHOW_EXEC_TIME=true
+export MODERN_DARK_PRO_EXEC_TIME_MIN=2
+export MODERN_DARK_PRO_VARIANT="night"
+# MODERN_DARK_PRO_VARIANT => night, monokai
+export MODERN_DARK_PRO_PILL_STYLE="round"
+# MODERN_DARK_PRO_PILL_STYLE => bracket, round, none
+export MODERN_DARK_PRO_PILL_COLOR_STYLE="solid"
+# MODERN_DARK_PRO_PILL_COLOR_STYLE => solid, dark
+export MODERN_DARK_PRO_PATH_STYLE="full"
+# Choose path display style: 'limit' (default), 'shrink', or 'full'
+# - 'shrink': Shrinks parent folders to 1 letter, e.g., ~/d/p/modern-dark-pro-ohmyzsh
+# - 'limit': Shows only the last N directories, e.g., .../proyectos/modern-dark-pro-ohmyzsh
+# - 'full': Shows the full directory path, e.g., ~/dev/proyectos/modern-dark-pro-ohmyzsh
+export MODERN_DARK_PRO_PATH_DEPTH=3
+# Depth level (used only if style is set to 'limit') (default: 3)

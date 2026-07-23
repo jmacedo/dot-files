@@ -1,6 +1,7 @@
 export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME="agnoster-altered"
+# ZSH_THEME => robbyrussell, bira, jonathan, agnoster, modern-dark-pro-capsule
+ZSH_THEME="modern-dark-pro-capsule"
 zstyle ':omz:update' mode reminder  # disabled, auto, reminder
 HIST_STAMPS="dd.mm.yyyy" # "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd" / see 'man strftime' for details
 
@@ -17,18 +18,11 @@ plugins=(git themes node pyenv aliases colored-man-pages copypath cp per-directo
 
 source "$ZSH/oh-my-zsh.sh"
 
-#: USER CONFIGURATION
-#:===================
+#: CUSTOM CONFIGURATION
+
 export LANG="pt_BR.UTF-8"
 
-# export MANPATH="/usr/local/man:$MANPATH"
-# Preferred editor for local and remote sessions. TODO: Uncomment for NVIM
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='nano'
-# else
-#   export EDITOR='nvim'
-# fi
-
+[[ -f /usr/lib/git-core/git-sh-prompt ]] && source /usr/lib/git-core/git-sh-prompt
 source "$ZSH_CUSTOM/aliases.zsh"
 source "$ZSH_CUSTOM/export_vars.zsh"
 

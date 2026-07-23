@@ -115,6 +115,14 @@ if [[ -e $zshrc_file ]]; then
 fi
 cp -f .zshrc $zshrc_file
 
+external_themes="~/.oh-my-zsh/custom/external_themes"
+current_pwd="$(pwd)"
+mkdir -p  "$external_themes"
+cd "$external_themes"
+git clone "https://github.com/dvigo/modern-dark-pro-capsule-ohmyzsh.git"
+cp -f "modern-dark-pro-capsule-ohmyzsh/modern-dark-pro-capsule.zsh-theme" ~/.oh-my-zsh/custom/themes
+cd "$current_pwd"
+
 #> KITTY TERMINAL
 
 curl -L "https://sw.kovidgoyal.net/kitty/installer.sh" | sh /dev/stdin
