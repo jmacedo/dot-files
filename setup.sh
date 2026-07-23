@@ -59,40 +59,44 @@ cp -rf "$fonts_path/*" "$local_fonts_path/"
 
 sudo apt install -y unzip
 
+cd "$fonts_path"
+
 #> NERD FONTS SYMBOLS ONLY
-if [[ -d "$nerd_fonts_font" ]]; then
+if [[ ! -d "$nerd_fonts_font" ]]; then
     curl -LO "$nerd_fonts_url/$nerd_fonts_font.zip"
     unzip -o "$nerd_fonts_font.zip" -d "$local_fonts_path"
     rm "$nerd_fonts_font.zip"
 fi
 
 #> SAUCE CODE PRO NERD FONT
-if [[ -d "$sauce_code_font" ]]; then
+if [[ ! -d "$sauce_code_font" ]]; then
     curl -LO "$nerd_fonts_url/$sauce_code_font.zip"
     unzip -o "$sauce_code_font.zip" -d "$local_fonts_path"
     rm "$sauce_code_font.zip"
 fi
 
 #> UBUNTU NERD FONT
-if [[ -d "$ubuntu_font" ]]; then
+if [[ ! -d "$ubuntu_font" ]]; then
     curl -LO "$nerd_fonts_url/$ubuntu_font.zip"
     unzip -o "$ubuntu_font.zip" -d "$local_fonts_path"
     rm "$ubuntu_font.zip"
 fi
 
 #> UBUNTU MONO NERD FONT
-if [[ -d "$ubuntu_mono_font" ]]; then
+if [[ ! -d "$ubuntu_mono_font" ]]; then
     curl -LO "$nerd_fonts_url/$ubuntu_mono_font.zip"
     unzip -o "$ubuntu_mono_font.zip" -d "$local_fonts_path"
     rm "$ubuntu_mono_font.zip"
 fi
 
 #> UBUNTU SANS NERD FONT
-if [[ -d "$ubuntu_sans_font" ]]; then
+if [[ ! -d "$ubuntu_sans_font" ]]; then
     curl -LO "$nerd_fonts_url/$ubuntu_sans_font.zip"
     unzip -o "$ubuntu_sans_font.zip" -d "$local_fonts_path"
     rm "$ubuntu_sans_font.zip"
 fi
+
+cd "$current_pwd"
 
 #: SHELL
 
@@ -171,12 +175,22 @@ ya pkg add yazi-rs/plugins:smart-enter
 # nvim app
 nvim_dir=~/Apps/nvim
 mkdir -p "$nvim_dir"
+
 cd "$nvim_dir"
+
 curl -LO https://github.com/neovim/neovim/releases/download/v0.12.4/nvim-linux-x86_64.tar.gz
 tar xzvf nvim-linux-x86_64.tar.gz
 rm -f nvim-linux-x86_64.tar.gz
 sudo ln -sf "$nvim_dir/nvim-linux-x86_64/bin/nvim" /usr/bin/nvim
+
 cd "$current_pwd"
+
+if [[ -d "~/.config/nvim" ]]; then
+    mv "~/.config/nvim" "~/.config/nvim.$date_time.bkp"
+fi
+
+# .config nvim directory
+cp -rf ".config/nvim" "~/.config/nvim"
 
 # tree-sitter cli
 tree_sitter_cli_dirname="tree-sitter-cli-linux-x64"
@@ -187,4 +201,3 @@ curl -LO "https://github.com/tree-sitter/tree-sitter/releases/download/v0.26.11/
 unzip "$tree_sitter_cli_dirname.zip"
 rm -f "$tree_sitter_cli_dirname.zip"
 sudo ln -sf "$tree_sitter_cli_dir/tree-sitter /usr/bin/tree-sitter"
-
