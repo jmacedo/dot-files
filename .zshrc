@@ -1,6 +1,6 @@
 export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME="agnoster"
+ZSH_THEME="agnoster-altered"
 zstyle ':omz:update' mode reminder  # disabled, auto, reminder
 HIST_STAMPS="dd.mm.yyyy" # "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd" / see 'man strftime' for details
 
