@@ -6,6 +6,9 @@ zoxide_data_dir="$XDG_DATA_HOME/zoxide"
 mkdir -p $zoxide_data_dir
 export _ZO_DATA_DIR="$zoxide_data_dir"
 
+export EDITOR="nvim"
+export VISUAL="nvim"
+
 #: MODERN DARK PRO CAPSULE THEME CONFIGURATION
 
 export MODERN_DARK_PRO_NERD_FONTS=true
