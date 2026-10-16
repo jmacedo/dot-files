@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name="Steam"
+Comment="Iniciar Steam automaticamente"
+Exec="flatpak run com.valvesoftware.Steam -silent"
+Icon="com.valvesoftware.Steam"
+Terminal=false
+X-GNOME-Autostart-enabled=true

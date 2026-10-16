@@ -13,3 +13,5 @@ alias llfilesizeinverted='ll -Sr'
 
 alias y='yazi'
 alias ycache='yazi --clear-cache'
+
+alias ..='cd ..'
