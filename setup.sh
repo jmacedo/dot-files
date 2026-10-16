@@ -50,6 +50,8 @@ overwrite_dot_file() {
 create_custom_dirs() {
     local dir_list=(
         "$HOME/Apps"
+        "$HOME/Dev"
+        "$HOME/Temp"
     )
 
     mkdir -p "${dir_list[@]}"
@@ -57,10 +59,8 @@ create_custom_dirs() {
 
 install_kitty_terminal() {
     install_nerdfont "NerdFontsSymbolsOnly"
-    install_nerdfont "SourceCodePro"
     install_nerdfont "Ubuntu"
     install_nerdfont "UbuntuMono"
-    install_nerdfont "UbuntuSans"
 
     curl -fL "https://sw.kovidgoyal.net/kitty/installer.sh" |
         sh /dev/stdin launch="n"
@@ -82,24 +82,6 @@ install_kitty_terminal() {
     # Update the paths to the kitty and its icon in the kitty desktop file(s)
     sed -i "s|Icon=kitty|Icon=$(readlink -f ~)/.local/kitty.app/share/icons/hicolor/256x256/apps/kitty.png|g" ~/.local/share/applications/kitty*.desktop
     sed -i "s|Exec=kitty|Exec=$(readlink -f ~)/.local/kitty.app/bin/kitty|g" ~/.local/share/applications/kitty*.desktop
-}
-
-install_oh_my_zsh() {
-    sh -c "$(curl -fsSL 'https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh')"
-
-    cp -f "$HOME/.bash_aliases" "$HOME/.oh-my-zsh/custom/aliases.zsh"
-    cp -f "$HOME/.bash_export_vars" "$HOME/.oh-my-zsh/custom/export_vars.zsh"
-
-    local external_themes_dir="$HOME/.oh-my-zsh/custom/external_themes"
-    mkdir -p  "$external_themes_dir"
-    (
-        local theme_name="modern-dark-pro-capsule-ohmyzsh"
-        cd -- "$external_themes_dir"
-        git clone "https://github.com/dvigo/$theme_name.git"
-        cp -f "$theme_name/modern-dark-pro-capsule.zsh-theme" "$HOME/.oh-my-zsh/custom/themes"
-        rm -rf "$theme_name"
-        cd "$WORKING_DIR"
-    )
 }
 
 install_fzf() {
@@ -173,14 +155,41 @@ install_nvim() {
     cp -rf "$SCRIPT_DIR/.config/nvim" "$HOME/.config/nvim"
 }
 
-main() {
-    initialize_script
-    create_custom_dirs
+install_flatpak_packages() {
+  local app
+  local apps=(
+    "cc.arduino.IDE2"
+    "com.dropbox.Client"
+    "com.google.AndroidStudio"
+    "com.google.Chrome"
+    "com.valvesoftware.Steam"
+    "com.visualstudio.code"
+    "dev.edfloreshz.Calculator"
+    "dev.edfloreshz.CosmicTweaks"
+    "dev.mariinkys.Cedilla"
+    "io.github.kolunmi.Bazaar"
+    "md.obsidian.Obsidian"
+    "me.proton.Pass"
+    "org.gnome.Boxes"
+    "org.onlyoffice.desktopeditors"
+  )
 
+  for app in "${apps[@]}"; do
+    flatpak install flathub "$app"
+  done
+}
+
+main() {
+    echo ">> VARIÁVEIS DE AMBIENTE"
+    initialize_script > "init.log"
+    echo ">> CUSTOM DIRS"
+    create_custom_dirs > "custom-dirs.log"
+
+    echo ">> APT UPGRADE"
     sudo apt update -y &&
     sudo apt upgrade -y &&
     sudo apt autoremove -y &&
-    sudo apt autoclean -y
+    sudo apt autoclean -y > "apt-upgrade.log"
 
     local packages=(
         "git"
@@ -199,24 +208,66 @@ main() {
         "xclip"
         "wl-clipboard"
         "xsel"
+        "flatpak"
     )
 
-    sudo apt install -y "${packages[@]}"
+    echo ">> PACKAGES INSTALL"
+    sudo apt install -y "${packages[@]}" > "packages-install.log"
 
-    overwrite_dot_file ".bash_aliases"
-    overwrite_dot_file ".bash_export_vars"
-    overwrite_dot_file ".bashrc"
-    overwrite_dot_file ".gitconfig"
-    overwrite_dot_file ".hidden"
+    echo ">> OVERWRITE DOT FILES"
+    overwrite_dot_file ".bash_aliases" > "dot-files.log"
+    overwrite_dot_file ".bash_export_vars" >> "dot-files.log"
+    overwrite_dot_file ".bashrc" >> "dot-files.log"
+    overwrite_dot_file ".gitconfig" >> "dot-files.log"
+    overwrite_dot_file ".hidden" >> "dot-files.log"
 
-    #install_kitty_terminal
-    #install_oh_my_zsh
-    #overwrite_dot_file ".zshrc"
-    install_fzf
-    install_zoxide
-    install_yazi
-    install_tree_sitter
-    install_nvim
+    echo ">> CONFIGURANDO FLATHUB"
+    sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo > "flathub.log"
+
+    echo ">> FLATPAK PACKAGES"
+    install_flatpak_packages > "flatpak.log"
+
+    echo ">> KITTY"
+    install_kitty_terminal > "kitty.log"
+    
+    echo ">> FZF"
+    install_fzf > "fzf.log"
+    
+    echo ">> ZOXIDE"
+    install_zoxide > "zoxide.log"
+    
+    echo ">> YAZI"
+    install_yazi > "yazi.log"
+    
+    echo ">> TREE SITTER"
+    install_tree_sitter > "tree-sitter.log"
+    
+    echo ">> NVIM"
+    install_nvim > "nvim.log"
 }
 
 main "$@"
+
+#TODO
+#install_flatpak_packages() {
+#  local app
+#  local apps=(
+#    cc.arduino.IDE2
+#    com.dropbox.Client
+#    com.google.AndroidStudio
+#    com.google.Chrome
+#    com.valvesoftware.Steam
+#    com.visualstudio.code
+#    dev.edfloreshz.Calculator
+#    dev.edfloreshz.CosmicTweaks
+#    dev.mariinkys.Cedilla
+#    io.github.kolunmi.Bazaar
+#    md.obsidian.Obsidian
+#    me.proton.Pass
+#    org.gnome.Boxes
+#    org.onlyoffice.desktopeditors
+#  )
+#  for app in "${apps[@]}"; do
+#    flatpak install flathub "$app"
+#  done
+#}

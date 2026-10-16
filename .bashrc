@@ -139,7 +139,7 @@ __prompt_command() {
 }
 
 PROMPT_COMMAND='__prompt_command'
-PS1='\[\e[38;2;108;112;134m\]${__icon_top_left}${__icon_horizontal_line}\[\e[0m\] \[\e[38;2;137;180;250m\]${__icon_user}\[\e[0m\] \[\e[38;2;108;112;134m\]\u${__icon_at} \h\[\e[0m\] \[\e[38;2;137;180;250m\]${__icon_os}  ${__icon_separator}\[\e[0m\] \[\e[38;2;249;226;175m\]${__icon_folder}  \w\[\e[0m\] \[\e[38;2;203;166;247m\]${__icon_clock} \D{%d/%m/%Y %H:%M}h\[\e[0m\] \[\e[38;2;$(__git_info_color)m\]$(__git_info_text)\[\e[0m\]\[\e[38;2;108;112;134m\]${__icon_top_right}\[\e[0m\]\n\[\e[38;2;108;112;134m\]${__icon_bottom_left}${__icon_horizontal_line}\[\e[0m\] \[$( [[ ${__last_status:-0} -eq 0 ]] && printf "\e[38;2;166;227;161m" || printf "\e[38;2;243;139;168m" )\]${__prompt_status}\[\e[0m\] \[\e[38;2;137;180;250m\]${__icon_prompt}\[\e[0m\] '
+PS1='\[\e[38;2;108;112;134m\]${__icon_top_left}${__icon_horizontal_line}\[\e[0m\] \[\e[38;2;137;180;250m\]${__icon_user}\[\e[0m\] \[\e[38;2;108;112;134m\]\u${__icon_at} \h\[\e[0m\] \[\e[38;2;137;180;250m\]${__icon_os}  ${__icon_separator}\[\e[0m\] \[\e[38;2;249;226;175m\]${__icon_folder}  \w\[\e[0m\] \[\e[38;2;203;166;247m\]${__icon_clock} \D{%d/%m/%Y %H:%M}h\[\e[0m\] \[\e[38;2;$(__git_info_color)m\]$(__git_info_text)\[\e[0m\]\n\[\e[38;2;108;112;134m\]${__icon_bottom_left}${__icon_horizontal_line}\[\e[0m\] \[$( [[ ${__last_status:-0} -eq 0 ]] && printf "\e[38;2;166;227;161m" || printf "\e[38;2;243;139;168m" )\]${__prompt_status}\[\e[0m\] \[\e[38;2;137;180;250m\]${__icon_prompt}\[\e[0m\] '
 
 # DOCS FOR CONFIGURATION DETAILS
 
