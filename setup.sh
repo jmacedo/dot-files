@@ -175,7 +175,7 @@ install_flatpak_packages() {
   )
 
   for app in "${apps[@]}"; do
-    flatpak install flathub "$app"
+    sudo flatpak install --system --noninteractive flathub "$app"
   done
 }
 
@@ -189,7 +189,7 @@ main() {
     sudo apt update -y &&
     sudo apt upgrade -y &&
     sudo apt autoremove -y &&
-    sudo apt autoclean -y > "apt-upgrade.log"
+    sudo apt autoclean -y > "apt-upgrade.log" 2>&1
 
     local packages=(
         "git"
@@ -212,7 +212,7 @@ main() {
     )
 
     echo ">> PACKAGES INSTALL"
-    sudo apt install -y "${packages[@]}" > "packages-install.log"
+    sudo apt install -y "${packages[@]}" > "packages-install.log" 2>&1
 
     echo ">> OVERWRITE DOT FILES"
     overwrite_dot_file ".bash_aliases" > "dot-files.log"
@@ -247,27 +247,3 @@ main() {
 }
 
 main "$@"
-
-#TODO
-#install_flatpak_packages() {
-#  local app
-#  local apps=(
-#    cc.arduino.IDE2
-#    com.dropbox.Client
-#    com.google.AndroidStudio
-#    com.google.Chrome
-#    com.valvesoftware.Steam
-#    com.visualstudio.code
-#    dev.edfloreshz.Calculator
-#    dev.edfloreshz.CosmicTweaks
-#    dev.mariinkys.Cedilla
-#    io.github.kolunmi.Bazaar
-#    md.obsidian.Obsidian
-#    me.proton.Pass
-#    org.gnome.Boxes
-#    org.onlyoffice.desktopeditors
-#  )
-#  for app in "${apps[@]}"; do
-#    flatpak install flathub "$app"
-#  done
-#}
