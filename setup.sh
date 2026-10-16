@@ -216,10 +216,10 @@ main() {
 
     echo ">> OVERWRITE DOT FILES"
     overwrite_dot_file ".bash_aliases" > "dot-files.log"2>&1
-    overwrite_dot_file ".bash_export_vars" >> "dot-files.log"2>>&1
-    overwrite_dot_file ".bashrc" >> "dot-files.log"2>>&1
-    overwrite_dot_file ".gitconfig" >> "dot-files.log"2>>&1
-    overwrite_dot_file ".hidden" >> "dot-files.log"2>>&1
+    overwrite_dot_file ".bash_export_vars" >> "dot-files.log"2>&1
+    overwrite_dot_file ".bashrc" >> "dot-files.log"2>&1
+    overwrite_dot_file ".gitconfig" >> "dot-files.log"2>&1
+    overwrite_dot_file ".hidden" >> "dot-files.log"2>&1
 
     echo ">> CONFIGURANDO FLATHUB"
     sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo >"flathub.log"2>&1
