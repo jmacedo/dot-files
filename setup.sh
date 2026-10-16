@@ -175,21 +175,21 @@ install_flatpak_packages() {
   )
 
   for app in "${apps[@]}"; do
-    sudo flatpak install --system --noninteractive flathub "$app"
+    sudo flatpak install --system --noninteractive flathub "$app" >"$app.log"2>&1
   done
 }
 
 main() {
     echo ">> VARIÁVEIS DE AMBIENTE"
-    initialize_script > "init.log"
+    initialize_script
     echo ">> CUSTOM DIRS"
-    create_custom_dirs > "custom-dirs.log"
+    create_custom_dirs
 
     echo ">> APT UPGRADE"
     sudo apt update -y &&
     sudo apt upgrade -y &&
     sudo apt autoremove -y &&
-    sudo apt autoclean -y > "apt-upgrade.log" 2>&1
+    sudo apt autoclean -y >"apt-upgrade.log"2>&1
 
     local packages=(
         "git"
@@ -212,7 +212,7 @@ main() {
     )
 
     echo ">> PACKAGES INSTALL"
-    sudo apt install -y "${packages[@]}" > "packages-install.log" 2>&1
+    sudo apt install -y "${packages[@]}" >"packages-install.log"2>&1
 
     echo ">> OVERWRITE DOT FILES"
     overwrite_dot_file ".bash_aliases" > "dot-files.log"
