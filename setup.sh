@@ -215,35 +215,35 @@ main() {
     sudo apt install -y "${packages[@]}" >"packages-install.log"2>&1
 
     echo ">> OVERWRITE DOT FILES"
-    overwrite_dot_file ".bash_aliases" > "dot-files.log"
-    overwrite_dot_file ".bash_export_vars" >> "dot-files.log"
-    overwrite_dot_file ".bashrc" >> "dot-files.log"
-    overwrite_dot_file ".gitconfig" >> "dot-files.log"
-    overwrite_dot_file ".hidden" >> "dot-files.log"
+    overwrite_dot_file ".bash_aliases" > "dot-files.log"2>&1
+    overwrite_dot_file ".bash_export_vars" >> "dot-files.log"2>>&1
+    overwrite_dot_file ".bashrc" >> "dot-files.log"2>>&1
+    overwrite_dot_file ".gitconfig" >> "dot-files.log"2>>&1
+    overwrite_dot_file ".hidden" >> "dot-files.log"2>>&1
 
     echo ">> CONFIGURANDO FLATHUB"
-    sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo > "flathub.log"
+    sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo >"flathub.log"2>&1
 
     echo ">> FLATPAK PACKAGES"
-    install_flatpak_packages > "flatpak.log"
+    install_flatpak_packages >"flatpak.log"2>&1
 
     echo ">> KITTY"
-    install_kitty_terminal > "kitty.log"
+    install_kitty_terminal > "kitty.log"2>&1
     
     echo ">> FZF"
-    install_fzf > "fzf.log"
+    install_fzf > "fzf.log"2>&1
     
     echo ">> ZOXIDE"
-    install_zoxide > "zoxide.log"
+    install_zoxide > "zoxide.log"2>&1
     
     echo ">> YAZI"
-    install_yazi > "yazi.log"
+    install_yazi > "yazi.log"2>&1
     
     echo ">> TREE SITTER"
-    install_tree_sitter > "tree-sitter.log"
+    install_tree_sitter > "tree-sitter.log"2>&1
     
     echo ">> NVIM"
-    install_nvim > "nvim.log"
+    install_nvim > "nvim.log"2>&1
 }
 
 main "$@"
