@@ -1,7 +1,23 @@
 #!/usr/bin/env bash
 
+# Install and configure some apps and tools for a personal dev, gamer, general PC setup.
+# It is build based on a linux bash environment, debian based distros with apt packages in x86 64 bit architectures.
+#
+# >> CAUTION <<
+#   Run this script from its own directory. Paths are build relative to its folder.
+# >> CAUTION <<
+#
+# Instalation summary:
+# APT:
+#   - git, curl, unzip, vim, file, ffmpeg, 7zip, jq, poppler-utils, fdutils, fzf, zoxide, imagemagick, xclip, wl-clipboard, xsel, flatpak
+# DIRECT INSTALL:
+#   - kitty 0.74.1, fzf 0.74.1, zoxide, yazi 26.5.6, tree-sitter 0.26.11, neovim 0.12.4, custom fonts from Nerd Fonts
+# FLATPAK:
+#   - Arduino IDE V2, Dropbox, Android Studio, Chrome, Steam, VS Code, Calculator, Cosmic Tweaks, Cedilla, Bazaar, Obsidian, Proton Pass, Gnome Boxes, OnlyOffice
+
 set -euo pipefail
 
+# Define shared values.
 initialize_script() {
     declare -gr START_DATE_TIME="$(date '+%Y%m%d%H%M%S')"
     declare -gr BACKUP_EXT="bkp"
@@ -11,10 +27,18 @@ initialize_script() {
     declare -gr WORKING_DIR="$(pwd)"
 }
 
+# Verify if a command is available in PATH.
 command_exists() {
-    command -v "$1" >/dev/null 2>&1
+    command -v "$1" > /dev/null 2>&1
 }
 
+# Download and install one font from Nerd Fonts [https://www.nerdfonts.com], version 3.4.0.
+# Fonts directory: ~/.local/share/fonts
+# Requires:
+#   - curl, unzip
+# References:
+#   - https://www.nerdfonts.com
+#   - https://github.com/ryanoasis/nerd-fonts
 install_nerdfont() {
     local font_name="$1"
     local fonts_path="$HOME/.local/share/fonts"
@@ -31,11 +55,12 @@ install_nerdfont() {
         mkdir -p "$font_path"
     fi
     
-    curl -fL "$nerd_fonts_url/$font_name.zip" -o "$archive_path"
-    unzip -oq "$archive_path" -d "$font_path"
+    curl -fL "$nerd_fonts_url/$font_name.zip" -o "$archive_path" > /dev/null 2>&1
+    unzip -oq "$archive_path" -d "$font_path" > /dev/null 2>&1
     rm -f "$archive_path"
 }
 
+# Overwirtes a .dotfile in HOME directory. If it already exists, make a backup with ".AAAAMMDDHHMMSS.bkp" suffix.
 overwrite_dot_file() {
     local dot_file="$1"
     local dot_file_path="$HOME/$dot_file"
@@ -47,6 +72,7 @@ overwrite_dot_file() {
     cp -f "$SCRIPT_DIR/$dot_file" "$dot_file_path"
 }
 
+# Create some custom directories in HOME folder.
 create_custom_dirs() {
     local dir_list=(
         "$HOME/Apps"
@@ -57,13 +83,17 @@ create_custom_dirs() {
     mkdir -p "${dir_list[@]}"
 }
 
+# Install Kitty. It is a modern terminal emulator with tabs, panels, gpu aceleration, image view and extremely customizable.
+# Requires:
+#   - install_nerdfont 
+# References:
+#   - https://sw.kovidgoyal.net/kitty
 install_kitty_terminal() {
     install_nerdfont "NerdFontsSymbolsOnly"
     install_nerdfont "Ubuntu"
     install_nerdfont "UbuntuMono"
 
-    curl -fL "https://sw.kovidgoyal.net/kitty/installer.sh" |
-        sh /dev/stdin launch="n"
+    curl -fL "https://sw.kovidgoyal.net/kitty/installer.sh" | sh /dev/stdin launch="n" > /dev/null 2>&1
 
     cp -rf "$SCRIPT_DIR/.config/kitty" "$HOME/.config/"
 
@@ -84,19 +114,40 @@ install_kitty_terminal() {
     sed -i "s|Exec=kitty|Exec=$(readlink -f ~)/.local/kitty.app/bin/kitty|g" ~/.local/share/applications/kitty*.desktop
 }
 
+# Install `fzf` fuzzy finder, version 0.74.1. It is an aproximate search, typing just part of the string or not necessarily the same character order.
+# Requires:
+#   - curl
+# References:
+#   - https://github.com/junegunn/fzf
 install_fzf() {
     local fzf_installer="fzf_0.74.1_amd64.deb"
-    curl -LO "https://github.com/junegunn/fzf/releases/download/v0.74.1/$fzf_installer"
+    curl -LO "https://github.com/junegunn/fzf/releases/download/v0.74.1/$fzf_installer" > /dev/null 2>&1
     chmod +x "./$fzf_installer"
-    sudo apt install -y "./$fzf_installer"
+    sudo apt install -y "./$fzf_installer" > /dev/null 2>&1
     rm -f "./$fzf_installer"
 }
 
+# "zoxide is a smarter cd command, inspired by z and autojump.
+# It remembers which directories you use most frequently, so you can "jump" to them in just a few keystrokes." (directly from oficial site)
+# Requires:
+#   - curl
+#   - fzf
+# References:
+#   - https://github.com/ajeetdsouza/zoxide
 install_zoxide() {
-    curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
-    find "$HOME" -type d -print0 | xargs -0 zoxide add
+    curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh > /dev/null 2>&1
+    find "$HOME" -type d -print0 | xargs -0 zoxide add>/dev/null2>&1
 }
 
+# "Yazi is a terminal file manager written in Rust, based on non-blocking async I/O. It aims to provide an efficient, user-friendly, and customizable file management experience." (directly from site)
+# Version: 26.5.6
+# Plugins:
+#   - full-border, diff, catppuccin-mocha, git, mount, smart-enter
+# Requires:
+#   - curl
+# References:
+#   - https://yazi-rs.github.io/
+#   - https://github.com/sxyazi/yazi
 install_yazi() {
     local yazi_installer="yazi-x86_64-unknown-linux-gnu.deb"
     local yazi_plugins=(
@@ -108,17 +159,23 @@ install_yazi() {
         "smart-enter"        
     )
 
-    curl -LO "https://github.com/sxyazi/yazi/releases/download/v26.5.6/$yazi_installer"
+    curl -LO "https://github.com/sxyazi/yazi/releases/download/v26.5.6/$yazi_installer" > /dev/null 2>&1
     chmod +x "./$yazi_installer"
 
-    sudo apt install  -y "./$yazi_installer"
+    sudo apt install  -y "./$yazi_installer" > /dev/null 2>&1
     rm -f "./$yazi_installer"
 
     for plugin in "${yazi_plugins[@]}";do
-        ya pkg add "yazi-rs/plugins:$plugin"
+        ya pkg add "yazi-rs/plugins:$plugin" > "yazi-plugin-$plugin.log" 2>&1
     done
 }
 
+# "Tree-sitter is a parser generator tool and an incremental parsing library. It can build a concrete syntax tree for a source file and efficiently update the syntax tree as the source file is edited." (directly from site)
+# Version: 0.26.11
+# Requires:
+#   - curl, unzip
+# References:
+#   - https://github.com/tree-sitter/tree-sitter
 install_tree_sitter() {
     local tree_sitter_cli_dirname="tree-sitter-cli-linux-x64"
     local tree_sitter_cli_path="$HOME/Apps/$tree_sitter_cli_dirname"
@@ -127,22 +184,28 @@ install_tree_sitter() {
 
     (
         cd -- "$tree_sitter_cli_path"
-        curl -LO "https://github.com/tree-sitter/tree-sitter/releases/download/v0.26.11/$tree_sitter_cli_dirname.zip"
-        unzip "$tree_sitter_cli_dirname.zip"
+        curl -LO "https://github.com/tree-sitter/tree-sitter/releases/download/v0.26.11/$tree_sitter_cli_dirname.zip" > /dev/null 2>&1
+        unzip "$tree_sitter_cli_dirname.zip" > /dev/null 2>&1
         rm -f "$tree_sitter_cli_dirname.zip"
         sudo ln -sf "$tree_sitter_cli_path/tree-sitter" "/usr/bin/tree-sitter"
         cd -- "$WORKING_DIR"
     )
 }
 
+# Install NeoVim, a terminal text editor based on Vim.
+# Requires:
+#   - curl, tar
+# References:
+#   - https://neovim.io/
+#   - https://github.com/neovim/neovim
 install_nvim() {
     local nvim_dir="$HOME/Apps/nvim"
     mkdir -p "$nvim_dir"
 
     (
         cd -- "$nvim_dir"
-        curl -LO https://github.com/neovim/neovim/releases/download/v0.12.4/nvim-linux-x86_64.tar.gz
-        tar xzvf nvim-linux-x86_64.tar.gz
+        curl -LO https://github.com/neovim/neovim/releases/download/v0.12.4/nvim-linux-x86_64.tar.gz > /dev/null 2>&1
+        tar xzvf nvim-linux-x86_64.tar.gz > /dev/null 2>&1
         rm -f nvim-linux-x86_64.tar.gz
         sudo ln -sf "$nvim_dir/nvim-linux-x86_64/bin/nvim" "/usr/bin/nvim"
         cd -- "$WORKING_DIR"
@@ -155,6 +218,9 @@ install_nvim() {
     cp -rf "$SCRIPT_DIR/.config/nvim" "$HOME/.config/nvim"
 }
 
+# Install the applications below from flathub.
+# Apps:
+#   - Arduino IDE V2, Dropbox, Android Studio, Chrome, Steam, VS Code, Calculator, Cosmic Tweaks, Cedilla, Bazaar, Obsidian, Proton Pass, Gnome Boxes, OnlyOffice
 install_flatpak_packages() {
   local app
   local apps=(
@@ -175,21 +241,18 @@ install_flatpak_packages() {
   )
 
   for app in "${apps[@]}"; do
-    sudo flatpak install --system --noninteractive flathub "$app" >"$app.log"2>&1
+    sudo flatpak install --system --noninteractive flathub "$app" > "flatpak-$app.log" 2>&1
   done
 }
 
 main() {
-    echo ">> VARIÁVEIS DE AMBIENTE"
     initialize_script
-    echo ">> CUSTOM DIRS"
     create_custom_dirs
 
-    echo ">> APT UPGRADE"
-    sudo apt update -y &&
-    sudo apt upgrade -y &&
-    sudo apt autoremove -y &&
-    sudo apt autoclean -y >"apt-upgrade.log"2>&1
+    sudo apt update -y > "apt-upgrade.log" 2>&1
+    sudo apt upgrade -y >> "apt-upgrade.log" 2>&1
+    sudo apt autoremove -y >> "apt-upgrade.log" 2>&1
+    sudo apt autoclean -y >> "apt-upgrade.log" 2>&1
 
     local packages=(
         "git"
@@ -211,39 +274,23 @@ main() {
         "flatpak"
     )
 
-    echo ">> PACKAGES INSTALL"
-    sudo apt install -y "${packages[@]}" >"packages-install.log"2>&1
+    sudo apt install -y "${packages[@]}" > "packages-install.log" 2>&1
 
-    echo ">> OVERWRITE DOT FILES"
     overwrite_dot_file ".bash_aliases" > "dot-files.log"2>&1
     overwrite_dot_file ".bash_export_vars" >> "dot-files.log"2>&1
     overwrite_dot_file ".bashrc" >> "dot-files.log"2>&1
     overwrite_dot_file ".gitconfig" >> "dot-files.log"2>&1
     overwrite_dot_file ".hidden" >> "dot-files.log"2>&1
 
-    echo ">> CONFIGURANDO FLATHUB"
-    sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo >"flathub.log"2>&1
+    sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo > "flathub-add.log" 2>&1
 
-    echo ">> FLATPAK PACKAGES"
-    install_flatpak_packages >"flatpak.log"2>&1
-
-    echo ">> KITTY"
-    install_kitty_terminal > "kitty.log"2>&1
-    
-    echo ">> FZF"
-    install_fzf > "fzf.log"2>&1
-    
-    echo ">> ZOXIDE"
-    install_zoxide > "zoxide.log"2>&1
-    
-    echo ">> YAZI"
-    install_yazi > "yazi.log"2>&1
-    
-    echo ">> TREE SITTER"
-    install_tree_sitter > "tree-sitter.log"2>&1
-    
-    echo ">> NVIM"
-    install_nvim > "nvim.log"2>&1
+    install_kitty_terminal
+    install_fzf
+    install_zoxide
+    install_tree_sitter
+    install_yazi
+    install_nvim
+    install_flatpak_packages
 }
 
 main "$@"
