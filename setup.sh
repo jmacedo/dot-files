@@ -136,7 +136,7 @@ install_fzf() {
 #   - https://github.com/ajeetdsouza/zoxide
 install_zoxide() {
     curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh > /dev/null 2>&1
-    find "$HOME" -type d -print0 | xargs -0 zoxide add>/dev/null2>&1
+    find "$HOME" -type d -print0 | xargs -0 zoxide add > /dev/null 2>&1
 }
 
 # "Yazi is a terminal file manager written in Rust, based on non-blocking async I/O. It aims to provide an efficient, user-friendly, and customizable file management experience." (directly from site)
@@ -246,9 +246,12 @@ install_flatpak_packages() {
 }
 
 main() {
+    clear
+    echo ">> Running `setup.sh`"
     initialize_script
     create_custom_dirs
 
+    echo "> Upgrade packages"
     sudo apt update -y > "apt-upgrade.log" 2>&1
     sudo apt upgrade -y >> "apt-upgrade.log" 2>&1
     sudo apt autoremove -y >> "apt-upgrade.log" 2>&1
@@ -274,6 +277,7 @@ main() {
         "flatpak"
     )
 
+    echo "> Install new packages"
     sudo apt install -y "${packages[@]}" > "packages-install.log" 2>&1
 
     overwrite_dot_file ".bash_aliases" > "dot-files.log"2>&1
@@ -284,13 +288,22 @@ main() {
 
     sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo > "flathub-add.log" 2>&1
 
+    echo "> Install Kitty"
     install_kitty_terminal
+    echo "> Install fzf"
     install_fzf
+    echo "> Install zoxide"
     install_zoxide
+    echo "> Install tree-sitter"
     install_tree_sitter
+    echo "> Install yazi"
     install_yazi
+    echo "> Install nvim"
     install_nvim
+    echo "> Install flatpak apps"
     install_flatpak_packages
+
+    echo ">> `setup.sh` finished."
 }
 
 main "$@"
