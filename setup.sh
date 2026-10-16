@@ -114,7 +114,7 @@ install_kitty_terminal() {
     sed -i "s|Exec=kitty|Exec=$(readlink -f ~)/.local/kitty.app/bin/kitty|g" ~/.local/share/applications/kitty*.desktop
 }
 
-# Install `fzf` fuzzy finder, version 0.74.1. It is an aproximate search, typing just part of the string or not necessarily the same character order.
+# Install fzf fuzzy finder, version 0.74.1. It is an aproximate search, typing just part of the string or not necessarily the same character order.
 # Requires:
 #   - curl
 # References:
@@ -247,7 +247,7 @@ install_flatpak_packages() {
 
 main() {
     clear
-    echo ">> Running `setup.sh`"
+    echo ">> Running setup.sh"
     initialize_script
     create_custom_dirs
 
@@ -303,7 +303,7 @@ main() {
     echo "> Install flatpak apps"
     install_flatpak_packages
 
-    echo ">> `setup.sh` finished."
+    echo ">> setup.sh finished."
 }
 
 main "$@"
