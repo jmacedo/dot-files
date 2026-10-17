@@ -17,6 +17,19 @@
 
 set -euo pipefail
 
+# To preach the word of the Tux!
+print_ascii_art() {
+    cat <<'EOF'
+    .--.
+   |o_o |
+   |:_/ |
+  //   \ \
+ (|     | )
+/'\_   _/`\
+\___)=(___/
+EOF
+}
+
 # Define shared values.
 initialize_script() {
     declare -gr START_DATE_TIME="$(date '+%Y%m%d%H%M%S')"
@@ -247,6 +260,7 @@ install_flatpak_packages() {
 
 main() {
     clear
+    print_ascii_art
     echo ">> Running setup.sh"
     initialize_script
     create_custom_dirs
