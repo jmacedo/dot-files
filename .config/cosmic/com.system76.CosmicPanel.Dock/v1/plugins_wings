@@ -1,5 +1,6 @@
-Some(([], [
+Some(([
     "com.system76.CosmicPanelAppButton",
-    "com.system76.CosmicAppletAudio",
-    "com.system76.CosmicAppletPower",
+], [
+    "com.system76.CosmicAppletStatusArea",
+    "com.system76.CosmicAppletTime",
 ]))

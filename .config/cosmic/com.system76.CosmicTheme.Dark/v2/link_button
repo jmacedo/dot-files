@@ -9,6 +9,6 @@
     on: "#BD93F9FF",
     disabled: "#00000000",
     on_disabled: "#5E4A7D80",
-    border: "#A9BCF2FF",
-    disabled_border: "#A9BCF280",
+    border: "#BEBEBEFF",
+    disabled_border: "#BEBEBE80",
 )
