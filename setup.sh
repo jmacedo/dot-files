@@ -266,10 +266,10 @@ main() {
     create_custom_dirs
 
     echo "> Upgrade packages"
-    sudo apt update -y > "apt-upgrade.log" 2>&1
-    sudo apt upgrade -y >> "apt-upgrade.log" 2>&1
-    sudo apt autoremove -y >> "apt-upgrade.log" 2>&1
-    sudo apt autoclean -y >> "apt-upgrade.log" 2>&1
+    #sudo apt update -y > "apt-upgrade.log" 2>&1
+    #sudo apt upgrade -y >> "apt-upgrade.log" 2>&1
+    #sudo apt autoremove -y >> "apt-upgrade.log" 2>&1
+    #sudo apt autoclean -y >> "apt-upgrade.log" 2>&1
 
     local packages=(
         "git"
