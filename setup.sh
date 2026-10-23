@@ -1,23 +1,24 @@
 #!/usr/bin/env bash
 
-# Install and configure some apps and tools for a personal dev, gamer, general PC setup.
-# It is build based on a linux bash environment, debian based distros with apt packages in x86 64 bit architectures.
-#
-# >> CAUTION <<
-#   Run this script from its own directory. Paths are build relative to its folder.
-# >> CAUTION <<
-#
-# Instalation summary:
-# APT:
-#   - git, curl, unzip, vim, file, ffmpeg, 7zip, jq, poppler-utils, fdutils, fzf, zoxide, imagemagick, xclip, wl-clipboard, xsel, flatpak
-# DIRECT INSTALL:
-#   - kitty 0.74.1, fzf 0.74.1, zoxide, yazi 26.5.6, tree-sitter 0.26.11, neovim 0.12.4, custom fonts from Nerd Fonts
-# FLATPAK:
-#   - Arduino IDE V2, Dropbox, Android Studio, Chrome, Steam, VS Code, Calculator, Cosmic Tweaks, Cedilla, Bazaar, Obsidian, Proton Pass, Gnome Boxes, OnlyOffice
+# Set up this personal desktop environment on Debian-based x86_64 Linux systems.
+# Run from any directory: paths are resolved relative to this script.
 
 set -euo pipefail
 
-# To preach the word of the Tux!
+readonly KITTY_VERSION="0.74.1"
+readonly NEOVIM_VERSION="0.12.4"
+
+initialize_script() {
+    declare -gr START_DATE_TIME="$(date '+%Y%m%d%H%M%S')"
+    declare -gr BACKUP_EXT="bkp"
+    declare -gr SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+    declare -gr LOCAL_BIN_DIR="$HOME/.local/bin"
+}
+
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
 print_ascii_art() {
     cat <<'EOF'
     .--.
@@ -30,294 +31,189 @@ print_ascii_art() {
 EOF
 }
 
-# Define shared values.
-initialize_script() {
-    declare -gr START_DATE_TIME="$(date '+%Y%m%d%H%M%S')"
-    declare -gr BACKUP_EXT="bkp"
-    declare -gr SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-    declare -gr SCRIPT_NAME="$(basename -- "${BASH_SOURCE[0]}")"
-    declare -gr SCRIPT_PATH="$SCRIPT_DIR/$SCRIPT_NAME"
-    declare -gr WORKING_DIR="$(pwd)"
+backup_path() {
+    local destination="$1"
+
+    if [[ -e "$destination" || -L "$destination" ]]; then
+        mv -- "$destination" "${destination}.${START_DATE_TIME}.${BACKUP_EXT}"
+    fi
 }
 
-# Verify if a command is available in PATH.
-command_exists() {
-    command -v "$1" > /dev/null 2>&1
-}
+install_file() {
+    local relative_path="$1"
+    local source="$SCRIPT_DIR/$relative_path"
+    local destination="$HOME/$relative_path"
 
-# Download and install one font from Nerd Fonts [https://www.nerdfonts.com], version 3.4.0.
-# Fonts directory: ~/.local/share/fonts
-# Requires:
-#   - curl, unzip
-# References:
-#   - https://www.nerdfonts.com
-#   - https://github.com/ryanoasis/nerd-fonts
-install_nerdfont() {
-    local font_name="$1"
-    local fonts_path="$HOME/.local/share/fonts"
-    local font_path="$fonts_path/$font_name"
-    local nerd_fonts_url="https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0"
-    local archive_path="$(mktemp)"
-
-    if ! command_exists unzip || ! command_exists curl; then
-        printf '%s\n' "The packages 'unzip' and 'curl' must be installed."
+    [[ -f "$source" ]] || {
+        printf 'Missing source file: %s\n' "$source" >&2
         return 1
-    fi
+    }
 
-    if [[ ! -d "$font_path" ]]; then
-        mkdir -p "$font_path"
-    fi
-    
-    curl -fL "$nerd_fonts_url/$font_name.zip" -o "$archive_path" > /dev/null 2>&1
-    unzip -oq "$archive_path" -d "$font_path" > /dev/null 2>&1
-    rm -f "$archive_path"
+    mkdir -p -- "$(dirname -- "$destination")"
+    backup_path "$destination"
+    cp -- "$source" "$destination"
 }
 
-# Overwirtes a .dotfile in HOME directory. If it already exists, make a backup with ".AAAAMMDDHHMMSS.bkp" suffix.
-overwrite_dot_file() {
-    local dot_file="$1"
-    local dot_file_path="$HOME/$dot_file"
+install_directory() {
+    local relative_path="$1"
+    local source="$SCRIPT_DIR/$relative_path"
+    local destination="$HOME/$relative_path"
 
-    if [[ -e $dot_file_path ]]; then
-        mv "$dot_file_path" "$HOME/$dot_file.$START_DATE_TIME.$BACKUP_EXT"
-    fi
+    [[ -d "$source" ]] || {
+        printf 'Missing source directory: %s\n' "$source" >&2
+        return 1
+    }
 
-    cp -f "$SCRIPT_DIR/$dot_file" "$dot_file_path"
+    mkdir -p -- "$(dirname -- "$destination")"
+    backup_path "$destination"
+    cp -a -- "$source" "$destination"
 }
 
-# Create some custom directories in HOME folder.
-create_custom_dirs() {
-    local dir_list=(
-        "$HOME/Apps"
-        "$HOME/Dev"
-        "$HOME/Temp"
+install_font() {
+    local font_name="$1"
+    local source="$SCRIPT_DIR/.local/share/fonts/$font_name"
+    local destination="$HOME/.local/share/fonts/$font_name"
+
+    [[ -d "$source" ]] || {
+        printf 'Missing bundled font: %s\n' "$source" >&2
+        return 1
+    }
+
+    mkdir -p -- "$(dirname -- "$destination")"
+    backup_path "$destination"
+    cp -a -- "$source" "$destination"
+}
+
+validate_environment() {
+    [[ "$(uname -s)" == "Linux" ]] || {
+        printf 'This setup supports Linux only.\n' >&2
+        return 1
+    }
+
+    [[ "$(uname -m)" == "x86_64" ]] || {
+        printf 'This setup supports x86_64 only.\n' >&2
+        return 1
+    }
+
+    command_exists apt || {
+        printf 'This setup requires apt (a Debian-based distribution).\n' >&2
+        return 1
+    }
+}
+
+install_apt_packages() {
+    local packages=(
+        git curl unzip vim file ffmpeg 7zip jq poppler-utils fd-find fontconfig
+        fzf zoxide imagemagick xclip wl-clipboard xsel flatpak
     )
 
-    mkdir -p "${dir_list[@]}"
+    sudo apt install -y "${packages[@]}"
 }
 
-# Install Kitty. It is a modern terminal emulator with tabs, panels, gpu aceleration, image view and extremely customizable.
-# Requires:
-#   - install_nerdfont 
-# References:
-#   - https://sw.kovidgoyal.net/kitty
-install_kitty_terminal() {
-    install_nerdfont "NerdFontsSymbolsOnly"
-    install_nerdfont "Ubuntu"
-    install_nerdfont "UbuntuMono"
+install_kitty() {
+    local installer_path
 
-    curl -fL "https://sw.kovidgoyal.net/kitty/installer.sh" | sh /dev/stdin launch="n" > /dev/null 2>&1
+    installer_path="$(mktemp)"
+    trap 'rm -f -- "$installer_path"' RETURN
+    curl --fail --location "https://sw.kovidgoyal.net/kitty/installer.sh" --output "$installer_path"
+    sh "$installer_path" launch=n "version=${KITTY_VERSION}"
+    trap - RETURN
+    rm -f -- "$installer_path"
 
-    cp -rf "$SCRIPT_DIR/.config/kitty" "$HOME/.config/"
+    mkdir -p -- "$LOCAL_BIN_DIR" "$HOME/.local/share/applications"
+    ln -sfn -- "$HOME/.local/kitty.app/bin/kitty" "$LOCAL_BIN_DIR/kitty"
+    ln -sfn -- "$HOME/.local/kitty.app/bin/kitten" "$LOCAL_BIN_DIR/kitten"
 
-    sudo ln -sf "$HOME/.local/kitty.app/bin/kitty" "/usr/bin/kitty"
-    sudo ln -sf "$HOME/.local/kitty.app/bin/kitten" "/usr/bin/kitten"
-    
-    local shared_apps="$HOME/.local/share/applications"
-    local kitty_shared_apps="$HOME/.local/kitty.app/share/applications"
-    if [[ ! -d $shared_apps ]];then
-        mkdir -p "$shared_apps"
-    fi
+    cp -- "$HOME/.local/kitty.app/share/applications/kitty.desktop" \
+        "$HOME/.local/share/applications/kitty.desktop"
+    cp -- "$HOME/.local/kitty.app/share/applications/kitty-open.desktop" \
+        "$HOME/.local/share/applications/kitty-open.desktop"
 
-    cp -f "$kitty_shared_apps/kitty.desktop" "$shared_apps"
-    cp -f "$kitty_shared_apps/kitty-open.desktop" "$shared_apps"
-    
-    # Update the paths to the kitty and its icon in the kitty desktop file(s)
-    sed -i "s|Icon=kitty|Icon=$(readlink -f ~)/.local/kitty.app/share/icons/hicolor/256x256/apps/kitty.png|g" ~/.local/share/applications/kitty*.desktop
-    sed -i "s|Exec=kitty|Exec=$(readlink -f ~)/.local/kitty.app/bin/kitty|g" ~/.local/share/applications/kitty*.desktop
+    sed -i \
+        -e "s|^Icon=kitty$|Icon=$HOME/.local/kitty.app/share/icons/hicolor/256x256/apps/kitty.png|" \
+        -e "s|^Exec=kitty|Exec=$HOME/.local/kitty.app/bin/kitty|" \
+        "$HOME/.local/share/applications/kitty.desktop" \
+        "$HOME/.local/share/applications/kitty-open.desktop"
 }
 
-# Install fzf fuzzy finder, version 0.74.1. It is an aproximate search, typing just part of the string or not necessarily the same character order.
-# Requires:
-#   - curl
-# References:
-#   - https://github.com/junegunn/fzf
-install_fzf() {
-    local fzf_installer="fzf_0.74.1_amd64.deb"
-    curl -LO "https://github.com/junegunn/fzf/releases/download/v0.74.1/$fzf_installer" > /dev/null 2>&1
-    chmod +x "./$fzf_installer"
-    sudo apt install -y "./$fzf_installer" > /dev/null 2>&1
-    rm -f "./$fzf_installer"
+install_neovim() {
+    local archive="nvim-linux-x86_64.tar.gz"
+    local source_url="https://github.com/neovim/neovim/releases/download/v${NEOVIM_VERSION}/${archive}"
+    local install_dir="$HOME/Apps/nvim-${NEOVIM_VERSION}"
+    local download_path
+
+    download_path="$(mktemp)"
+    trap 'rm -f -- "$download_path"' RETURN
+    curl --fail --location "$source_url" --output "$download_path"
+
+    backup_path "$install_dir"
+    mkdir -p -- "$install_dir"
+    tar --extract --gzip --file "$download_path" --strip-components=1 --directory "$install_dir"
+    mkdir -p -- "$LOCAL_BIN_DIR"
+    ln -sfn -- "$install_dir/bin/nvim" "$LOCAL_BIN_DIR/nvim"
+    trap - RETURN
+    rm -f -- "$download_path"
 }
 
-# "zoxide is a smarter cd command, inspired by z and autojump.
-# It remembers which directories you use most frequently, so you can "jump" to them in just a few keystrokes." (directly from oficial site)
-# Requires:
-#   - curl
-#   - fzf
-# References:
-#   - https://github.com/ajeetdsouza/zoxide
-install_zoxide() {
-    curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh > /dev/null 2>&1
-    find "$HOME" -type d -print0 | xargs -0 zoxide add > /dev/null 2>&1
-}
-
-# "Yazi is a terminal file manager written in Rust, based on non-blocking async I/O. It aims to provide an efficient, user-friendly, and customizable file management experience." (directly from site)
-# Version: 26.5.6
-# Plugins:
-#   - full-border, diff, catppuccin-mocha, git, mount, smart-enter
-# Requires:
-#   - curl
-# References:
-#   - https://yazi-rs.github.io/
-#   - https://github.com/sxyazi/yazi
-install_yazi() {
-    local yazi_installer="yazi-x86_64-unknown-linux-gnu.deb"
-    local yazi_plugins=(
-        "full-border"
-        "diff"
-        "catppuccin-mocha"
-        "git"
-        "mount"
-        "smart-enter"        
+install_flatpak_packages() {
+    local app
+    local apps=(
+        com.dropbox.Client com.google.Chrome com.valvesoftware.Steam
+        com.visualstudio.code dev.edfloreshz.Calculator io.github.kolunmi.Bazaar
+        me.proton.Pass org.onlyoffice.desktopeditors
     )
 
-    curl -LO "https://github.com/sxyazi/yazi/releases/download/v26.5.6/$yazi_installer" > /dev/null 2>&1
-    chmod +x "./$yazi_installer"
-
-    sudo apt install  -y "./$yazi_installer" > /dev/null 2>&1
-    rm -f "./$yazi_installer"
-
-    for plugin in "${yazi_plugins[@]}";do
-        ya pkg add "yazi-rs/plugins:$plugin" > "yazi-plugin-$plugin.log" 2>&1
+    sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+    for app in "${apps[@]}"; do
+        sudo flatpak install --system --noninteractive flathub "$app"
     done
 }
 
-# "Tree-sitter is a parser generator tool and an incremental parsing library. It can build a concrete syntax tree for a source file and efficiently update the syntax tree as the source file is edited." (directly from site)
-# Version: 0.26.11
-# Requires:
-#   - curl, unzip
-# References:
-#   - https://github.com/tree-sitter/tree-sitter
-install_tree_sitter() {
-    local tree_sitter_cli_dirname="tree-sitter-cli-linux-x64"
-    local tree_sitter_cli_path="$HOME/Apps/$tree_sitter_cli_dirname"
-
-    mkdir -p "$tree_sitter_cli_path"
-
-    (
-        cd -- "$tree_sitter_cli_path"
-        curl -LO "https://github.com/tree-sitter/tree-sitter/releases/download/v0.26.11/$tree_sitter_cli_dirname.zip" > /dev/null 2>&1
-        unzip "$tree_sitter_cli_dirname.zip" > /dev/null 2>&1
-        rm -f "$tree_sitter_cli_dirname.zip"
-        sudo ln -sf "$tree_sitter_cli_path/tree-sitter" "/usr/bin/tree-sitter"
-        cd -- "$WORKING_DIR"
-    )
-}
-
-# Install NeoVim, a terminal text editor based on Vim.
-# Requires:
-#   - curl, tar
-# References:
-#   - https://neovim.io/
-#   - https://github.com/neovim/neovim
-install_nvim() {
-    local nvim_dir="$HOME/Apps/nvim"
-    mkdir -p "$nvim_dir"
-
-    (
-        cd -- "$nvim_dir"
-        curl -LO https://github.com/neovim/neovim/releases/download/v0.12.4/nvim-linux-x86_64.tar.gz > /dev/null 2>&1
-        tar xzvf nvim-linux-x86_64.tar.gz > /dev/null 2>&1
-        rm -f nvim-linux-x86_64.tar.gz
-        sudo ln -sf "$nvim_dir/nvim-linux-x86_64/bin/nvim" "/usr/bin/nvim"
-        cd -- "$WORKING_DIR"
-    )
-
-    if [[ -d "$HOME/.config/nvim" ]]; then
-        mv "$HOME/.config/nvim" "$HOME/.config/nvim.$START_DATE_TIME.$BACKUP_EXT"
-    fi
-
-    cp -rf "$SCRIPT_DIR/.config/nvim" "$HOME/.config/nvim"
-}
-
-# Install the applications below from flathub.
-# Apps:
-#   - Arduino IDE V2, Dropbox, Android Studio, Chrome, Steam, VS Code, Calculator, Cosmic Tweaks, Cedilla, Bazaar, Obsidian, Proton Pass, Gnome Boxes, OnlyOffice
-install_flatpak_packages() {
-  local app
-  local apps=(
-    "cc.arduino.IDE2"
-    "com.dropbox.Client"
-    "com.google.AndroidStudio"
-    "com.google.Chrome"
-    "com.valvesoftware.Steam"
-    "com.visualstudio.code"
-    "dev.edfloreshz.Calculator"
-    "dev.edfloreshz.CosmicTweaks"
-    "dev.mariinkys.Cedilla"
-    "io.github.kolunmi.Bazaar"
-    "md.obsidian.Obsidian"
-    "me.proton.Pass"
-    "org.gnome.Boxes"
-    "org.onlyoffice.desktopeditors"
-  )
-
-  for app in "${apps[@]}"; do
-    sudo flatpak install --system --noninteractive flathub "$app" > "flatpak-$app.log" 2>&1
-  done
+install_dotfiles() {
+    install_directory ".config/bash"
+    install_directory ".config/kitty"
+    install_directory ".config/nvim"
+    install_font "NerdFontsSymbolsOnly"
+    install_font "Ubuntu"
+    install_font "UbuntuMono"
+    install_file ".bashrc"
+    install_file ".gitconfig"
+    install_file ".hidden"
 }
 
 main() {
-    clear
-    print_ascii_art
-    echo ">> Running setup.sh"
+    local install_flatpaks=false
+
+    case "${1:-}" in
+        "") ;;
+        --flatpaks) install_flatpaks=true ;;
+        -h|--help)
+            printf 'Usage: %s [--flatpaks]\n' "${0##*/}"
+            return 0
+            ;;
+        *)
+            printf 'Unknown option: %s\n' "$1" >&2
+            return 2
+            ;;
+    esac
+
     initialize_script
-    create_custom_dirs
+    validate_environment
+    print_ascii_art
+    printf 'Installing base packages and dotfiles...\n'
 
-    echo "> Upgrade packages"
-    #sudo apt update -y > "apt-upgrade.log" 2>&1
-    #sudo apt upgrade -y >> "apt-upgrade.log" 2>&1
-    #sudo apt autoremove -y >> "apt-upgrade.log" 2>&1
-    #sudo apt autoclean -y >> "apt-upgrade.log" 2>&1
+    install_apt_packages
+    mkdir -p -- "$HOME/Apps" "$HOME/Dev" "$HOME/Temp"
+    install_dotfiles
+    install_kitty
+    install_neovim
+    fc-cache --force
 
-    local packages=(
-        "git"
-        "curl"
-        "unzip"
-        "vim"
-        "file" 
-        "ffmpeg"
-        "7zip"
-        "jq"
-        "poppler-utils"
-        "fdutils"
-        "fzf"
-        "zoxide"
-        "imagemagick"
-        "xclip"
-        "wl-clipboard"
-        "xsel"
-        "flatpak"
-    )
+    if [[ "$install_flatpaks" == true ]]; then
+        install_flatpak_packages
+    fi
 
-    echo "> Install new packages"
-    sudo apt install -y "${packages[@]}" > "packages-install.log" 2>&1
-
-    overwrite_dot_file ".bash_aliases" > "dot-files.log"2>&1
-    overwrite_dot_file ".bash_export_vars" >> "dot-files.log"2>&1
-    overwrite_dot_file ".bashrc" >> "dot-files.log"2>&1
-    overwrite_dot_file ".gitconfig" >> "dot-files.log"2>&1
-    overwrite_dot_file ".hidden" >> "dot-files.log"2>&1
-
-    sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo > "flathub-add.log" 2>&1
-
-    echo "> Install Kitty"
-    install_kitty_terminal
-    echo "> Install fzf"
-    install_fzf
-    echo "> Install zoxide"
-    install_zoxide
-    echo "> Install tree-sitter"
-    install_tree_sitter
-    echo "> Install yazi"
-    install_yazi
-    echo "> Install nvim"
-    install_nvim
-    echo "> Install flatpak apps"
-    install_flatpak_packages
-
-    echo ">> setup.sh finished."
+    printf 'Setup finished. Open a new shell to load the Bash configuration.\n'
 }
 
 main "$@"

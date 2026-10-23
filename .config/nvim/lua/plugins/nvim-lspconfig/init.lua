@@ -13,6 +13,8 @@ vim.lsp.config("*", {
   capabilities = capabilities,
 })
 
+vim.lsp.config("lua_ls", require("config.lsp.lua_ls"))
+
 -- Load laravel server only on laravel project folders.
 vim.lsp.config("laravel_lsp", {
   cmd = { "laravel-lsp" },

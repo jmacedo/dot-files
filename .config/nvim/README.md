@@ -1,23 +1,22 @@
 # Neovim
 
-## Servidores LSP
+This configuration targets Neovim `0.12.4` and uses its native package manager
+to obtain `nvim-lspconfig` on first start. An internet connection and `git` are
+therefore required the first time Neovim starts.
 
-[https://github.com/neovim/nvim-lspconfig]
-`nvim-lspconfig` fornece configurações para conectar o Neovim aos servidores
-LSP; ele não instala os executáveis desses servidores.
+## Language servers
 
-Esta configuração habilita:
+`nvim-lspconfig` configures language servers but does not install their
+executables. Install the servers you use and keep their executables in
+Neovim's `PATH`.
 
-- `jsonls`
-- `html`
-- `bashls`
-- `cssls`
-- `tsc`
-- `vimls`
-- `dockerls`
-- `php_lsp`
-- `lua_ls`
+Configured server names:
 
-Instale os servidores correspondentes e garanta que seus executáveis estejam
-no `PATH` do Neovim. Para verificar a configuração e os servidores disponíveis,
-execute `:checkhealth vim.lsp`.
+- `html`, `cssls`, `jsonls`, `yamlls`, `bashls`, `vimls`
+- `tsc`, `basedpyright`, `php_lsp`, `symfony_lsp`, `laravel_lsp`
+- `sqls`, `jdtls`, `kotlin_lsp`, `gopls`, `clangd`, `rust_analyzer`
+- `lua_ls`, `awk_ls`, `dockerls`, `docker_compose_language_service`
+
+Use `:checkhealth vim.lsp` to inspect enabled clients and diagnose missing
+servers. Lua-specific settings are loaded explicitly from
+`lua/config/lsp/lua_ls.lua`.
