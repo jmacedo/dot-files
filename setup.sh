@@ -39,25 +39,6 @@ validate_environment() {
     }
 }
 
-install_apt_packages() {
-    #imagemagick fd-find fontconfig jq poppler-utils
-    local packages=(
-        git
-        curl
-        unzip
-        vim
-        file
-        ffmpeg
-        fzf
-        zoxide
-        xclip
-        wl-clipboard
-        flatpak
-    )
-
-    sudo apt install -y "${packages[@]}"
-}
-
 # Perform a backup of given PATH. Include the suffix: ".<DATETIME>.<BACKUP-EXTENSION> - e.g. '.20261024120135.bkp'".
 backup_path() {
     local destination="$1"
@@ -166,6 +147,26 @@ install_neovim() {
     rm -f -- "$download_path"
 }
 
+install_apt_packages() {
+    #imagemagick fd-find fontconfig jq poppler-utils
+    local packages=(
+        git
+        curl
+        unzip
+        vim
+        file
+        ffmpeg
+        fzf
+        zoxide
+        xclip
+        wl-clipboard
+        flatpak
+        steam-devices
+    )
+
+    sudo apt install -y "${packages[@]}"
+}
+
 install_flatpak_packages() {
     local app
     local apps=(
@@ -173,16 +174,15 @@ install_flatpak_packages() {
         com.google.Chrome
         com.valvesoftware.Steam
         com.visualstudio.code
-        dev.edfloreshz.Calculator
         io.github.kolunmi.Bazaar
         me.proton.Pass
         org.onlyoffice.desktopeditors
     )
 
-    flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+    flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
     for app in "${apps[@]}"; do
-        flatpak install --user --noninteractive --or-update "$app"
+        flatpak install --user --noninteractive --or-update flathub "$app"
     done
 }
 
