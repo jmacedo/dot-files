@@ -5,8 +5,8 @@
 
 set -euo pipefail
 
-readonly KITTY_VERSION="0.74.1"
-readonly NEOVIM_VERSION="0.12.4"
+readonly KITTY_VERSION="0.49.2"
+readonly NEOVIM_VERSION="0.12.6"
 
 initialize_script() {
     declare -gr START_DATE_TIME="$(date '+%Y%m%d%H%M%S')"
@@ -116,7 +116,7 @@ install_kitty() {
     installer_path="$(mktemp)"
     trap 'rm -f -- "$installer_path"' RETURN
     curl --fail --location "https://sw.kovidgoyal.net/kitty/installer.sh" --output "$installer_path"
-    sh "$installer_path" launch=n "version=${KITTY_VERSION}"
+    sh "$installer_path" launch=n "installer=version-${KITTY_VERSION}"
     trap - RETURN
     rm -f -- "$installer_path"
 
