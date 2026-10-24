@@ -219,7 +219,7 @@ main() {
     install_kitty
     install_neovim
 
-    if [[ "$1" != "--no-flatpaks" ]]; then
+    if [[ "${1:-}" != "--no-flatpaks" ]]; then
         install_flatpak_packages
     fi
 
