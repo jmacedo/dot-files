@@ -182,7 +182,7 @@ install_flatpak_packages() {
     flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
     for app in "${apps[@]}"; do
-        flatpak install --user --noninteractive --or-update flathub "$app"
+        flatpak install --user --noninteractive --or-update "$app"
     done
 }
 
