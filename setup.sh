@@ -114,7 +114,7 @@ install_kitty() {
     local installer_path="$(mktemp)"
     
     curl --fail --location "https://sw.kovidgoyal.net/kitty/installer.sh" --output "$installer_path"
-    sh "$installer_path" launch=n
+    sh "$installer_path" launch=n dest="${CUSTOM_USER_APPS_DIR:-'$HOME/.local'}"
     rm -f -- "$installer_path"
 
     ln -sfn -- "$HOME/.local/kitty.app/bin/kitty" "$LOCAL_BIN_DIR/kitty"
@@ -200,9 +200,10 @@ main() {
     BACKUP_EXT="bkp"
     SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
     LOCAL_BIN_DIR="$HOME/.local/bin"
+    CUSTOM_USER_APPS_DIR="$HOME/Apps"
 
     # Create custom home directories.
-    mkdir -p -- "$HOME/Apps" "$HOME/Dev" "$HOME/Temp"
+    mkdir -p -- "$CUSTOM_USER_APPS_DIR" "$HOME/Dev" "$HOME/Temp"
     
     # Ensure local bin and desktop launchers folders.
     mkdir -p -- "$LOCAL_BIN_DIR" "$HOME/.local/share/applications"
