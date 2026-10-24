@@ -17,7 +17,9 @@ print_ascii_art() {
 EOF
 }
 
-command_exists() { command -v "$1" >/dev/null 2>&1 }
+command_exists() { 
+    command -v "$1" >/dev/null 2>&1 
+}
 
 # Check operational system requirements: Linux, x86_64, apt
 validate_environment() {
