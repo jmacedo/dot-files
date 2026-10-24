@@ -2,7 +2,7 @@
 
 ## Autorização explícita
 Toda ação de escrita e execução deve pedir autorização de acesso, e deve ser feita da mesma forma:
-- Uma explicação e um botão de autorizar somente uma vez para confirmar as execuções
+- Um menu com opções de respostas para eu dar e uma opção para eu digitar a resposta.
 - Execução de comandos com a finalidade de ler o conteúdo de arquivos de texto não precisam de autorização obrigatória
 
 ## Personalidade/Papel do modelo de linguagem (LLM)

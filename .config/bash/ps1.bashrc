@@ -1,102 +1,210 @@
-# PS1 DEFINITION
-__icon_user=$'\uE36E' # 
-__icon_prompt=$'\u276F' # ❯
-__icon_folder=$'\uF115' # 
-__icon_separator=$'\uF0DA' # 
-__icon_top_left=$'\u256D' # ╭
-__icon_horizontal_line=$'\u2500' # ─
-__icon_top_right=$'\u256E' # ╮
-__icon_bottom_left=$'\u2570' # ╰
-__icon_os=$'\uF32A' # 
-__icon_at=$'\uF1FA' #  
-__icon_clock=$'\uF017' # 
-__icon_git=$'\uE725' # 
-__icon_success=$'\u2713' # ✓
-__icon_failure=$'\u2717' # ✗
-__last_status=''
-__prompt_status=''
-__git_info_branch_name=''
-__is_git_directory=false
+CUSTOM_USER_PS1="\u@\h - \w"
 
-__git_info_load_branch_name() {
+__ps1_get_git_branch() {
     command -v git >/dev/null 2>&1 || return 0
-    #git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
+    git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
 
-    if [[ $(git rev-parse --is-inside-work-tree 2>&1) ]];then
-        __git_info_branch_name=$(git symbolic-ref --quiet --short HEAD 2>/dev/null) ||
-            __git_info_branch_name=$(git rev-parse --short HEAD 2>/dev/null) || return 0
+    local git_branch
+    git_branch=$(git symbolic-ref --quiet --short HEAD 2>/dev/null) ||
+        git_branch=$(git rev-parse --short HEAD 2>/dev/null) || return 0
 
-        __is_git_directory=true
-    else
-        __git_info_branch_name=""
-        __is_git_directory=false
-    fi
+    printf '%s' "$git_branch"
 }
 
-__git_info_text() {
-    __git_info_load_branch_name
+__ps1_get_user_icon() {
+    printf '%s' $'\uE36E' # 
+}
+
+__ps1_get_os_icon() {
+    local os_id=''
+
+    case "$(uname -s)" in
+        Darwin)
+            printf '%s' $'\uF179' # 
+            return 0
+            ;;
+        Linux)
+            if [[ -r /proc/device-tree/model ]] && [[ $(</proc/device-tree/model) == *'Raspberry Pi'* ]]; then
+                printf '%s' $'\uF315' # 
+                return 0
+            fi
+
+            if [[ -r /etc/os-release ]]; then
+                # shellcheck disable=SC1091
+                source /etc/os-release
+                os_id=${ID,,}
+            fi
+            ;;
+        *)
+            printf '%s' $'\uF31A' # 
+            return 0
+            ;;
+    esac
+
+    case "$os_id" in
+        pop)
+            printf '%s' $'\uF32A' # 
+            ;;
+        ubuntu)
+            printf '%s' $'\uF31B' # 
+            ;;
+        linuxmint)
+            printf '%s' $'\uF30E' # 
+            ;;
+        zorin)
+            printf '%s' $'\uF32F' # 
+            ;;
+        deepin)
+            printf '%s' $'\uF321' # 
+            ;;
+        debian)
+            printf '%s' $'\uF306' # 
+            ;;
+        bazzite|fedora)
+            printf '%s' $'\uF30A' # 
+            ;;
+        arch)
+            printf '%s' $'\uF303' # 
+            ;;
+        steamos)
+            printf '%s' $'\uF1B6' # 
+            ;;
+        kali)
+            printf '%s' $'\uF327' # 
+            ;;
+        raspbian)
+            printf '%s' $'\uF315' # 
+            ;;
+        *)
+            printf '%s' $'\uF31A' # 
+            ;;
+    esac
+}
+
+__ps1_get_dir_icon() {
+    printf '%s' $'\uF115' # 
+}
+
+__ps1_get_clock_icon() {
+    printf '%s' $'\uF017' # 
+}
+
+__ps1_get_git_icon() {
+    printf '%s' $'\uE725' # 
+}
+
+__ps1_get_git_modified_icon() {
+    command -v git >/dev/null 2>&1 || return 0
+    git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
 
     if [[ -n $(git status --porcelain --untracked-files=normal 2>/dev/null) ]]; then
-        printf '%s %s* ' "$__icon_git" "$__git_info_branch_name"
-    elif [[ "$__git_info_branch_name" != "" ]]; then
-        printf '%s %s ' "$__icon_git" "$__git_info_branch_name"
-    else
-        printf ''
+        printf '%s' $'\uF044' # 
     fi
 }
 
-__git_info_color() {
-    __git_info_load_branch_name
-    local color_text=""
-
-    if [[ -n $(git status --porcelain --untracked-files=normal 2>/dev/null) ]]; then
-        color_text='243;139;168'
-    else
-        color_text='249;226;175'
-    fi
-
-    if [[ $__is_git_directory ]]; then
-        printf '%s' $color_text
-    else
-        printf ''
-    fi
+__ps1_get_success_icon() {
+    printf '%s' $'\uF00C' # 
 }
 
-__prompt_command() {
-    __last_status=$?
-
-    if (( __last_status == 0 )); then
-        __prompt_status="${__icon_success}"
-    else
-        __prompt_status="${__icon_failure} ${__last_status}"
-    fi
-
-    # Maintain the history between terminals
-    builtin history -a
-    builtin history -n
+__ps1_get_failure_icon() {
+    printf '%s' $'\uF00D' # 
 }
 
-PROMPT_COMMAND='__prompt_command'
-PS1='\[\e[38;2;108;112;134m\]${__icon_top_left}${__icon_horizontal_line}\[\e[0m\] \[\e[38;2;137;180;250m\]${__icon_user}\[\e[0m\] \[\e[38;2;108;112;134m\]\u${__icon_at} \h\[\e[0m\] \[\e[38;2;137;180;250m\]${__icon_os}  ${__icon_separator}\[\e[0m\] \[\e[38;2;249;226;175m\]${__icon_folder}  \w\[\e[0m\] \[\e[38;2;203;166;247m\]${__icon_clock} \D{%d/%m/%Y %H:%M}h\[\e[0m\] \[\e[38;2;$(__git_info_color)m\]$(__git_info_text)\[\e[0m\]\n\[\e[38;2;108;112;134m\]${__icon_bottom_left}${__icon_horizontal_line}\[\e[0m\] \[$( [[ ${__last_status:-0} -eq 0 ]] && printf "\e[38;2;166;227;161m" || printf "\e[38;2;243;139;168m" )\]${__prompt_status}\[\e[0m\] \[\e[38;2;137;180;250m\]${__icon_prompt}\[\e[0m\] '
-# COLOR SCHEME:
-# GREEN       (rgb 166,227,161)
-# RED         (rgb 243,139,168)
-# BLUE        (rgb 137,180,250)
-# PURPLE      (rgb 203,166,247)
-# LIGHT RED   (rgb 245,224,220) 
-# GRAY        (rgb 108,112,134) 
-# YELLOW      (rgb 249,226,175)
-# PS1:
-# <GRAY><BORDER-ICONS><RESET>
-# <BLUE><USER-ICON><RESET>
-# <GRAY><USER-NAME><AT-SYMBOL><HOST-NAME><RESET>
-# <BLUE><OS-ICON><RESET>
-# <SEPARATOR-ICON>
-# <YELLOW><FOLDER-ICON><WORKING-DIR><RESET>
-# <PURPLE><CLOCK-ICON><DATETIME><RESET>
-# <GIT-BRANCH-COLOR><GIT-BRANCH-NAME><RESET>
-# <GRAY><BORDER-ICON><RESET>
-# <NEW-LINE>
-# <GRAY><BORDER-ICONS><RESET>
-# <LAST-EXECUTION-STATUS-COLOR><LAST-EXECUTION-STATUS-CODE><RESET>
-# <BLUE><PROMPT-ICON><RESET>
+__ps1_get_prompt_icon() {
+    printf '%s' $'\u276F' # ❯
+}
+
+__ps1_sty_reset() {
+    printf '\\[\e[0m\\]'
+}
+
+__ps1_sty_color() {
+    local red="$1"
+    local green="$2"
+    local blue="$3"
+
+    printf '\\[\e[38;2;%s;%s;%sm\\]' "$red" "$green" "$blue"
+}
+
+__ps1_get_left_border_up() {
+    printf '%s' $'\u256D\u2500' # ╭─
+}
+
+__ps1_get_left_border_down() {
+    printf '%s' $'\u2570\u2500' # ╰─
+}
+
+__ps1_prompt_command() {
+    local last_exec_status_code=$?
+    local git_branch
+    local user_icon
+    local os_icon
+    local dir_icon
+    local clock_icon
+    local git_icon
+    local git_modified_icon
+    local success_icon
+    local failure_icon
+    local prompt_icon
+    local left_border_up
+    local left_border_down
+    local current_datetime
+    local color_green
+    local color_red
+    local color_blue
+    local color_purple
+    local color_light_red
+    local color_gray
+    local color_yellow
+    local style_reset
+    local git_section=''
+    local last_exec_status=''
+    local last_exec_status_color=''
+
+    git_branch=$(__ps1_get_git_branch)
+    user_icon=$(__ps1_get_user_icon)
+    os_icon=$(__ps1_get_os_icon)
+    dir_icon=$(__ps1_get_dir_icon)
+    clock_icon=$(__ps1_get_clock_icon)
+    git_icon=$(__ps1_get_git_icon)
+    success_icon=$(__ps1_get_success_icon)
+    failure_icon=$(__ps1_get_failure_icon)
+    prompt_icon=$(__ps1_get_prompt_icon)
+    left_border_up=$(__ps1_get_left_border_up)
+    left_border_down=$(__ps1_get_left_border_down)
+    printf -v current_datetime '%(%d/%m/%Y %H:%M)T' -1
+    current_datetime+='h'
+
+    color_green=$(__ps1_sty_color 166 227 161)
+    color_red=$(__ps1_sty_color 243 139 168)
+    color_blue=$(__ps1_sty_color 137 180 250)
+    color_purple=$(__ps1_sty_color 203 166 247)
+    color_light_red=$(__ps1_sty_color 245 224 220)
+    color_gray=$(__ps1_sty_color 108 112 134)
+    color_yellow=$(__ps1_sty_color 249 226 175)
+    style_reset=$(__ps1_sty_reset)
+
+    if [[ -n "$git_branch" ]]; then
+        git_modified_icon=$(__ps1_get_git_modified_icon)
+
+        if [[ -n "$git_modified_icon" ]]; then
+            git_section="${color_red}${git_icon} ${git_branch} ${git_modified_icon}${style_reset} "
+        else
+            git_section="${color_yellow}${git_icon} ${git_branch}${style_reset} "
+        fi
+    fi
+
+    if (( last_exec_status_code == 0 )); then
+        last_exec_status=$success_icon
+        last_exec_status_color=$color_green
+    else
+        last_exec_status="${last_exec_status_code} ${failure_icon}"
+        last_exec_status_color=$color_light_red
+    fi
+
+    CUSTOM_USER_PS1="${color_gray}${left_border_up}${style_reset} ${color_yellow}${dir_icon} \w${style_reset} ${git_section}${color_gray}${clock_icon} ${current_datetime} ${last_exec_status_color}[${last_exec_status}]${style_reset} ${color_purple}${user_icon} \u@\h ${os_icon}${style_reset}\n${color_gray}${left_border_down}${style_reset} ${color_blue}${prompt_icon}${style_reset} "
+    PS1=$CUSTOM_USER_PS1
+}
+
+PROMPT_COMMAND='__ps1_prompt_command'
+PS1=$CUSTOM_USER_PS1
