@@ -177,6 +177,9 @@ install_flatpak_packages() {
         io.github.kolunmi.Bazaar
         me.proton.Pass
         org.onlyoffice.desktopeditors
+        org.gnome.gedit
+        de.swsnr.turnon
+        org.videolan.VLC
     )
 
     flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
@@ -214,7 +217,10 @@ main() {
     # Apps.
     install_kitty
     install_neovim
-    install_flatpak_packages
+
+    if [[ "$1" != "--no-flatpaks" ]]; then
+        install_flatpak_packages
+    fi
 
     # Configs.
     install_config ".config/bash"
