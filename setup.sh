@@ -23,19 +23,18 @@ command_exists() {
 
 # Check operational system requirements: Linux, x86_64, apt
 validate_environment() {
-    [[ "$(uname -s)" == "Linux" ]] || {
+    if [[ "$(uname -s)" != "Linux" ]]; then
         printf 'This setup supports Linux only.\n' >&2
         return 1
-    }
+    fi
 
-    [[ "$(uname -m)" == "x86_64" ]] || {
+    if [[ "$(uname -m)" != "x86_64" ]]; then
         printf 'This setup supports x86_64 only.\n' >&2
         return 1
-    }
-
+    fi
     
     command_exists apt || {
-        printf 'This setup requires apt (a Debian-based distribution).\n' >&2
+        printf 'This setup requires apt package manager (a Debian-based distribution).\n' >&2
         return 1
     }
 }
@@ -74,37 +73,36 @@ install_config() {
     local source="$SCRIPT_DIR/$relative_path"
     local destination="$HOME/$relative_path"
 
-    [[ -e "$source" ]] || {
+    if [[ ! -e "$source" ]]; then
         printf "Missing source file or directory: '%s'\n" "$source" >&2
         return 1
-    }
+    fi
 
     mkdir -p -- "$(dirname -- "$destination")"
     backup_path "$destination"
 
-    [[ -f "$source" ]] || {
+    if [[ -f "$source" ]]; then
         cp -- "$source" "$destination"
         return 0
-    }
+    fi
 
-    [[ -d "$source" ]] || {
+    if [[ -d "$source" ]]; then
         cp -r -- "$source" "$destination"
         return 0
-    }
+    fi
 }
 
 # Install a font located in "$HOME/.local/share/fonts" or given by the second parameter.
 install_local_font() {
     local font_name="$1"
     local font_path="${2:-'$SCRIPT_DIR/.local/share/fonts'}"
-    #local source="$SCRIPT_DIR/.local/share/fonts/$font_name"
     local source="$font_path/$font_name"
     local destination="$HOME/.local/share/fonts/$font_name"
 
-    [[ -d "$source" ]] || {
-        printf 'Missing bundled font: %s\n' "$source" >&2
+    if [[ ! -d "$source" ]]; then
+        printf 'Missing local font: %s\n' "$source" >&2
         return 1
-    }
+    fi
 
     mkdir -p -- "$(dirname -- "$destination")"
     backup_path "$destination"
@@ -113,14 +111,11 @@ install_local_font() {
 
 # Install a font from Nerd Fonts [https://github.com/ryanoasis/nerd-fonts].
 install_web_font() {
-    local archive_name="$1"
-    local source_url="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/${archive_name}.zip"
-    local destination="$HOME/.local/share/fonts/$archive_name"
-    local download_path extraction_dir
-
-    download_path="$(mktemp)"
-    extraction_dir="$(mktemp -d)"
-    trap 'rm -f -- "$download_path"; rm -rf -- "$extraction_dir"' RETURN
+    local file_name="$1"
+    local source_url="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/${file_name}.zip"
+    local destination="$HOME/.local/share/fonts/$file_name"
+    local download_path="$(mktemp)"
+    local extraction_dir="$(mktemp -d)"
 
     curl --fail --location "$source_url" --output "$download_path"
     unzip -q -- "$download_path" -d "$extraction_dir"
@@ -129,7 +124,6 @@ install_web_font() {
     mkdir -p -- "$destination"
     cp -a -- "$extraction_dir/." "$destination"
 
-    trap - RETURN
     rm -f -- "$download_path"
     rm -rf -- "$extraction_dir"
 }
@@ -188,7 +182,7 @@ install_flatpak_packages() {
     flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
     for app in "${apps[@]}"; do
-        flatpak install --system --noninteractive flathub "$app"
+        flatpak install --user --noninteractive --or-update flathub "$app"
     done
 }
 
@@ -217,6 +211,11 @@ main() {
     install_web_font "NerdFontsSymbolsOnly"
     fc-cache --force
 
+    # Apps.
+    install_kitty
+    install_neovim
+    install_flatpak_packages
+
     # Configs.
     install_config ".config/bash"
     install_config ".config/kitty"
@@ -224,11 +223,6 @@ main() {
     install_config ".bashrc"
     install_config ".gitconfig"
     install_config ".hidden"
-
-    # Apps.
-    install_kitty
-    install_neovim
-    install_flatpak_packages
 
     printf 'Setup finished. Open a new shell to load the Bash configuration.\n'
 }
