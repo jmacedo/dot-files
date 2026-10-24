@@ -112,22 +112,24 @@ install_web_font() {
 
 install_kitty() {
     local installer_path="$(mktemp)"
+    local dest=${CUSTOM_USER_APPS_DIR:-$HOME/.local}
+    local kitty_folder="$dest/kitty.app"
     
     curl --fail --location "https://sw.kovidgoyal.net/kitty/installer.sh" --output "$installer_path"
-    sh "$installer_path" launch=n dest="${CUSTOM_USER_APPS_DIR:-'$HOME/.local'}"
+    sh "$installer_path" launch=n dest="$dest"
     rm -f -- "$installer_path"
 
-    ln -sfn -- "$HOME/.local/kitty.app/bin/kitty" "$LOCAL_BIN_DIR/kitty"
-    ln -sfn -- "$HOME/.local/kitty.app/bin/kitten" "$LOCAL_BIN_DIR/kitten"
+    ln -sfn -- "$kitty_folder/bin/kitty" "$LOCAL_BIN_DIR/kitty"
+    ln -sfn -- "$kitty_folder/bin/kitten" "$LOCAL_BIN_DIR/kitten"
 
-    cp -- "$HOME/.local/kitty.app/share/applications/kitty.desktop" \
+    cp -- "$kitty_folder/share/applications/kitty.desktop" \
         "$HOME/.local/share/applications/kitty.desktop"
 
-    cp -- "$HOME/.local/kitty.app/share/applications/kitty-open.desktop" \
+    cp -- "$kitty_folder/share/applications/kitty-open.desktop" \
         "$HOME/.local/share/applications/kitty-open.desktop"
 
     sed -i \
-        -e "s|^Icon=kitty$|Icon=$HOME/.local/kitty.app/share/icons/hicolor/256x256/apps/kitty.png|" \
+        -e "s|^Icon=kitty$|Icon=$kitty_folder/share/icons/hicolor/256x256/apps/kitty.png|" \
         "$HOME/.local/share/applications/kitty.desktop" \
         "$HOME/.local/share/applications/kitty-open.desktop"
 }
