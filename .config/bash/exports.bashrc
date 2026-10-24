@@ -1,6 +1,7 @@
 export XDG_DATA_HOME="$HOME/.local/share"
 export EDITOR="nvim"
 export VISUAL="nvim"
+export PATH="$HOME/.local/bin:$PATH"
 
 # Zoxide
 zoxide_data_dir="$XDG_DATA_HOME/zoxide"

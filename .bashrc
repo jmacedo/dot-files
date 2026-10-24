@@ -8,13 +8,10 @@ case "${LC_ALL:-${LC_CTYPE:-${LANG:-"utf8"}}}" in
   *) export LANG=C.UTF-8 LC_ALL=C.UTF-8 ;;
 esac
 
-# Custom bash configuration
+# Custom bash configurations.
+# All files under BASH_CONFIG_DIR with ".bashrc" suffix will be included.
 BASH_CONFIG_DIR="$HOME/.config/bash"
-export PATH="$HOME/.local/bin:$PATH"
 
-for bash_module in aliases completion exports params ps1; do
-  bash_module_path="$BASH_CONFIG_DIR/$bash_module.bashrc"
-  [[ -r "$bash_module_path" ]] && source "$bash_module_path"
+for bashrc_config in `find -L "$BASH_CONFIG_DIR" -type f -name "*.bashrc"`; do
+  [[ -r "$bashrc_config" ]] && source "$bashrc_config"
 done
-
-unset bash_module bash_module_path
