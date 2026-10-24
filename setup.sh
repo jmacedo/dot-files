@@ -4,6 +4,7 @@
 # Run from any directory: paths are resolved relative to this script.
 
 set -euo pipefail
+clear
 
 print_ascii_art() {
     cat <<'EOF'
