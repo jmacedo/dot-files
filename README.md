@@ -25,8 +25,9 @@ configuration stored in this repository.
 ./setup.sh
 ```
 
-This installs APT packages, deploys the dotfiles, installs the bundled Nerd
-Fonts, and installs pinned Kitty and Neovim releases into the home directory.
+This installs APT packages, deploys the dotfiles, downloads SauceCodePro and
+Symbols Nerd Fonts from the official Nerd Fonts releases, and installs pinned
+Kitty and Neovim releases into the home directory.
 Executables are exposed through `~/.local/bin`; no links are written to
 `/usr/bin`.
 
@@ -39,12 +40,13 @@ To additionally install the selected Flatpak applications:
 The script performs system changes, downloads pinned releases and invokes
 `sudo` for APT and Flatpak operations. It is intentionally not a dry-run tool.
 Review version changes and the upstream release checksums before updating the
-version constants in `setup.sh`.
+version constants in `setup.sh`. Nerd Fonts are downloaded from their latest
+official release.
 
 ## Maintainer notes
 
-- Font files are intentionally versioned under `.local/share/fonts` and are
-  copied from the repository rather than downloaded during setup.
+- Local font files can be installed with `install_local_font`; the configured
+  Nerd Fonts are downloaded by `install_web_font` during setup.
 - `fzf` and `zoxide` come from APT only; they are not installed a second time
   by third-party scripts.
 - Neovim language-server details are in `.config/nvim/README.md`.

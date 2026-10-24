@@ -69,7 +69,7 @@ install_directory() {
     cp -a -- "$source" "$destination"
 }
 
-install_font() {
+install_local_font() {
     local font_name="$1"
     local source="$SCRIPT_DIR/.local/share/fonts/$font_name"
     local destination="$HOME/.local/share/fonts/$font_name"
@@ -82,6 +82,28 @@ install_font() {
     mkdir -p -- "$(dirname -- "$destination")"
     backup_path "$destination"
     cp -a -- "$source" "$destination"
+}
+
+install_web_font() {
+    local archive_name="$2"
+    local source_url="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/${archive_name}.zip"
+    local destination="$HOME/.local/share/fonts/$archive_name"
+    local download_path extraction_dir
+
+    download_path="$(mktemp)"
+    extraction_dir="$(mktemp -d)"
+    trap 'rm -f -- "$download_path"; rm -rf -- "$extraction_dir"' RETURN
+
+    curl --fail --location "$source_url" --output "$download_path"
+    unzip -q -- "$download_path" -d "$extraction_dir"
+
+    backup_path "$destination"
+    mkdir -p -- "$destination"
+    cp -a -- "$extraction_dir/." "$destination"
+
+    trap - RETURN
+    rm -f -- "$download_path"
+    rm -rf -- "$extraction_dir"
 }
 
 validate_environment() {
@@ -173,9 +195,8 @@ install_dotfiles() {
     install_directory ".config/bash"
     install_directory ".config/kitty"
     install_directory ".config/nvim"
-    install_font "NerdFontsSymbolsOnly"
-    install_font "Ubuntu"
-    install_font "UbuntuMono"
+    install_web_font "SauceCodePro" "SourceCodePro"
+    install_web_font "Symbols" "NerdFontsSymbolsOnly"
     install_file ".bashrc"
     install_file ".gitconfig"
     install_file ".hidden"
