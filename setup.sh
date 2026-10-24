@@ -88,7 +88,7 @@ install_config() {
     }
 
     [[ -d "$source" ]] || {
-        cp -a -- "$source" "$destination"
+        cp -r -- "$source" "$destination"
         return 0
     }
 }
