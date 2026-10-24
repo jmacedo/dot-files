@@ -5,6 +5,20 @@
 
 set -euo pipefail
 
+print_ascii_art() {
+    cat <<'EOF'
+    .--.
+   |o_o |
+   |:_/ |
+  //   \ \
+ (|     | )
+/'\_   _/`\
+\___)=(___/
+EOF
+}
+
+command_exists() { command -v "$1" >/dev/null 2>&1 }
+
 # Check operational system requirements: Linux, x86_64, apt
 validate_environment() {
     [[ "$(uname -s)" == "Linux" ]] || {
@@ -17,8 +31,8 @@ validate_environment() {
         return 1
     }
 
-    # command_exists() { command -v "$1" >/dev/null 2>&1 }
-    [[ command -v apt >/dev/null 2>&1 ]] || {
+    
+    command_exists apt || {
         printf 'This setup requires apt (a Debian-based distribution).\n' >&2
         return 1
     }
@@ -177,15 +191,7 @@ install_flatpak_packages() {
 }
 
 main() {
-    cat <<'EOF'
-    .--.
-   |o_o |
-   |:_/ |
-  //   \ \
- (|     | )
-/'\_   _/`\
-\___)=(___/
-EOF
+    print_ascii_art
     validate_environment
     printf 'Installing base packages and dotfiles...\n'
 
