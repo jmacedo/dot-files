@@ -185,10 +185,10 @@ install_flatpak_packages() {
         org.videolan.VLC
     )
 
-    flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+    flatpak --installation=custom remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
     for app in "${apps[@]}"; do
-        flatpak install --user --noninteractive --or-update flathub "$app"
+        flatpak --installation=custom install --user --noninteractive --or-update flathub "$app"
     done
 }
 
@@ -205,7 +205,7 @@ main() {
     CUSTOM_USER_APPS_DIR="$HOME/Apps"
 
     # Create custom home directories.
-    mkdir -p -- "$CUSTOM_USER_APPS_DIR" "$HOME/Dev" "$HOME/Temp"
+    mkdir -p -- "$CUSTOM_USER_APPS_DIR" "$CUSTOM_USER_APPS_DIR/flatpak" "$HOME/Dev" "$HOME/Temp"
     
     # Ensure local bin and desktop launchers folders.
     mkdir -p -- "$LOCAL_BIN_DIR" "$HOME/.local/share/applications"
@@ -223,6 +223,8 @@ main() {
     install_neovim
 
     if [[ "${1:-}" != "--no-flatpaks" ]]; then
+        sudo mkdir -p "/etc/flatpak/installations.d"
+        sudo cp "$SCRIPT_DIR/etc/flatpak/installations.d/custom.conf" "/etc/flatpak/installations.d/custom.conf"
         install_flatpak_packages
     fi
 
