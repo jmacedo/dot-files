@@ -185,10 +185,13 @@ install_flatpak_packages() {
         org.videolan.VLC
     )
 
-    flatpak --installation=custom remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+    sudo mkdir -p "/etc/flatpak/installations.d"
+    sudo cp "$SCRIPT_DIR/etc/flatpak/installations.d/custom.conf" "/etc/flatpak/installations.d/custom.conf"
+
+    flatpak remote-add --installation=custom --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
     for app in "${apps[@]}"; do
-        flatpak --installation=custom install --user --noninteractive --or-update flathub "$app"
+        flatpak install --installation=custom --noninteractive --or-update flathub "$app"
     done
 }
 
@@ -222,9 +225,8 @@ main() {
     install_kitty
     install_neovim
 
+    # Conditionally install flatpaks.
     if [[ "${1:-}" != "--no-flatpaks" ]]; then
-        sudo mkdir -p "/etc/flatpak/installations.d"
-        sudo cp "$SCRIPT_DIR/etc/flatpak/installations.d/custom.conf" "/etc/flatpak/installations.d/custom.conf"
         install_flatpak_packages
     fi
 

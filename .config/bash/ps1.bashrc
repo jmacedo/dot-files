@@ -204,6 +204,10 @@ __ps1_prompt_command() {
 
     CUSTOM_USER_PS1="${color_gray}${left_border_up}${style_reset} ${color_yellow}${dir_icon} \w${style_reset} ${git_section}${color_gray}${clock_icon} ${current_datetime} ${last_exec_status_color}[${last_exec_status}]${style_reset} ${color_purple}${user_icon} \u@\h ${os_icon}${style_reset}\n${color_gray}${left_border_down}${style_reset} ${color_blue}${prompt_icon}${style_reset} "
     PS1=$CUSTOM_USER_PS1
+
+    # Maintain the history between terminals
+    builtin history -a
+    builtin history -n
 }
 
 PROMPT_COMMAND='__ps1_prompt_command'
