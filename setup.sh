@@ -169,10 +169,8 @@ install_apt_packages() {
         clangd
         default-jdk
         golang-go
-        lua-language-server
         pipx
         python3-venv
-        rust-analyzer
         php-cli
         composer
     )
