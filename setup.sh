@@ -287,6 +287,47 @@ install_rustup() {
     rustup component add rust-analyzer
 }
 
+install_lua_language_server() {
+    local release_info
+    local archive
+    local download_url
+    local install_dir="$CUSTOM_USER_APPS_DIR/lua-language-server"
+    local download_path
+    local extraction_dir
+
+    release_info="$(
+        curl --fail --silent --show-error --location \
+            "https://api.github.com/repos/LuaLS/lua-language-server/releases/latest" |
+            python3 -c '
+import json
+import sys
+
+release = json.load(sys.stdin)
+asset = next(
+    asset for asset in release["assets"]
+    if asset["name"].endswith("-linux-x64.tar.gz")
+)
+print(asset["name"], asset["browser_download_url"])
+'
+    )"
+
+    read -r archive download_url <<< "$release_info"
+    download_path="$(mktemp)"
+    extraction_dir="$(mktemp -d)"
+
+    curl --fail --location "$download_url" --output "$download_path"
+    tar --extract --gzip --file "$download_path" --directory "$extraction_dir"
+
+    backup_path "$install_dir"
+    mkdir -p -- "$install_dir"
+    cp -a -- "$extraction_dir/." "$install_dir/"
+    ln -sfn -- "$install_dir/bin/lua-language-server" \
+        "$LOCAL_BIN_DIR/lua-language-server"
+
+    rm -f -- "$download_path"
+    rm -rf -- "$extraction_dir"
+}
+
 main() {
     print_ascii_art
     validate_environment
@@ -319,6 +360,7 @@ main() {
     install_rustup
     install_php_lsp_tools
     install_laravel_lsp
+    install_lua_language_server
 
     # Custom fonts.
     install_web_font "SourceCodePro"
