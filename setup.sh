@@ -193,17 +193,19 @@ install_flatpak_packages() {
         org.videolan.VLC
     )
 
-    local flatpak_installations_d=/etc/flatpak/installations.d
-    sudo mkdir -p -- "${flatpak_installations_d}"
+    # Give correct flatpak permissions to custom flatpak/installations.d directory.
+    flatpak override --user --filesystem="$FLATPAK_INSTALLATIONS_D"
     
-    flatpak override --user --filesystem="${flatpak_installations_d}"
-    
+    # Inside flatpak/installations.d/custom.conf.
+    # Change HOME alias in flatpak install path to use current HOME environment variable.
     sed "s|@HOME@|$HOME|g" \
         "$SCRIPT_DIR/etc/flatpak/installations.d/custom.conf" |
-        sudo tee "${flatpak_installations_d}/custom.conf" >/dev/null
+        sudo tee "$FLATPAK_INSTALLATIONS_D/custom.conf" >/dev/null
 
+    # Adds flathub to custom installation.
     flatpak remote-add --installation=custom --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
+    # Install all pre-defined flatpak apps in a custom path.
     for app in "${apps[@]}"; do
         flatpak install --installation=custom --noninteractive --or-update flathub "$app"
     done
@@ -343,6 +345,7 @@ main() {
     SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
     LOCAL_BIN_DIR="$HOME/.local/bin"
     CUSTOM_USER_APPS_DIR="$HOME/Apps"
+    FLATPAK_INSTALLATIONS_D="/etc/flatpak/installations.d"
 
     # Create custom home directories.
     mkdir -p -- "$CUSTOM_USER_APPS_DIR" \
@@ -352,6 +355,8 @@ main() {
         "$LOCAL_BIN_DIR" \
         "$HOME/.local/share/applications" \
         "$HOME/.local/share/zoxide"
+
+    sudo mkdir -p -- "$FLATPAK_INSTALLATIONS_D"
 
     # Apt packages.
     install_apt_packages
