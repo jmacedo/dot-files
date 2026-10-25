@@ -193,8 +193,11 @@ install_flatpak_packages() {
         org.videolan.VLC
     )
 
-    # Give correct flatpak permissions to custom flatpak/installations.d directory.
+    # Give correct flatpak permissions to:
+    # - Custom flatpak/installations.d directory.
+    # - Custom ~/Apps/flatpak directory.
     flatpak override --user --filesystem="$FLATPAK_INSTALLATIONS_D"
+    flatpak override --user --filesystem="$FLATPAK_CUSTOM_PATH"
     
     # Inside flatpak/installations.d/custom.conf.
     # Change HOME alias in flatpak install path to use current HOME environment variable.
@@ -346,10 +349,11 @@ main() {
     LOCAL_BIN_DIR="$HOME/.local/bin"
     CUSTOM_USER_APPS_DIR="$HOME/Apps"
     FLATPAK_INSTALLATIONS_D="/etc/flatpak/installations.d"
+    FLATPAK_CUSTOM_PATH="$CUSTOM_USER_APPS_DIR/flatpak"
 
     # Create custom home directories.
     mkdir -p -- "$CUSTOM_USER_APPS_DIR" \
-        "$CUSTOM_USER_APPS_DIR/flatpak/repo" \
+        "$FLATPAK_CUSTOM_PATH" \
         "$HOME/Dev" \
         "$HOME/Temp" \
         "$LOCAL_BIN_DIR" \
