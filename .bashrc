@@ -9,9 +9,20 @@ case "${LC_ALL:-${LC_CTYPE:-${LANG:-"utf8"}}}" in
 esac
 
 # Custom bash configurations.
-# All files under BASH_CONFIG_DIR with ".bashrc" suffix will be included.
+
 BASH_CONFIG_DIR="$HOME/.config/bash"
 
-for bashrc_config in `find -L "$BASH_CONFIG_DIR" -type f -name "*.bashrc"`; do
-  [[ -r "$bashrc_config" ]] && source "$bashrc_config"
+# External .bashrc configs: "~/.config/bash/<NAME>.bashrc".
+# Pay attention to the order to load each one.
+bashrc_list=(
+  "aliases"
+  "completion"
+  "params"
+  "ps1"
+  "exports"
+  "integrations"
+)
+
+for bashrc_config in ${bashrc_list[@]}; do
+  [[ -r "$BASH_CONFIG_DIR/$bashrc_config.bashrc" ]] && source "$BASH_CONFIG_DIR/$bashrc_config.bashrc"
 done

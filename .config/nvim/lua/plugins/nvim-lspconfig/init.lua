@@ -9,45 +9,30 @@ vim.pack.add({
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 
-vim.lsp.config("*", {
-  capabilities = capabilities,
-})
-
+vim.lsp.config("*", { capabilities = capabilities, })
 vim.lsp.config("lua_ls", require("config.lsp.lua_ls"))
-
--- Load laravel server only on laravel project folders.
-vim.lsp.config("laravel_lsp", {
-  cmd = { "laravel-lsp" },
-  filetypes = { "php", "blade" },
-  root_dir = function(bufnr, on_dir)
-    local root = vim.fs.root(bufnr, "artisan")
-
-    if root then
-      on_dir(root)
-    end
-  end,
-})
+vim.lsp.config("php_lsp", require("config.lsp.php_lsp"))
+vim.lsp.config("laravel_lsp", require("config.lsp.laravel_lsp"))
 
 vim.lsp.enable({
   "html", -- HTML
   "cssls", -- CSS
   "jsonls", -- JSON
-  "tsc", -- TYPESCRIPT
+  "ts_ls", -- TYPESCRIPT
   "yamlls", -- YAML
-  "php_lsp", -- PHP
-  "symfony_lsp",-- SYMFONY
-  "laravel_lsp",-- LARAVEL
-  "sqls", -- SQL
   "basedpyright", -- PYTHON
+  "bashls", -- BASH
+  "vimls", -- VIMSCRIPT
+  "awk_ls", -- AWK
+  "dockerls", -- DOCKER FILE
+  "docker_compose_language_service", -- DOCKER COMPOSE
+  "gopls", -- GO
+  "sqls", -- SQL
   "jdtls", -- JAVA
   "kotlin_lsp", -- KOTLIN
-  "gopls", -- GO
   "clangd", -- C/C++
   "rust_analyzer", -- RUST
   "lua_ls", -- LUA
-  "bashls", -- BASH
-  "awk_ls", -- AWK
-  "vimls", -- VIMSCRIPT
-  "dockerls", -- DOCKER FILE
-  "docker_compose_language_service", -- DOCKER COMPOSE
+  "php_lsp", -- PHP
+  "laravel_lsp", -- LARAVEL
 })

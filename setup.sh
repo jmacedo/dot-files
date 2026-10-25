@@ -165,6 +165,16 @@ install_apt_packages() {
         wl-clipboard
         flatpak
         steam-devices
+        # LSPs and runtimes available through apt
+        clangd
+        default-jdk
+        golang-go
+        lua-language-server
+        pipx
+        python3-venv
+        rust-analyzer
+        php-cli
+        composer
     )
 
     sudo apt install -y "${packages[@]}"
@@ -195,6 +205,88 @@ install_flatpak_packages() {
     done
 }
 
+install_php_lsp_tools() {
+    local tools_dir="$CUSTOM_USER_APPS_DIR/npm-tools"
+
+    mkdir -p -- "$tools_dir"
+
+    npm install \
+        --prefix "$tools_dir" \
+        --save-exact \
+        intelephense
+}
+
+install_laravel_lsp() {
+    export COMPOSER_HOME="$CUSTOM_USER_APPS_DIR/composer"
+
+    composer global require laravel/lsp
+
+    ln -sfn -- "$COMPOSER_HOME/vendor/bin/laravel-lsp" \
+        "$LOCAL_BIN_DIR/laravel-lsp"
+}
+
+# Install Node.js version manager.
+install_fnm() {
+    local installer_path="$(mktemp)"
+
+    curl --fail --location "https://fnm.vercel.app/install" --output "$installer_path"
+    bash "$installer_path" --install-dir "$CUSTOM_USER_APPS_DIR/fnm" --skip-shell
+
+    rm -f -- "$installer_path"
+
+    export PATH="$HOME/Apps/fnm:$PATH"
+    eval "$(fnm env --use-on-cd --shell bash)"
+    fnm install --lts # Node latest version
+    fnm default "$(fnm current)" # Make node available by default
+}
+
+install_npm_lsp_tools() {
+    local tools_dir="$CUSTOM_USER_APPS_DIR/npm-tools"
+
+    mkdir -p -- "$tools_dir"
+
+    npm install \
+        --prefix "$tools_dir" \
+        --save-exact \
+        vscode-langservers-extracted \
+        typescript-language-server \
+        typescript \
+        yaml-language-server \
+        bash-language-server \
+        vim-language-server \
+        awk-language-server \
+        dockerfile-language-server-nodejs \
+        "@microsoft/compose-language-service" \
+        intelephense
+}
+
+install_python_lsp_tools() {
+    pipx ensurepath
+    pipx install basedpyright
+}
+
+install_go_lsp_tools() {
+    export GOPATH="$CUSTOM_USER_APPS_DIR/go"
+    export PATH="$GOPATH/bin:$PATH"
+
+    go install github.com/sqls-server/sqls@latest
+}
+
+install_rustup() {
+    local installer_path="$(mktemp)"
+
+    export CARGO_HOME="$CUSTOM_USER_APPS_DIR/cargo"
+    export RUSTUP_HOME="$CUSTOM_USER_APPS_DIR/rustup"
+
+    curl --fail --location https://sh.rustup.rs --output "$installer_path"
+    sh "$installer_path" -y --no-modify-path
+
+    rm -f -- "$installer_path"
+
+    export PATH="$CARGO_HOME/bin:$PATH"
+    rustup component add rust-analyzer
+}
+
 main() {
     print_ascii_art
     validate_environment
@@ -208,14 +300,26 @@ main() {
     CUSTOM_USER_APPS_DIR="$HOME/Apps"
 
     # Create custom home directories.
-    mkdir -p -- "$CUSTOM_USER_APPS_DIR" "$CUSTOM_USER_APPS_DIR/flatpak" "$HOME/Dev" "$HOME/Temp"
-    
-    # Ensure local bin and desktop launchers folders.
-    mkdir -p -- "$LOCAL_BIN_DIR" "$HOME/.local/share/applications"
+    mkdir -p -- "$CUSTOM_USER_APPS_DIR" \
+        "$CUSTOM_USER_APPS_DIR/flatpak" \
+        "$HOME/Dev" \
+        "$HOME/Temp" \
+        "$LOCAL_BIN_DIR" \
+        "$HOME/.local/share/applications" \
+        "$HOME/.local/share/zoxide"
 
     # Apt packages.
     install_apt_packages
-        
+    
+    # Fnm nodejs version manager
+    install_fnm
+    install_npm_lsp_tools
+    install_python_lsp_tools
+    install_go_lsp_tools
+    install_rustup
+    install_php_lsp_tools
+    install_laravel_lsp
+
     # Custom fonts.
     install_web_font "SourceCodePro"
     install_web_font "NerdFontsSymbolsOnly"
@@ -225,11 +329,6 @@ main() {
     install_kitty
     install_neovim
 
-    # Conditionally install flatpaks.
-    if [[ "${1:-}" != "--no-flatpaks" ]]; then
-        install_flatpak_packages
-    fi
-
     # Configs.
     install_config ".config/bash"
     install_config ".config/kitty"
@@ -237,6 +336,11 @@ main() {
     install_config ".bashrc"
     install_config ".gitconfig"
     install_config ".hidden"
+
+    # Conditionally install flatpaks.
+    if [[ "${1:-}" != "--no-flatpaks" ]]; then
+        install_flatpak_packages
+    fi
 
     printf 'Setup finished. Open a new shell to load the Bash configuration.\n'
 }
