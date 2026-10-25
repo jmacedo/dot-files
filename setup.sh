@@ -194,7 +194,9 @@ install_flatpak_packages() {
     )
 
     sudo mkdir -p -- "/etc/flatpak/installations.d"
-    sudo cp -f -- "$SCRIPT_DIR/etc/flatpak/installations.d/custom.conf" "/etc/flatpak/installations.d/custom.conf"
+    sed "s|@HOME@|$HOME|g" \
+        "$SCRIPT_DIR/etc/flatpak/installations.d/custom.conf" |
+        sudo tee "/etc/flatpak/installations.d/custom.conf" >/dev/null
 
     flatpak remote-add --installation=custom --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
