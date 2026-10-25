@@ -193,8 +193,8 @@ install_flatpak_packages() {
         org.videolan.VLC
     )
 
-    sudo mkdir -p "/etc/flatpak/installations.d"
-    sudo cp "$SCRIPT_DIR/etc/flatpak/installations.d/custom.conf" "/etc/flatpak/installations.d/custom.conf"
+    sudo mkdir -p -- "/etc/flatpak/installations.d"
+    sudo cp -f -- "$SCRIPT_DIR/etc/flatpak/installations.d/custom.conf" "/etc/flatpak/installations.d/custom.conf"
 
     flatpak remote-add --installation=custom --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
