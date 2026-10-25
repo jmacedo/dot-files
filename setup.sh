@@ -342,7 +342,7 @@ main() {
 
     # Create custom home directories.
     mkdir -p -- "$CUSTOM_USER_APPS_DIR" \
-        "$CUSTOM_USER_APPS_DIR/flatpak" \
+        "$CUSTOM_USER_APPS_DIR/flatpak/repo" \
         "$HOME/Dev" \
         "$HOME/Temp" \
         "$LOCAL_BIN_DIR" \
