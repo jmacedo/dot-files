@@ -426,6 +426,30 @@ print(asset["browser_download_url"])
     rm -rf -- "$extraction_dir"
 }
 
+# On PopOS 24.04, some flatpak apps bugged to launch.
+# This function configure a work-around to fix it.
+override_pop_os_flatpak_launchers() {
+    cat > "$HOME/.local/share/applications/com.google.Chrome.desktop" <<'EOF'
+[Desktop Entry]
+Name=Google Chrome
+Exec=flatpak run --user com.google.Chrome --ozone-platform=x11 %U
+Icon=com.google.Chrome
+Type=Application
+Categories=Network;WebBrowser;
+StartupWMClass=google-chrome
+EOF
+
+    cat > "$HOME/.local/share/applications/com.visualstudio.code.desktop" <<'EOF'
+[Desktop Entry]
+Name=Visual Studio Code
+Exec=flatpak run --user com.visualstudio.code --disable-gpu %F
+Icon=com.visualstudio.code
+Type=Application
+Categories=TextEditor;Development;IDE;
+StartupWMClass=Code
+EOF
+}
+
 # Entry point of the shellscript.
 main() {
     print_ascii_art
@@ -484,6 +508,7 @@ main() {
     # Conditionally install flatpaks.
     if [[ "${1:-}" != "--no-flatpaks" ]]; then
         install_flatpak_packages
+        override_pop_os_flatpak_launchers
     fi
 
     printf "\n\nSetup finished. Open a new shell or run 'source ~/.bashrc' in current shell.\n"
