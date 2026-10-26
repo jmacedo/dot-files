@@ -285,6 +285,11 @@ install_flatpak_packages() {
     for app in "${apps[@]}"; do
         flatpak install --user --noninteractive --or-update flathub "$app"
     done
+
+    # On Pop!_OS 24.04, at least inside a VM, Chrome and VSCode does not open.
+    # Below hacks override flatpak to use x11 engine in Chrome and disable GPU aceleration in VSCode.
+    flatpak override --user --ozone-platform=x11 com.google.Chrome
+    flatpak override --user --disable-gpu com.visualstudio.code
 }
 
 # Laravel language server for nvim.
@@ -472,7 +477,8 @@ main() {
         install_flatpak_packages
     fi
 
-    printf "\n\nSetup finished. Open a new shell or run 'source ~/.bashrc' in current shell.\n\n"
+    printf "\n\nSetup finished. Open a new shell or run 'source ~/.bashrc' in current shell.\n"
+    printf "Some apps, like Kitty Terminal, may present bugged behavior at oppening. Mainly with desktop integration. Log out and log in again.\n\n"
     printf "Have a nice day! =)\n"
     print_ascii_art
     echo ""
