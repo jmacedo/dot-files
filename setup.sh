@@ -421,7 +421,7 @@ main() {
     backup_path "$FLATPAK_CUSTOM_PATH"
     rm -rf -- "$FLATPAK_CUSTOM_PATH"
     mkdir -p -- "$FLATPAK_CUSTOM_PATH"
-    ln -sf ~/.local/share/flatpak "$FLATPAK_CUSTOM_PATH"
+    ln -sf "$FLATPAK_CUSTOM_PATH" ~/.local/share/flatpak
 
     # Apt packages.
     install_apt_packages
