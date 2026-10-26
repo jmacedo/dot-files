@@ -4,7 +4,10 @@
 # Run from any directory: paths are resolved relative to this script.
 
 set -euo pipefail
-clear
+
+if [[ -t 1 && -n "${TERM:-}" ]] && command -v clear >/dev/null 2>&1; then
+    clear || true
+fi
 
 print_ascii_art() {
     cat <<'EOF'
@@ -77,7 +80,7 @@ install_config() {
 # Install a font located in "$HOME/.local/share/fonts" or given by the second parameter.
 install_local_font() {
     local font_name="$1"
-    local font_path="${2:-'$SCRIPT_DIR/.local/share/fonts'}"
+    local font_path="${2:-$SCRIPT_DIR/.local/share/fonts}"
     local source="$font_path/$font_name"
     local destination="$HOME/.local/share/fonts/$font_name"
 
@@ -115,16 +118,21 @@ install_kitty() {
     local dest=${CUSTOM_USER_APPS_DIR:-$HOME/.local}
     local kitty_folder="$dest/kitty.app"
     
+    backup_path "$kitty_folder"
     curl --fail --location "https://sw.kovidgoyal.net/kitty/installer.sh" --output "$installer_path"
     sh "$installer_path" launch=n dest="$dest"
     rm -f -- "$installer_path"
-
+    
+    backup_path "$LOCAL_BIN_DIR/kitty"
+    backup_path "$LOCAL_BIN_DIR/kitten"
     ln -sfn -- "$kitty_folder/bin/kitty" "$LOCAL_BIN_DIR/kitty"
     ln -sfn -- "$kitty_folder/bin/kitten" "$LOCAL_BIN_DIR/kitten"
 
+    backup_path "$HOME/.local/share/applications/kitty.desktop"
     cp -- "$kitty_folder/share/applications/kitty.desktop" \
         "$HOME/.local/share/applications/kitty.desktop"
 
+    backup_path "$HOME/.local/share/applications/kitty-open.desktop"
     cp -- "$kitty_folder/share/applications/kitty-open.desktop" \
         "$HOME/.local/share/applications/kitty-open.desktop"
 
@@ -193,11 +201,10 @@ install_flatpak_packages() {
         org.videolan.VLC
     )
 
-    # Give correct flatpak permissions to:
-    # - Custom flatpak/installations.d directory.
-    # - Custom ~/Apps/flatpak directory.
-    sudo flatpak override --user --filesystem="$FLATPAK_INSTALLATIONS_D"
-    flatpak override --user --filesystem="$FLATPAK_CUSTOM_PATH"
+    # Apply overrides to the invoking user's Flatpak apps, not root's.
+    # Keep access read-only because apps do not need to modify the installation.
+    flatpak override --user --filesystem="$FLATPAK_INSTALLATIONS_D:ro"
+    flatpak override --user --filesystem="$FLATPAK_CUSTOM_PATH:ro"
     
     # Inside flatpak/installations.d/custom.conf.
     # Change HOME alias in flatpak install path to use current HOME environment variable.
@@ -214,6 +221,7 @@ install_flatpak_packages() {
     done
 }
 
+# TODO: Verificar a remoção dessa função
 install_php_lsp_tools() {
     local tools_dir="$CUSTOM_USER_APPS_DIR/npm-tools"
 
@@ -371,12 +379,12 @@ main() {
     install_python_lsp_tools
     install_go_lsp_tools
     install_rustup
-    install_php_lsp_tools
+    install_php_lsp_tools # TODO: Excluir?
     install_laravel_lsp
     install_lua_language_server
 
     # Custom fonts.
-    install_web_font "SourceCodePro"
+    install_web_font "SauceCodePro"
     install_web_font "NerdFontsSymbolsOnly"
     fc-cache --force
 
