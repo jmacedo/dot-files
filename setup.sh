@@ -261,8 +261,8 @@ install_flatpak_packages() {
 
     # Apply overrides to the invoking user's Flatpak apps, not root's.
     # Keep access read-only because apps do not need to modify the installation.
-    flatpak override --user --filesystem="$FLATPAK_INSTALLATIONS_D:ro"
-    flatpak override --user --filesystem="$FLATPAK_CUSTOM_PATH:ro"
+    flatpak override --user --filesystem="$FLATPAK_INSTALLATIONS_D"
+    flatpak override --user --filesystem="$FLATPAK_CUSTOM_PATH"
     
     # Inside flatpak/installations.d/custom.conf.
     # Change HOME alias in flatpak install path to use current HOME environment variable.
@@ -465,7 +465,7 @@ main() {
 
     # Install Dropbox natively, outside the custom Flatpak installation.
     install_dropbox_deb
-    
+
     printf 'Setup finished. Open a new shell to load the Bash configuration.\n'
 }
 
