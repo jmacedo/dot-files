@@ -1,7 +1,7 @@
-# Load only in interactive shell
+# Load only in interactive shell.
 [[ $- != *i* ]] && return
 
-# Default lang utf-8, respecting previous configured lang
+# Default lang utf-8, respecting previous configured lang.
 # Utf-8 is necessary to render symbols in terminal.
 case "${LC_ALL:-${LC_CTYPE:-${LANG:-"utf8"}}}" in
   *UTF-8*|*UTF8*|*utf8*|*utf-8*) ;;
@@ -12,7 +12,7 @@ esac
 
 BASH_CONFIG_DIR="$HOME/.config/bash"
 
-# External .bashrc configs: "~/.config/bash/<NAME>.bashrc".
+# External .bashrc configs: "~/.config/bash/<name>.bashrc".
 # Pay attention to the order to load each one.
 bashrc_list=(
   "aliases"

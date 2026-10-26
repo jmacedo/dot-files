@@ -1,6 +1,6 @@
 # Neovim
 
-This configuration is based on Neovim `0.12.*` and uses its native package manager to obtain `nvim-lspconfig` on first start. An internet connection and `git` are therefore required the first time Neovim starts.
+This configuration is based on Neovim `0.12.*` and uses its native package manager to obtain `nvim-lspconfig` on first start.
 
 ## Language servers
 
@@ -30,6 +30,5 @@ Configured server names:
 - `php_lsp`
 - `laravel_lsp`
 
-Use `:checkhealth vim.lsp` to inspect enabled clients and diagnose missing servers. 
 Server-specific settings are loaded explicitly from `lua/config/lsp/<server.lua>`.
 e.g. `lua/config/lsp/lua_ls.lua`, `lua/config/lsp/php_lsp.lua`

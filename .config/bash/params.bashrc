@@ -1,8 +1,8 @@
 HISTSIZE=20000
 HISTFILESIZE=50000
 HISTCONTROL=ignoreboth:erasedups
-HISTIGNORE='ls:ll:la:pwd:exit:clear:history'
-HISTTIMEFORMAT='%F %T  ' # "AAAA-MM-DD HH:MM:SS  "
+HISTIGNORE="ls:ll:la:pwd:exit:clear:history"
+HISTTIMEFORMAT="%F %T  " # "AAAA-MM-DD HH:MM:SS  "
 
 set -o notify
 shopt -s histappend

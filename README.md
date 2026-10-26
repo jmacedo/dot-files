@@ -4,15 +4,13 @@ Personal desktop setup for Debian-based `x86_64` Linux systems. It installs a sm
 
 ## Before running
 
-- Review the package list and versions at the top of `setup.sh`.
+- Review the package list and versions inside `setup.sh`.
 - Upgrade the operating system yourself (`sudo apt update && sudo apt upgrade`).
 - Create a personal Git identity outside this repository:
-
   ```bash
   cp .gitconfig.local.example ~/.gitconfig.local
   $EDITOR ~/.gitconfig.local
   ```
-
   The tracked `.gitconfig` includes this local file when it exists.
 - The setup makes timestamped backups (`.<timestamp>.bkp`) of every managed destination it replaces.
 
@@ -38,5 +36,3 @@ Nerd Fonts are downloaded from their latest official release.
 ## Maintainer notes
 
 - Local font files can be installed with `install_local_font`; the configured Nerd Fonts are downloaded by `install_web_font` during setup.
-- `fzf` and `zoxide` come from APT only; they are not installed a second time by third-party scripts.
-- Neovim language-server details are in `.config/nvim/README.md`.

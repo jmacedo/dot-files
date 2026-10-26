@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 
-# Set up this personal desktop environment on Debian-based x86_64 Linux systems.
+# Set up desktop environment and base apps/packages installations.
 # Run from any directory: paths are resolved relative to this script.
 
+# `-u`: nounset - Unset variables raises error. Misspeling variables will not be treated as empty values.
+# `-e`: errexit - Exit script on errors.
+# `-o pipefail` - Raise errors inside a chain of commands (`cmdA | cmdB | cmdC`) instead of by default use the last command status code.
 set -euo pipefail
 
+# Verify if is a valid interactive terminal and command `clear` exists.
 if [[ -t 1 && -n "${TERM:-}" ]] && command -v clear >/dev/null 2>&1; then
     clear || true
 fi
@@ -25,30 +29,30 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1 
 }
 
-# Check operational system requirements: Linux, x86_64, apt
+# Check operational system requirements: Linux kernel, x86_64 architecture, apt packages.
 validate_environment() {
     if [[ "$(uname -s)" != "Linux" ]]; then
-        printf 'This setup supports Linux only.\n' >&2
+        printf "This setup supports Linux only.\n" >&2
         return 1
     fi
 
     if [[ "$(uname -m)" != "x86_64" ]]; then
-        printf 'This setup supports x86_64 only.\n' >&2
+        printf "This setup supports x86_64 only.\n" >&2
         return 1
     fi
     
     command_exists apt || {
-        printf 'This setup requires apt package manager (a Debian-based distribution).\n' >&2
+        printf "This setup requires apt package manager (a Debian-based distribution).\n" >&2
         return 1
     }
 }
 
-# Perform a backup of given PATH. Include the suffix: ".<DATETIME>.<BACKUP-EXTENSION> - e.g. '.20261024120135.bkp'".
+# Perform a backup of given PATH. Include the suffix `.<datetime>.<backup_extension>` - e.g. `~/custom_path` -> `~/custom_path.20261024120135.bkp`.
 backup_path() {
     local destination="$1"
 
     if [[ -e "$destination" || -L "$destination" ]]; then
-        mv -- "$destination" "${destination}.${START_DATE_TIME:-'old'}.${BACKUP_EXT:-'bkp'}"
+        mv -f -- "$destination" "${destination}.${START_DATE_TIME:-'old'}.${BACKUP_EXT:-'bkp'}"
     fi
 }
 
@@ -67,17 +71,17 @@ install_config() {
     backup_path "$destination"
 
     if [[ -f "$source" ]]; then
-        cp -- "$source" "$destination"
+        cp -f -- "$source" "$destination"
         return 0
     fi
 
     if [[ -d "$source" ]]; then
-        cp -r -- "$source" "$destination"
+        cp -rf -- "$source" "$destination"
         return 0
     fi
 }
 
-# Install a font located in "$HOME/.local/share/fonts" or given by the second parameter.
+# Install a font located in `dot-files/.local/share/fonts` or located in the path of second parameter.
 install_local_font() {
     local font_name="$1"
     local font_path="${2:-$SCRIPT_DIR/.local/share/fonts}"
@@ -102,59 +106,70 @@ install_web_font() {
     local download_path="$(mktemp)"
     local extraction_dir="$(mktemp -d)"
 
+    # Download and extract.
     curl --fail --location "$source_url" --output "$download_path"
     unzip -q -- "$download_path" -d "$extraction_dir"
 
+    # Bakcup and copy
     backup_path "$destination"
     mkdir -p -- "$destination"
     cp -a -- "$extraction_dir/." "$destination"
 
+    # Clean up
     rm -f -- "$download_path"
     rm -rf -- "$extraction_dir"
 }
 
+# Kitty terminal emulator.
 install_kitty() {
     local installer_path="$(mktemp)"
     local dest=${CUSTOM_USER_APPS_DIR:-$HOME/.local}
     local kitty_folder="$dest/kitty.app"
     
+    # Backup old, download and install.
     backup_path "$kitty_folder"
     curl --fail --location "https://sw.kovidgoyal.net/kitty/installer.sh" --output "$installer_path"
     sh "$installer_path" launch=n dest="$dest"
     rm -f -- "$installer_path"
     
+    # Handle binaries
     backup_path "$LOCAL_BIN_DIR/kitty"
     backup_path "$LOCAL_BIN_DIR/kitten"
     ln -sfn -- "$kitty_folder/bin/kitty" "$LOCAL_BIN_DIR/kitty"
     ln -sfn -- "$kitty_folder/bin/kitten" "$LOCAL_BIN_DIR/kitten"
 
+    # Desktop launcher integration.
     backup_path "$HOME/.local/share/applications/kitty.desktop"
-    cp -- "$kitty_folder/share/applications/kitty.desktop" \
+    cp -f -- "$kitty_folder/share/applications/kitty.desktop" \
         "$HOME/.local/share/applications/kitty.desktop"
 
     backup_path "$HOME/.local/share/applications/kitty-open.desktop"
     cp -- "$kitty_folder/share/applications/kitty-open.desktop" \
         "$HOME/.local/share/applications/kitty-open.desktop"
 
+    # Desktop launcher integration icon.
     sed -i \
         -e "s|^Icon=kitty$|Icon=$kitty_folder/share/icons/hicolor/256x256/apps/kitty.png|" \
         "$HOME/.local/share/applications/kitty.desktop" \
         "$HOME/.local/share/applications/kitty-open.desktop"
 }
 
+# Nvim text editor.
 install_neovim() {
     local source_url="https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz"
     local install_dir="$HOME/Apps/nvim"
     local download_path="$(mktemp)"
-    
-    curl --fail --location "$source_url" --output "$download_path"
 
+    # Download and copy files.    
+    curl --fail --location "$source_url" --output "$download_path"
     backup_path "$install_dir"
     mkdir -p -- "$install_dir"
     tar --extract --gzip --file "$download_path" --strip-components=1 --directory "$install_dir"
     
+    # Handle binaries.
     ln -sfn -- "$install_dir/bin/nvim" "$LOCAL_BIN_DIR/nvim"
 
+    # Clean up
     rm -f -- "$download_path"
 }
 
@@ -185,6 +200,7 @@ install_apt_packages() {
     sudo apt install -y "${packages[@]}"
 }
 
+# Install oficial debian package from Dropbox website.
 # It works, but it's not used.
 install_dropbox_deb() {
     local package_family
@@ -194,8 +210,8 @@ install_dropbox_deb() {
     local temp_dir
     local package_path
 
-    # Pop!_OS and Ubuntu derivatives use Dropbox's Ubuntu package.
-    # Debian and Debian derivatives use its Debian package.
+    # AI: Pop!_OS and Ubuntu derivatives use Dropbox's Ubuntu package.
+    # AI: Debian and Debian derivatives use its Debian package.
     # shellcheck disable=SC1091
     . /etc/os-release
 
@@ -207,17 +223,17 @@ install_dropbox_deb() {
             package_family="debian"
             ;;
         *)
-            printf 'Dropbox .deb installation supports Ubuntu- or Debian-based systems.\n' >&2
+            printf 'Dropbox .deb installation only supports Ubuntu- or Debian-based systems.\n' >&2
             return 1
             ;;
     esac
 
+    # Select the newest dated 64-bit desktop package from Dropbox's listing.
     package_index_url="https://linux.dropbox.com/packages/$package_family/"
     package_listing="$(
         curl --fail --silent --show-error --location "$package_index_url"
     )"
 
-    # Select the newest dated 64-bit desktop package from Dropbox's listing.
     package_name="$(
         printf '%s\n' "$package_listing" |
             { grep -oE 'dropbox_[0-9]{4}\.[0-9]{2}\.[0-9]{2}_amd64\.deb' || true; } |
@@ -231,6 +247,7 @@ install_dropbox_deb() {
         return 1
     fi
 
+    # Download and install.
     temp_dir="$(mktemp -d)"
     package_path="$temp_dir/$package_name"
 
@@ -241,6 +258,7 @@ install_dropbox_deb() {
     dpkg-deb --info "$package_path" >/dev/null
     sudo apt install --yes "$package_path"
 
+    # Clean up
     rm -rf -- "$temp_dir"
 }
 
@@ -259,30 +277,16 @@ install_flatpak_packages() {
         org.videolan.VLC
     )
 
-    # Apply overrides to the invoking user's Flatpak apps, not root's.
-    #flatpak override --user --filesystem="$FLATPAK_CUSTOM_PATH"
-    
-    # Adds flathub to custom installation.
+    # Flatpak remote
     flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
-    # Install all pre-defined flatpak apps in a custom path.
+    # Install Apps
     for app in "${apps[@]}"; do
         flatpak install --user --noninteractive --or-update flathub "$app"
     done
 }
 
-# TODO: Verificar a remoção dessa função
-install_php_lsp_tools() {
-    local tools_dir="$CUSTOM_USER_APPS_DIR/npm-tools"
-
-    mkdir -p -- "$tools_dir"
-
-    npm install \
-        --prefix "$tools_dir" \
-        --save-exact \
-        intelephense
-}
-
+# Laravel language server for nvim.
 install_laravel_lsp() {
     export COMPOSER_HOME="$CUSTOM_USER_APPS_DIR/composer"
 
@@ -292,21 +296,25 @@ install_laravel_lsp() {
         "$LOCAL_BIN_DIR/laravel-lsp"
 }
 
-# Install Node.js version manager.
+# Fnm: nodejs version manager.
 install_fnm() {
     local installer_path="$(mktemp)"
 
+    # Download and install.
     curl --fail --location "https://fnm.vercel.app/install" --output "$installer_path"
     bash "$installer_path" --install-dir "$CUSTOM_USER_APPS_DIR/fnm" --skip-shell
 
+    # Clean up
     rm -f -- "$installer_path"
 
+    # Configure fnm for now and install LTS nodejs (`--lts`). For latest: `--latest`.
     export PATH="$HOME/Apps/fnm:$PATH"
     eval "$(fnm env --use-on-cd --shell bash)"
-    fnm install --lts # Node latest version
-    fnm default "$(fnm current)" # Make node available by default
+    fnm install --lts # Node LTS version.
+    fnm default "$(fnm current)" # Make node available by default.
 }
 
+# LSP servers installations from `npm`.
 install_npm_lsp_tools() {
     local tools_dir="$CUSTOM_USER_APPS_DIR/npm-tools"
 
@@ -339,29 +347,33 @@ install_go_lsp_tools() {
     go install github.com/sqls-server/sqls@latest
 }
 
+# Rust lsp tools.
 install_rustup() {
     local installer_path="$(mktemp)"
 
+    # Download and install rustup.
     export CARGO_HOME="$CUSTOM_USER_APPS_DIR/cargo"
     export RUSTUP_HOME="$CUSTOM_USER_APPS_DIR/rustup"
-
     curl --fail --location https://sh.rustup.rs --output "$installer_path"
     sh "$installer_path" -y --no-modify-path
 
+    # Clean up
     rm -f -- "$installer_path"
 
+    # Install rust language server.
     export PATH="$CARGO_HOME/bin:$PATH"
     rustup component add rust-analyzer
 }
 
 install_lua_language_server() {
     local release_info
-    local archive
     local download_url
     local install_dir="$CUSTOM_USER_APPS_DIR/lua-language-server"
     local download_path
     local extraction_dir
 
+    # AI implementation approved.
+    # The goal is to discover latest versions and get the download url.
     release_info="$(
         curl --fail --silent --show-error --location \
             "https://api.github.com/repos/LuaLS/lua-language-server/releases/latest" |
@@ -374,67 +386,66 @@ asset = next(
     asset for asset in release["assets"]
     if asset["name"].endswith("-linux-x64.tar.gz")
 )
-print(asset["name"], asset["browser_download_url"])
-'
-    )"
+print(asset["browser_download_url"])
+            ')"
 
-    read -r archive download_url <<< "$release_info"
+    read -r download_url <<< "$release_info"
+
+    # Download and extract.
     download_path="$(mktemp)"
     extraction_dir="$(mktemp -d)"
-
     curl --fail --location "$download_url" --output "$download_path"
     tar --extract --gzip --file "$download_path" --directory "$extraction_dir"
 
+    # Backup and install.
     backup_path "$install_dir"
     mkdir -p -- "$install_dir"
     cp -a -- "$extraction_dir/." "$install_dir/"
+
+    # Handle binary.
     ln -sfn -- "$install_dir/bin/lua-language-server" \
         "$LOCAL_BIN_DIR/lua-language-server"
 
+    # Clean up.
     rm -f -- "$download_path"
     rm -rf -- "$extraction_dir"
 }
 
+# Entry point of the shellscript.
 main() {
     print_ascii_art
     validate_environment
-    printf 'Installing base packages and dotfiles...\n'
+    printf 'Setting up your environment...\n'
 
     # Runtime variables.
-    START_DATE_TIME="$(date '+%Y%m%d%H%M%S')"
+    START_DATE_TIME="$(date '+%Y%m%d%H%M%S')" # AAAAMMDDHHMMSS
     BACKUP_EXT="bkp"
-    SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+    SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)" # Absolute path
     LOCAL_BIN_DIR="$HOME/.local/bin"
     CUSTOM_USER_APPS_DIR="$HOME/Apps"
-    FLATPAK_CUSTOM_PATH="$CUSTOM_USER_APPS_DIR/flatpak"
     LOCAL_SHARE="$HOME/.local/share"
 
     # Create custom home directories.
-            #"$FLATPAK_CUSTOM_PATH" \
     mkdir -p -- "$CUSTOM_USER_APPS_DIR" \
-        "$LOCAL_SHARE/flatpak" \
         "$LOCAL_BIN_DIR" \
+        "$LOCAL_SHARE" \
+        "$LOCAL_SHARE/flatpak" \
         "$LOCAL_SHARE/applications" \
         "$LOCAL_SHARE/zoxide" \
         "$HOME/Dev" \
         "$HOME/Temp"
-
-    # Mirror default flatpak user directory to my own user directory.
-    #backup_path "$FLATPAK_CUSTOM_PATH"
-    #rm -rf -- "$FLATPAK_CUSTOM_PATH"
-    #mkdir -p -- "$FLATPAK_CUSTOM_PATH"
-    #ln -sf "$FLATPAK_CUSTOM_PATH" ~/.local/share/flatpak
 
     # Apt packages.
     install_apt_packages
     
     # Fnm nodejs version manager
     install_fnm
+    # Npm installations.
     install_npm_lsp_tools
+    # Python, Go, Rust, Laravel, Lua
     install_python_lsp_tools
     install_go_lsp_tools
     install_rustup
-    install_php_lsp_tools # TODO: Excluir?
     install_laravel_lsp
     install_lua_language_server
 
@@ -460,7 +471,9 @@ main() {
         install_flatpak_packages
     fi
 
-    printf 'Setup finished. Open a new shell to load the Bash configuration.\n'
+    printf "Setup finished. Open a new shell or run 'source ~/.bashrc' in current shell.\n"
+    printf "Have a nice day! =)"
+    print_ascii_art
 }
 
 main "$@"
