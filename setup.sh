@@ -471,9 +471,10 @@ main() {
         install_flatpak_packages
     fi
 
-    printf "Setup finished. Open a new shell or run 'source ~/.bashrc' in current shell.\n"
+    printf "\n\nSetup finished. Open a new shell or run 'source ~/.bashrc' in current shell.\n\n"
     printf "Have a nice day! =)"
     print_ascii_art
+    echo ""
 }
 
 main "$@"

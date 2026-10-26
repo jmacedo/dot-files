@@ -128,11 +128,11 @@ __ps1_sty_color() {
 }
 
 __ps1_get_left_border_up() {
-    printf "%s" $"\u256D\u2500" # ╭─
+    printf "%s" $'\u256D\u2500' # ╭─
 }
 
 __ps1_get_left_border_down() {
-    printf "%s" $"\u2570\u2500" # ╰─
+    printf "%s" $'\u2570\u2500' # ╰─
 }
 
 __ps1_prompt_command() {
