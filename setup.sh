@@ -271,7 +271,6 @@ install_flatpak_packages() {
         com.valvesoftware.Steam
         com.visualstudio.code
         io.github.kolunmi.Bazaar
-        me.proton.Pass
         org.onlyoffice.desktopeditors
         org.gnome.gedit
         de.swsnr.turnon
@@ -286,10 +285,20 @@ install_flatpak_packages() {
         flatpak install --user --noninteractive --or-update flathub "$app"
     done
 
-    # On Pop!_OS 24.04, at least inside a VM, Chrome and VSCode does not open.
-    # Below hacks override flatpak to use x11 engine in Chrome and disable GPU aceleration in VSCode.
-    flatpak override --user --ozone-platform=x11 com.google.Chrome
-    flatpak override --user --disable-gpu com.visualstudio.code
+    
+    # On *Pop!_OS 24.04*, at least inside a VM, Chrome and VSCode failed on open.
+    # TODO: Analyse to use these parameters directly in `<app>.desktop`, in `Exec=` call.
+    
+    # Override flatpak to use x11 engine in Chrome.
+    flatpak override --user \
+        --env=ELECTRON_OZONE_PLATFORM_HINT=x11 \
+        --env=GDK_BACKEND=x11 \
+        com.google.Chrome
+
+    # Disable GPU aceleration in VSCode.
+    flatpak override --user \
+        --env=LIBGL_ALWAYS_SOFTWARE=1 \
+        com.visualstudio.code
 }
 
 # Laravel language server for nvim.
