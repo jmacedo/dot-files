@@ -159,7 +159,6 @@ install_neovim() {
 }
 
 install_apt_packages() {
-    #imagemagick fd-find fontconfig jq poppler-utils
     local packages=(
         git
         curl
@@ -186,6 +185,7 @@ install_apt_packages() {
     sudo apt install -y "${packages[@]}"
 }
 
+# It works, but it's not used.
 install_dropbox_deb() {
     local package_family
     local package_index_url
@@ -247,6 +247,7 @@ install_dropbox_deb() {
 install_flatpak_packages() {
     local app
     local apps=(
+        com.dropbox.Client
         com.google.Chrome
         com.valvesoftware.Steam
         com.visualstudio.code
@@ -259,16 +260,8 @@ install_flatpak_packages() {
     )
 
     # Apply overrides to the invoking user's Flatpak apps, not root's.
-    # Keep access read-only because apps do not need to modify the installation.
-    #flatpak override --user --filesystem="$FLATPAK_INSTALLATIONS_D"
     flatpak override --user --filesystem="$FLATPAK_CUSTOM_PATH"
     
-    # Inside flatpak/installations.d/custom.conf.
-    # Change HOME alias in flatpak install path to use current HOME environment variable.
-    # sed "s|@HOME@|$HOME|g" \
-    #     "$SCRIPT_DIR/etc/flatpak/installations.d/custom.conf" |
-    #     sudo tee "$FLATPAK_INSTALLATIONS_D/custom.conf" >/dev/null
-
     # Adds flathub to custom installation.
     flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
@@ -413,7 +406,6 @@ main() {
     SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
     LOCAL_BIN_DIR="$HOME/.local/bin"
     CUSTOM_USER_APPS_DIR="$HOME/Apps"
-    #FLATPAK_INSTALLATIONS_D="/etc/flatpak/installations.d"
     FLATPAK_CUSTOM_PATH="$CUSTOM_USER_APPS_DIR/flatpak"
 
     # Create custom home directories.
@@ -425,11 +417,10 @@ main() {
         "$HOME/Dev" \
         "$HOME/Temp"
 
-    #sudo mkdir -p -- "$FLATPAK_INSTALLATIONS_D"
-
     # Mirror default flatpak user directory to my own user directory.
     backup_path "$FLATPAK_CUSTOM_PATH"
     rm -rf -- "$FLATPAK_CUSTOM_PATH"
+    mkdir -p -- "$FLATPAK_CUSTOM_PATH"
     ln -sf ~/.local/share/flatpak "$FLATPAK_CUSTOM_PATH"
 
     # Apt packages.
@@ -466,9 +457,6 @@ main() {
     if [[ "${1:-}" != "--no-flatpaks" ]]; then
         install_flatpak_packages
     fi
-
-    # Install Dropbox natively, outside the custom Flatpak installation.
-    install_dropbox_deb
 
     printf 'Setup finished. Open a new shell to load the Bash configuration.\n'
 }
