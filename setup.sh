@@ -172,7 +172,6 @@ install_apt_packages() {
         xclip
         wl-clipboard
         flatpak
-        libappindicator3-1
         steam-devices
         # LSPs and runtimes available through apt
         clangd
