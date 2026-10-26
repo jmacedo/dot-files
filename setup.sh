@@ -196,7 +196,7 @@ install_flatpak_packages() {
     # Give correct flatpak permissions to:
     # - Custom flatpak/installations.d directory.
     # - Custom ~/Apps/flatpak directory.
-    flatpak override --user --filesystem="$FLATPAK_INSTALLATIONS_D"
+    sudo flatpak override --user --filesystem="$FLATPAK_INSTALLATIONS_D"
     flatpak override --user --filesystem="$FLATPAK_CUSTOM_PATH"
     
     # Inside flatpak/installations.d/custom.conf.
@@ -354,11 +354,11 @@ main() {
     # Create custom home directories.
     mkdir -p -- "$CUSTOM_USER_APPS_DIR" \
         "$FLATPAK_CUSTOM_PATH" \
-        "$HOME/Dev" \
-        "$HOME/Temp" \
         "$LOCAL_BIN_DIR" \
         "$HOME/.local/share/applications" \
-        "$HOME/.local/share/zoxide"
+        "$HOME/.local/share/zoxide" \
+        "$HOME/Dev" \
+        "$HOME/Temp"
 
     sudo mkdir -p -- "$FLATPAK_INSTALLATIONS_D"
 
