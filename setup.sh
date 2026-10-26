@@ -172,6 +172,7 @@ install_apt_packages() {
         xclip
         wl-clipboard
         flatpak
+        libappindicator3-1
         steam-devices
         # LSPs and runtimes available through apt
         clangd
@@ -186,10 +187,67 @@ install_apt_packages() {
     sudo apt install -y "${packages[@]}"
 }
 
+install_dropbox_deb() {
+    local package_family
+    local package_index_url
+    local package_listing
+    local package_name
+    local temp_dir
+    local package_path
+
+    # Pop!_OS and Ubuntu derivatives use Dropbox's Ubuntu package.
+    # Debian and Debian derivatives use its Debian package.
+    # shellcheck disable=SC1091
+    . /etc/os-release
+
+    case " ${ID:-} ${ID_LIKE:-} " in
+        *" ubuntu "*)
+            package_family="ubuntu"
+            ;;
+        *" debian "*)
+            package_family="debian"
+            ;;
+        *)
+            printf 'Dropbox .deb installation supports Ubuntu- or Debian-based systems.\n' >&2
+            return 1
+            ;;
+    esac
+
+    package_index_url="https://linux.dropbox.com/packages/$package_family/"
+    package_listing="$(
+        curl --fail --silent --show-error --location "$package_index_url"
+    )"
+
+    # Select the newest dated 64-bit desktop package from Dropbox's listing.
+    package_name="$(
+        printf '%s\n' "$package_listing" |
+            { grep -oE 'dropbox_[0-9]{4}\.[0-9]{2}\.[0-9]{2}_amd64\.deb' || true; } |
+            sort -V |
+            tail -n 1
+    )"
+
+    if [[ -z "$package_name" ]]; then
+        printf 'Could not find a Dropbox amd64 .deb at %s\n' \
+            "$package_index_url" >&2
+        return 1
+    fi
+
+    temp_dir="$(mktemp -d)"
+    package_path="$temp_dir/$package_name"
+
+    curl --fail --silent --show-error --location \
+        "$package_index_url$package_name" \
+        --output "$package_path"
+
+    dpkg-deb --info "$package_path" >/dev/null
+    sudo apt install --yes "$package_path"
+
+    rm -rf -- "$temp_dir"
+}
+
 install_flatpak_packages() {
     local app
     local apps=(
-        com.dropbox.Client
         com.google.Chrome
         com.valvesoftware.Steam
         com.visualstudio.code
@@ -384,7 +442,7 @@ main() {
     install_lua_language_server
 
     # Custom fonts.
-    install_web_font "SauceCodePro"
+    install_web_font "SourceCodePro"
     install_web_font "NerdFontsSymbolsOnly"
     fc-cache --force
 
@@ -405,6 +463,9 @@ main() {
         install_flatpak_packages
     fi
 
+    # Install Dropbox natively, outside the custom Flatpak installation.
+    install_dropbox_deb
+    
     printf 'Setup finished. Open a new shell to load the Bash configuration.\n'
 }
 
