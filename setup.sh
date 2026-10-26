@@ -260,7 +260,7 @@ install_flatpak_packages() {
     )
 
     # Apply overrides to the invoking user's Flatpak apps, not root's.
-    flatpak override --user --filesystem="$FLATPAK_CUSTOM_PATH"
+    #flatpak override --user --filesystem="$FLATPAK_CUSTOM_PATH"
     
     # Adds flathub to custom installation.
     flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
@@ -407,21 +407,23 @@ main() {
     LOCAL_BIN_DIR="$HOME/.local/bin"
     CUSTOM_USER_APPS_DIR="$HOME/Apps"
     FLATPAK_CUSTOM_PATH="$CUSTOM_USER_APPS_DIR/flatpak"
+    LOCAL_SHARE="$HOME/.local/share"
 
     # Create custom home directories.
+            #"$FLATPAK_CUSTOM_PATH" \
     mkdir -p -- "$CUSTOM_USER_APPS_DIR" \
-        "$FLATPAK_CUSTOM_PATH" \
+        "$LOCAL_SHARE/flatpak" \
         "$LOCAL_BIN_DIR" \
-        "$HOME/.local/share/applications" \
-        "$HOME/.local/share/zoxide" \
+        "$LOCAL_SHARE/applications" \
+        "$LOCAL_SHARE/zoxide" \
         "$HOME/Dev" \
         "$HOME/Temp"
 
     # Mirror default flatpak user directory to my own user directory.
-    backup_path "$FLATPAK_CUSTOM_PATH"
-    rm -rf -- "$FLATPAK_CUSTOM_PATH"
-    mkdir -p -- "$FLATPAK_CUSTOM_PATH"
-    ln -sf "$FLATPAK_CUSTOM_PATH" ~/.local/share/flatpak
+    #backup_path "$FLATPAK_CUSTOM_PATH"
+    #rm -rf -- "$FLATPAK_CUSTOM_PATH"
+    #mkdir -p -- "$FLATPAK_CUSTOM_PATH"
+    #ln -sf "$FLATPAK_CUSTOM_PATH" ~/.local/share/flatpak
 
     # Apt packages.
     install_apt_packages
