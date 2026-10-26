@@ -187,6 +187,7 @@ install_apt_packages() {
         wl-clipboard
         flatpak
         steam-devices
+        build-essential
         # LSPs and runtimes available through apt
         clangd
         default-jdk
