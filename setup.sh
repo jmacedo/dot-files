@@ -472,7 +472,7 @@ main() {
     fi
 
     printf "\n\nSetup finished. Open a new shell or run 'source ~/.bashrc' in current shell.\n\n"
-    printf "Have a nice day! =)"
+    printf "Have a nice day! =)\n"
     print_ascii_art
     echo ""
 }
