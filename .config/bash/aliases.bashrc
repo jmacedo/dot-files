@@ -1,4 +1,4 @@
-alias ll="ls -Alh --block-size=K --time-style="+%Y/%m/%d %H:%M" --time=ctime --file-type --group-directories-first"
+alias ll='ls -Alh --block-size=K --time-style="+%Y/%m/%d %H:%M" --time=ctime --file-type --group-directories-first'
 
 alias llinverted="ll -r"
 alias llrecursive="ll -R"

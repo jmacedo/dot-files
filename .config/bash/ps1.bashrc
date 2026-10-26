@@ -12,7 +12,7 @@ __ps1_get_git_branch() {
 }
 
 __ps1_get_user_icon() {
-    printf "%s" $"\uE36E" # 
+    printf "%s" $'\uE36E' # 
 }
 
 # Raspberry PI arch, Pop OS, Ubuntu, Linux Mint, Zorin OS, Deepin, Bazzite/Fedora, Arch, Steam OS, Raspbian and Tux for others.
@@ -21,12 +21,12 @@ __ps1_get_os_icon() {
 
     case "$(uname -s)" in
         Darwin)
-            printf "%s" $"\uF179" # 
+            printf "%s" $'\uF179' # 
             return 0
             ;;
         Linux)
             if [[ -r /proc/device-tree/model ]] && [[ $(</proc/device-tree/model) == *"Raspberry Pi"* ]]; then
-                printf "%s" $"\uF315" # 
+                printf "%s" $'\uF315' # 
                 return 0
             fi
 
@@ -37,61 +37,61 @@ __ps1_get_os_icon() {
             fi
             ;;
         *)
-            printf "%s" $"\uF31A" # 
+            printf "%s" $'\uF31A' # 
             return 0
             ;;
     esac
 
     case "$os_id" in
         pop)
-            printf "%s" $"\uF32A" # 
+            printf "%s" $'\uF32A' # 
             ;;
         ubuntu)
-            printf "%s" $"\uF31B" # 
+            printf "%s" $'\uF31B' # 
             ;;
         linuxmint)
-            printf "%s" $"\uF30E" # 
+            printf "%s" $'\uF30E' # 
             ;;
         zorin)
-            printf "%s" $"\uF32F" # 
+            printf "%s" $'\uF32F' # 
             ;;
         deepin)
-            printf "%s" $"\uF321" # 
+            printf "%s" $'\uF321' # 
             ;;
         debian)
-            printf "%s" $"\uF306" # 
+            printf "%s" $'\uF306' # 
             ;;
         bazzite|fedora)
-            printf "%s" $"\uF30A" # 
+            printf "%s" $'\uF30A' # 
             ;;
         arch)
-            printf "%s" $"\uF303" # 
+            printf "%s" $'\uF303' # 
             ;;
         steamos)
-            printf "%s" $"\uF1B6" # 
+            printf "%s" $'\uF1B6' # 
             ;;
         kali)
-            printf "%s" $"\uF327" # 
+            printf "%s" $'\uF327' # 
             ;;
         raspbian)
-            printf "%s" $"\uF315" # 
+            printf "%s" $'\uF315' # 
             ;;
         *)
-            printf "%s" $"\uF31A" # 
+            printf "%s" $'\uF31A' # 
             ;;
     esac
 }
 
 __ps1_get_dir_icon() {
-    printf "%s" $"\uF115" # 
+    printf "%s" $'\uF115' # 
 }
 
 __ps1_get_clock_icon() {
-    printf "%s" $"\uF017" # 
+    printf "%s" $'\uF017' # 
 }
 
 __ps1_get_git_icon() {
-    printf "%s" $"\uE725" # 
+    printf "%s" $'\uE725' # 
 }
 
 __ps1_get_git_modified_icon() {
@@ -99,20 +99,20 @@ __ps1_get_git_modified_icon() {
     git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
 
     if [[ -n $(git status --porcelain --untracked-files=normal 2>/dev/null) ]]; then
-        printf "%s" $"\uF044" # 
+        printf "%s" $'\uF044' # 
     fi
 }
 
 __ps1_get_success_icon() {
-    printf "%s" $"\uF00C" # 
+    printf "%s" $'\uF00C' # 
 }
 
 __ps1_get_failure_icon() {
-    printf "%s" $"\uF00D" # 
+    printf "%s" $'\uF00D' # 
 }
 
 __ps1_get_prompt_icon() {
-    printf "%s" $"\u276F" # ❯
+    printf "%s" $'\u276F' # ❯
 }
 
 __ps1_sty_reset() {
