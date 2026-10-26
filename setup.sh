@@ -260,21 +260,21 @@ install_flatpak_packages() {
 
     # Apply overrides to the invoking user's Flatpak apps, not root's.
     # Keep access read-only because apps do not need to modify the installation.
-    flatpak override --user --filesystem="$FLATPAK_INSTALLATIONS_D"
+    #flatpak override --user --filesystem="$FLATPAK_INSTALLATIONS_D"
     flatpak override --user --filesystem="$FLATPAK_CUSTOM_PATH"
     
     # Inside flatpak/installations.d/custom.conf.
     # Change HOME alias in flatpak install path to use current HOME environment variable.
-    sed "s|@HOME@|$HOME|g" \
-        "$SCRIPT_DIR/etc/flatpak/installations.d/custom.conf" |
-        sudo tee "$FLATPAK_INSTALLATIONS_D/custom.conf" >/dev/null
+    # sed "s|@HOME@|$HOME|g" \
+    #     "$SCRIPT_DIR/etc/flatpak/installations.d/custom.conf" |
+    #     sudo tee "$FLATPAK_INSTALLATIONS_D/custom.conf" >/dev/null
 
     # Adds flathub to custom installation.
-    flatpak remote-add --installation=custom --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+    flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
     # Install all pre-defined flatpak apps in a custom path.
     for app in "${apps[@]}"; do
-        flatpak install --installation=custom --noninteractive --or-update flathub "$app"
+        flatpak install --user --noninteractive --or-update flathub "$app"
     done
 }
 
@@ -413,7 +413,7 @@ main() {
     SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
     LOCAL_BIN_DIR="$HOME/.local/bin"
     CUSTOM_USER_APPS_DIR="$HOME/Apps"
-    FLATPAK_INSTALLATIONS_D="/etc/flatpak/installations.d"
+    #FLATPAK_INSTALLATIONS_D="/etc/flatpak/installations.d"
     FLATPAK_CUSTOM_PATH="$CUSTOM_USER_APPS_DIR/flatpak"
 
     # Create custom home directories.
@@ -425,7 +425,12 @@ main() {
         "$HOME/Dev" \
         "$HOME/Temp"
 
-    sudo mkdir -p -- "$FLATPAK_INSTALLATIONS_D"
+    #sudo mkdir -p -- "$FLATPAK_INSTALLATIONS_D"
+
+    # Mirror default flatpak user directory to my own user directory.
+    backup_path "$FLATPAK_CUSTOM_PATH"
+    rm -rf -- "$FLATPAK_CUSTOM_PATH"
+    ln -sf ~/.local/share/flatpak "$FLATPAK_CUSTOM_PATH"
 
     # Apt packages.
     install_apt_packages
