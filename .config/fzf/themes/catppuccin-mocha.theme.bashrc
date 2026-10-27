@@ -1,0 +1,2 @@
+# Catppuccin Mocha for fzf
+export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS:+$FZF_DEFAULT_OPTS }--color=bg:#1e1e2e,bg+:#313244,fg:#cdd6f4,fg+:#cdd6f4,hl:#f9e2af,hl+:#f9e2af,info:#a6adc8,prompt:#cba6f7,pointer:#89b4fa,marker:#a6e3a1,spinner:#f5c2e7,header:#a6adc8,border:#6c7086,separator:#6c7086,scrollbar:#6c7086,label:#cdd6f4"

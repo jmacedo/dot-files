@@ -1,0 +1,2 @@
+# Catppuccin Frappé for fzf
+export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS:+$FZF_DEFAULT_OPTS }--color=bg:#303446,bg+:#414559,fg:#c6d0f5,fg+:#c6d0f5,hl:#e5c890,hl+:#e5c890,info:#a5adce,prompt:#ca9ee6,pointer:#8caaee,marker:#a6d189,spinner:#f4b8e4,header:#a5adce,border:#737994,separator:#737994,scrollbar:#737994,label:#c6d0f5"

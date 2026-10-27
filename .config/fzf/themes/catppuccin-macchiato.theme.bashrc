@@ -1,0 +1,2 @@
+# Catppuccin Macchiato for fzf
+export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS:+$FZF_DEFAULT_OPTS }--color=bg:#24273a,bg+:#363a4f,fg:#cad3f5,fg+:#cad3f5,hl:#eed49f,hl+:#eed49f,info:#a5adcb,prompt:#c6a0f6,pointer:#8aadf4,marker:#a6da95,spinner:#f5bde6,header:#a5adcb,border:#6e738d,separator:#6e738d,scrollbar:#6e738d,label:#cad3f5"

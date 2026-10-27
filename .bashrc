@@ -19,8 +19,8 @@ bashrc_list=(
   "completion"
   "params"
   "exports"
-  "fzf"
   "ps1"
+  "externals"
   "integrations"
 )
 

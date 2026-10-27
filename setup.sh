@@ -606,6 +606,7 @@ main() {
     install_config ".config/bash"
     install_config ".config/kitty"
     install_config ".config/nvim"
+    install_config ".config/fzf"
     install_config ".bashrc"
     install_config ".gitconfig"
     install_config ".hidden"

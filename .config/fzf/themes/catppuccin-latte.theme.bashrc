@@ -1,0 +1,2 @@
+# Catppuccin Latte for fzf
+export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS:+$FZF_DEFAULT_OPTS }--color=bg:#eff1f5,bg+:#ccd0da,fg:#4c4f69,fg+:#4c4f69,hl:#df8e1d,hl+:#df8e1d,info:#6c6f85,prompt:#8839ef,pointer:#1e66f5,marker:#40a02b,spinner:#ea76cb,header:#6c6f85,border:#9ca0b0,separator:#9ca0b0,scrollbar:#9ca0b0,label:#4c4f69"
