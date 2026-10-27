@@ -135,6 +135,50 @@ __ps1_get_left_border_down() {
     printf "%s" $'\u2570\u2500' # ╰─
 }
 
+__ps1_align_three_columns() {
+    local left_visible="$1"
+    local center_visible="$2"
+    local right_visible="$3"
+    local left_rendered="$4"
+    local center_rendered="$5"
+    local right_rendered="$6"
+    local terminal_columns="${COLUMNS:-80}"
+    local minimum_gap=1
+    local left_width
+    local center_width
+    local right_width
+    local center_start
+    local right_start
+
+    [[ "$terminal_columns" =~ ^[1-9][0-9]*$ ]] || terminal_columns=120
+
+    # Measure only text without ANSI escape sequences.
+    left_width=${#left_visible}
+    center_width=${#center_visible}
+    right_width=${#right_visible}
+
+    # Terminal columns are zero-indexed for these position calculations.
+    center_start=$(( (terminal_columns - center_width) / 2 ))
+    right_start=$(( terminal_columns - right_width ))
+
+    # Keep the sections readable when the terminal is too narrow.
+    if (( center_start < left_width + minimum_gap )) ||
+       (( right_start < center_start + center_width + minimum_gap )); then
+        printf '%s %s %s' \
+            "$left_rendered" \
+            "$center_rendered" \
+            "$right_rendered"
+        return
+    fi
+
+    printf '%s%*s%s%*s%s' \
+        "$left_rendered" \
+        "$(( center_start - left_width ))" "" \
+        "$center_rendered" \
+        "$(( right_start - center_start - center_width ))" "" \
+        "$right_rendered"
+}
+
 __ps1_prompt_command() {
     local last_exec_status_code=$?
     local git_branch
@@ -158,7 +202,17 @@ __ps1_prompt_command() {
     local color_gray
     local color_yellow
     local style_reset
-    local git_section=""
+    local current_dir
+    local short_hostname
+    local git_visible=""
+    local git_rendered=""
+    local left_visible
+    local center_visible
+    local right_visible
+    local left_rendered
+    local center_rendered
+    local right_rendered
+    local top_line
     local last_exec_status=""
     local last_exec_status_color=""
 
@@ -184,16 +238,28 @@ __ps1_prompt_command() {
     color_yellow=$(__ps1_sty_color 249 226 175)
     style_reset=$(__ps1_sty_reset)
 
-    # Handle git branch.
+    # Convert $PWD to a short path equivalent to \w.
+    if [[ "$PWD" == "$HOME" ]]; then
+        current_dir="~"
+    elif [[ "$PWD" == "$HOME/"* ]]; then
+        current_dir="~/${PWD#"$HOME"/}"
+    else
+        current_dir=$PWD
+    fi
+
+    # Match the short host name displayed by \h.
+    short_hostname="${HOSTNAME%%.*}"
+
+    # Build Git sections without and with ANSI escape sequences.
     if [[ -n "$git_branch" ]]; then
         git_modified_icon=$(__ps1_get_git_modified_icon)
+        git_visible="${git_icon} ${git_branch}"
 
         if [[ -n "$git_modified_icon" ]]; then
-            # Has modifications.
-            git_section="${color_red}${git_icon} ${git_branch} ${git_modified_icon}${style_reset} "
+            git_visible+=" ${git_modified_icon}"
+            git_rendered="${color_red}${git_visible}${style_reset}"
         else
-            # No changes
-            git_section="${color_yellow}${git_icon} ${git_branch}${style_reset} "
+            git_rendered="${color_yellow}${git_visible}${style_reset}"
         fi
     fi
 
@@ -208,8 +274,36 @@ __ps1_prompt_command() {
         last_exec_status_color=$color_light_red
     fi
 
-    # Update ps1.
-    CUSTOM_USER_PS1="${color_gray}${left_border_up}${style_reset} ${color_yellow}${dir_icon} \w${style_reset} ${git_section}${color_gray}${clock_icon} ${current_datetime} ${last_exec_status_color}[${last_exec_status}]${style_reset} ${color_purple}${user_icon} \u@\h ${os_icon}${style_reset}\n${color_gray}${left_border_down}${style_reset} ${color_blue}${prompt_icon}${style_reset} "
+    # Left section: border, current directory and Git state.
+    left_visible="${left_border_up} ${dir_icon} ${current_dir}"
+    left_rendered="${color_gray}${left_border_up}${style_reset} ${color_yellow}${dir_icon} ${current_dir}${style_reset}"
+
+    if [[ -n "$git_visible" ]]; then
+        left_visible+=" ${git_visible}"
+        left_rendered+=" ${git_rendered}"
+    fi
+
+    # Center section: current date and time.
+    center_visible="${clock_icon} ${current_datetime}"
+    center_rendered="${color_gray}${center_visible}${style_reset}"
+
+    # Right section: exit status, user, host and operating system.
+    right_visible="[${last_exec_status}] ${user_icon} ${USER}@${short_hostname} ${os_icon}"
+    right_rendered="${last_exec_status_color}[${last_exec_status}]${style_reset} ${color_purple}${user_icon} \u@\h ${os_icon}${style_reset}"
+
+    # Calculate spacing from unstyled sections, then render their styled forms.
+    top_line=$(
+        __ps1_align_three_columns \
+            "$left_visible" \
+            "$center_visible" \
+            "$right_visible" \
+            "$left_rendered" \
+            "$center_rendered" \
+            "$right_rendered"
+    )
+
+    # Update PS1.
+    CUSTOM_USER_PS1="${top_line}\n${color_gray}${left_border_down}${style_reset} ${color_blue}${prompt_icon}${style_reset} "
     PS1=$CUSTOM_USER_PS1
 
     # Maintain the history between terminals.
