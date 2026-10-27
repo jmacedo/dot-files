@@ -38,18 +38,18 @@ Nerd Fonts are downloaded from their latest official release.
 - Local font files can be installed with `install_local_font`; the configured Nerd Fonts are downloaded by `install_web_font` during setup.
 - Last dev session status: Ok, go ahead.
 - Roadmap 1.0:
-  - Configure spaces between ps1 blocks.
-  - fzf
-  - zoxide
-  - yazi
-  - SuperFile
-  - Find some top|htop terminal app.
-  - Save Cosmic/Gnome configurations and themes.
-  - Save gedit configurations.
-  - Think about shell aliases.
-  - Research about desktop integration with Google Drive on Linux.
-  - Research, configure and save VSCode shortcuts and plugins.
-  - Create web apps:
+  [x] Configure spaces between ps1 blocks.
+  [] fzf
+  [] zoxide
+  [] yazi
+  [] SuperFile
+  [] Find some top|htop terminal app.
+  [] Save Cosmic/Gnome configurations and themes.
+  [] Save gedit configurations.
+  [] Think about shell aliases.
+  [] Research about desktop integration with Google Drive on Linux.
+  [] Research, configure and save VSCode shortcuts and plugins.
+  [] Create web apps:
     - WhatsApp Web
     - Youtube Music
     - Xmind
@@ -63,24 +63,25 @@ Nerd Fonts are downloaded from their latest official release.
     - Google Contacts
     - Google Translate
     - Google Keep
-  - Detect and uninstall:
+  [] Detect and uninstall:
     - Libre Office
     - Thunderbird
-  - Review all keyboard shortcuts.
-  - Review all themes.
-  - Install, if not exists, Firefox browser.
-  - Finalize nvim base configs
-    - LSP with visual completion.
-    - Tabs.
-    - File explorer with CTRL+O mapped.
-    - Fuzzy finding (CTRL+F) and definitions search (CTRL+ALT+F ???).
-    - Code folding.
-    - SHIFT+[LEFT|RIGHT]: select text.
-    - CTRL+SHIFT+[LEFT|RIGHT]: select text faster between words.
-    - CTRL+[LEFT|RIGHT]: navigate faster between words.
-    - [CTRL|CTRL+SHIFT]+[HOME|END]: TODO: description.
+  [] Review all keyboard shortcuts.
+  [] Review all themes.
+  [] Install, if not exists, Firefox browser.
+  [] Finalize nvim base configs
+    [] LSP with visual completion.
+    [] Tabs.
+    [] File explorer with CTRL+O mapped.
+    [] Fuzzy finding (CTRL+F) and definitions search (CTRL+ALT+F ???).
+    [] Code folding.
+    [] SHIFT+[LEFT|RIGHT]: select text.
+    [] CTRL+SHIFT+[LEFT|RIGHT]: select text faster between words.
+    [] CTRL+[LEFT|RIGHT]: navigate faster between words.
+    [] [CTRL|CTRL+SHIFT]+[HOME|END]: TODO: description.
   - ... (TODO)
 - Roadmap 2.0 (totally brainstorming):
+  - Implement "pill style" in ps1 blocks.
   - Fabrix Bash (.config/fabrix-bash):
     - Build some kind of interface manager and menu builder framework.
     - Parameters handler lib.

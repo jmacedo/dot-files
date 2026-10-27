@@ -463,6 +463,30 @@ main() {
     LOCAL_BIN_DIR="$HOME/.local/bin"
     CUSTOM_USER_APPS_DIR="$HOME/Apps"
     LOCAL_SHARE="$HOME/.local/share"
+    run_no_flatpaks=false
+    run_fast=false
+
+    case "${1:-}" in
+    --no-flatpaks|--disable-flatpaks)
+        run_no_flatpaks=true
+        ;;
+    --fast-install|--lite)
+        run_no_flatpaks=true
+        run_fast=true
+        ;;
+    help|--help|-h)
+        echo "Usage: $0 {--no-flatpaks|--fast-install|--help}"
+        ;;
+    "")
+        echo "Empty parameter. Use '$0 --help'." >&2
+        exit 1
+        ;;
+    *)
+        echo "Unknown parameter: $1" >&2
+        echo "Use '$0 --help'." >&2
+        exit 1
+        ;;
+    esac
 
     # Create custom home directories.
     mkdir -p -- "$CUSTOM_USER_APPS_DIR" \
@@ -477,16 +501,18 @@ main() {
     # Apt packages.
     install_apt_packages
     
-    # Fnm nodejs version manager
-    install_fnm
-    # Npm installations.
-    install_npm_lsp_tools
-    # Python, Go, Rust, Laravel, Lua
-    install_python_lsp_tools
-    install_go_lsp_tools
-    install_rustup
-    install_laravel_lsp
-    install_lua_language_server
+    if [[ ! $run_fast ]]; then
+        # Fnm nodejs version manager
+        install_fnm
+        # Npm installations.
+        install_npm_lsp_tools
+        # Python, Go, Rust, Laravel, Lua
+        install_python_lsp_tools
+        install_go_lsp_tools
+        install_rustup
+        install_laravel_lsp
+        install_lua_language_server
+    fi
 
     # Custom fonts.
     install_web_font "SourceCodePro"
@@ -506,7 +532,7 @@ main() {
     install_config ".hidden"
 
     # Conditionally install flatpaks.
-    if [[ "${1:-}" != "--no-flatpaks" ]]; then
+    if [[ ! $run_no_flatpaks || ! $run_fast ]]; then
         install_flatpak_packages
         override_pop_os_flatpak_launchers
     fi

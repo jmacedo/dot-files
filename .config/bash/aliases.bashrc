@@ -1,3 +1,5 @@
+alias gitfuck="git add . && git ci -m'...' && git push origin master"
+
 alias ll='ls -Alh --block-size=K --time-style="+%Y/%m/%d %H:%M" --time=ctime --file-type --group-directories-first'
 
 alias llinverted="ll -r"
