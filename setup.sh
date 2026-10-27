@@ -521,6 +521,7 @@ main() {
     LOCAL_SHARE="$HOME/.local/share"
     run_no_flatpaks=false
     run_fast=false
+    FALSE="false"
 
     case "${1:-}" in
     --no-flatpaks|--disable-flatpaks)
@@ -535,8 +536,6 @@ main() {
         exit 0
         ;;
     "")
-        echo "Empty parameter. Use '$0 --help'." >&2
-        exit 1
         ;;
     *)
         echo "Unknown parameter: $1" >&2
@@ -548,7 +547,7 @@ main() {
     custom_clear
     print_ascii_art
     validate_environment
-    printf 'Setting up your environment...\n'
+    printf "Setting up your environment...\n"
 
     # Create custom home directories.
     mkdir -p -- "$CUSTOM_USER_APPS_DIR" \
@@ -560,33 +559,44 @@ main() {
         "$HOME/Dev" \
         "$HOME/Temp"
 
-    # Apt packages.
-    install_apt_packages
-    
-    if [[ ! $run_fast ]]; then
+    if [[ "$run_fast" == "$FALSE" ]]; then
+        # Apt packages.
+        printf "Apt packages...\n"
+        install_apt_packages > /dev/null
+
+        printf "fnm...\n"
         # Fnm nodejs version manager
-        install_fnm
+        install_fnm > /dev/null
+
+        printf "npm installations...\n"
         # Npm installations.
-        install_npm_lsp_tools
+        install_npm_lsp_tools > /dev/null
+
+        printf "Lsp tools...\n"
         # Python, Go, Rust, Laravel, Lua
-        install_python_lsp_tools
-        install_go_lsp_tools
-        install_rustup
-        install_laravel_lsp
-        install_lua_language_server
+        install_python_lsp_tools > /dev/null
+        install_go_lsp_tools > /dev/null
+        install_rustup > /dev/null
+        install_laravel_lsp > /dev/null
+        install_lua_language_server > /dev/null
+
+        printf "Custom fonts...\n"
+        # Custom fonts.
+        install_web_font "SourceCodePro" > /dev/null
+        install_web_font "NerdFontsSymbolsOnly" > /dev/null
+        fc-cache --force
+
+        # Apps.
+        printf "Install kitty...\n"
+        install_kitty > /dev/null
+        printf "Install nvim...\n"
+        install_neovim > /dev/null
+        printf "Install fzf...\n"
+        install_fzf
     fi
 
-    # Custom fonts.
-    install_web_font "SourceCodePro"
-    install_web_font "NerdFontsSymbolsOnly"
-    fc-cache --force
-
-    # Apps.
-    install_kitty
-    install_neovim
-    install_fzf
-
     # Configs.
+    printf "Copying dot files...\n"
     install_config ".config/bash"
     install_config ".config/kitty"
     install_config ".config/nvim"
@@ -595,8 +605,9 @@ main() {
     install_config ".hidden"
 
     # Conditionally install flatpaks.
-    if [[ ! $run_no_flatpaks || ! $run_fast ]]; then
-        install_flatpak_packages
+    if [[ $run_no_flatpaks == "false" && "$run_fast" == "false" ]]; then
+        printf "Installing flatpaks...\n"
+        install_flatpak_packages > /dev/null
         override_pop_os_flatpak_launchers
     fi
 

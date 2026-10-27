@@ -180,6 +180,8 @@ __ps1_align_three_columns() {
 }
 
 __ps1_prompt_command() {
+    . "$HOME/.config/bash/themes/$THEME_CURRENT.theme.bashrc"
+
     local last_exec_status_code=$?
     local git_branch
     local user_icon
@@ -194,13 +196,13 @@ __ps1_prompt_command() {
     local left_border_up
     local left_border_down
     local current_datetime
-    local color_green
-    local color_red
-    local color_blue
-    local color_purple
-    local color_light_red
-    local color_gray
-    local color_yellow
+    local color_green=$THEME_COLOR2_RGB
+    local color_red=$THEME_COLOR1_RGB
+    local color_blue=$THEME_COLOR4_RGB
+    local color_purple=$THEME_ACTIVE_TAB_BACKGROUND_RGB
+    local color_light_red=$THEME_COLOR9_RGB
+    local color_gray=$THEME_COLOR8_RGB
+    local color_yellow=$THEME_COLOR11_RGB
     local style_reset
     local current_dir
     local short_hostname
@@ -229,13 +231,13 @@ __ps1_prompt_command() {
     left_border_down=$(__ps1_get_left_border_down)
     printf -v current_datetime "%(%d/%m/%Y %H:%M)T" -1
     current_datetime+="h"
-    color_green=$(__ps1_sty_color 166 227 161)
-    color_red=$(__ps1_sty_color 243 139 168)
-    color_blue=$(__ps1_sty_color 137 180 250)
-    color_purple=$(__ps1_sty_color 203 166 247)
-    color_light_red=$(__ps1_sty_color 245 224 220)
-    color_gray=$(__ps1_sty_color 108 112 134)
-    color_yellow=$(__ps1_sty_color 249 226 175)
+    color_green=$(__ps1_sty_color ${color_green[@]})
+    color_red=$(__ps1_sty_color ${color_red[@]})
+    color_blue=$(__ps1_sty_color ${color_blue[@]})
+    color_purple=$(__ps1_sty_color ${color_purple[@]})
+    color_light_red=$(__ps1_sty_color ${color_light_red[@]})
+    color_gray=$(__ps1_sty_color ${color_gray[@]})
+    color_yellow=$(__ps1_sty_color ${color_yellow[@]})
     style_reset=$(__ps1_sty_reset)
 
     # Convert $PWD to a short path equivalent to \w.

@@ -19,3 +19,5 @@ export RUSTUP_HOME="$HOME/Apps/rustup"
 
 # Zoxide
 export _ZO_DATA_DIR="$XDG_DATA_HOME/zoxide"
+
+export THEME_CURRENT="catppuccin-frappe"
