@@ -284,11 +284,11 @@ __ps1_prompt_command() {
     fi
 
     # Center section: current date and time.
-    center_visible="${clock_icon} ${current_datetime}"
+    center_visible="${current_datetime} ${clock_icon}"
     center_rendered="${color_gray}${center_visible}${style_reset}"
 
     # Right section: exit status, user, host and operating system.
-    right_visible="[${last_exec_status}] ${user_icon} ${USER}@${short_hostname} ${os_icon}"
+    right_visible="[${last_exec_status}] ${user_icon} ${USER}@${short_hostname} ${os_icon} "
     right_rendered="${last_exec_status_color}[${last_exec_status}]${style_reset} ${color_purple}${user_icon} \u@\h ${os_icon}${style_reset}"
 
     # Calculate spacing from unstyled sections, then render their styled forms.
