@@ -564,33 +564,39 @@ main() {
         printf "Apt packages...\n"
         install_apt_packages > /dev/null
 
+        # Fnm.
         printf "fnm...\n"
-        # Fnm nodejs version manager
         install_fnm > /dev/null
 
+        # Npm.
         printf "npm installations...\n"
-        # Npm installations.
         install_npm_lsp_tools > /dev/null
 
+        # Lsp Servers.
         printf "Lsp tools...\n"
-        # Python, Go, Rust, Laravel, Lua
+
+        # Python, Go, Rust, Laravel, Lua.
         install_python_lsp_tools > /dev/null
         install_go_lsp_tools > /dev/null
         install_rustup > /dev/null
         install_laravel_lsp > /dev/null
         install_lua_language_server > /dev/null
 
-        printf "Custom fonts...\n"
         # Custom fonts.
+        printf "Custom fonts...\n"
         install_web_font "SourceCodePro" > /dev/null
         install_web_font "NerdFontsSymbolsOnly" > /dev/null
         fc-cache --force
 
-        # Apps.
+        # Kitty terminal.
         printf "Install kitty...\n"
         install_kitty > /dev/null
+
+        # Nvim.
         printf "Install nvim...\n"
         install_neovim > /dev/null
+
+        # Fzf.
         printf "Install fzf...\n"
         install_fzf
     fi
