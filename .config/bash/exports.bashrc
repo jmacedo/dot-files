@@ -1,9 +1,14 @@
 export XDG_DATA_HOME="$HOME/.local/share"
 
+# User binaries
+export PATH="$HOME/.local/bin:$PATH"
+
+# Open Code Cli Harness
+export PATH="$HOME/.opencode/bin:$PATH"
+
+# Editor
 export EDITOR="nvim"
 export VISUAL="nvim"
-
-export PATH="$HOME/.local/bin:$PATH"
 
 # Go, cargo, npm, fnm, composer
 export PATH="$HOME/Apps/fnm:$PATH"
@@ -20,4 +25,5 @@ export RUSTUP_HOME="$HOME/Apps/rustup"
 # Zoxide
 export _ZO_DATA_DIR="$XDG_DATA_HOME/zoxide"
 
+# BASH THEME (`~/.config/bash/themes/<name>.theme.bashrc`)
 export THEME_CURRENT="catppuccin-frappe"

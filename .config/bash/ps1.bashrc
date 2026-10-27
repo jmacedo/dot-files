@@ -1,5 +1,3 @@
-CUSTOM_USER_PS1="\u@\h - \w"
-
 __ps1_get_git_branch() {
     command -v git >/dev/null 2>&1 || return 0
     git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
@@ -180,8 +178,6 @@ __ps1_align_three_columns() {
 }
 
 __ps1_prompt_command() {
-    . "$HOME/.config/bash/themes/$THEME_CURRENT.theme.bashrc"
-
     local last_exec_status_code=$?
     local git_branch
     local user_icon
@@ -196,13 +192,20 @@ __ps1_prompt_command() {
     local left_border_up
     local left_border_down
     local current_datetime
-    local color_green=$THEME_COLOR2_RGB
-    local color_red=$THEME_COLOR1_RGB
-    local color_blue=$THEME_COLOR4_RGB
-    local color_purple=$THEME_ACTIVE_TAB_BACKGROUND_RGB
-    local color_light_red=$THEME_COLOR9_RGB
-    local color_gray=$THEME_COLOR8_RGB
-    local color_yellow=$THEME_COLOR11_RGB
+    local color_green
+    local color_red
+    local color_blue
+    local color_purple
+    local color_light_red
+    local color_gray
+    local color_yellow
+    local _color_green=${THEME_COLOR2_RGB[@]}
+    local _color_red=${THEME_COLOR1_RGB[@]}
+    local _color_blue=${THEME_COLOR4_RGB[@]}
+    local _color_purple=${THEME_ACTIVE_TAB_BACKGROUND_RGB[@]}
+    local _color_light_red=${THEME_COLOR9_RGB[@]}
+    local _color_gray=${THEME_COLOR8_RGB[@]}
+    local _color_yellow=${THEME_COLOR11_RGB[@]}
     local style_reset
     local current_dir
     local short_hostname
@@ -231,13 +234,13 @@ __ps1_prompt_command() {
     left_border_down=$(__ps1_get_left_border_down)
     printf -v current_datetime "%(%d/%m/%Y %H:%M)T" -1
     current_datetime+="h"
-    color_green=$(__ps1_sty_color ${color_green[@]})
-    color_red=$(__ps1_sty_color ${color_red[@]})
-    color_blue=$(__ps1_sty_color ${color_blue[@]})
-    color_purple=$(__ps1_sty_color ${color_purple[@]})
-    color_light_red=$(__ps1_sty_color ${color_light_red[@]})
-    color_gray=$(__ps1_sty_color ${color_gray[@]})
-    color_yellow=$(__ps1_sty_color ${color_yellow[@]})
+    color_green=$(__ps1_sty_color ${_color_green[@]})
+    color_red=$(__ps1_sty_color ${_color_red[@]})
+    color_blue=$(__ps1_sty_color ${_color_blue[@]})
+    color_purple=$(__ps1_sty_color ${_color_purple[@]})
+    color_light_red=$(__ps1_sty_color ${_color_light_red[@]})
+    color_gray=$(__ps1_sty_color ${_color_gray[@]})
+    color_yellow=$(__ps1_sty_color ${_color_yellow[@]})
     style_reset=$(__ps1_sty_reset)
 
     # Convert $PWD to a short path equivalent to \w.
@@ -313,5 +316,7 @@ __ps1_prompt_command() {
     builtin history -n
 }
 
+source "$HOME/.config/bash/themes/$THEME_CURRENT.theme.bashrc"
+CUSTOM_USER_PS1="\u@\h - \w"
 PROMPT_COMMAND="__ps1_prompt_command"
 PS1=$CUSTOM_USER_PS1

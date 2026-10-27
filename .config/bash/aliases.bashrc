@@ -1,4 +1,6 @@
-alias gitfuck="git add . && git ci -m'...' && git push origin master"
+alias ls="ls --color"
+alias grep="grep --color"
+alias egrep="egrep --color"
 
 alias ll='ls -Alh --block-size=K --time-style="+%Y/%m/%d %H:%M" --time=ctime --file-type --group-directories-first'
 
