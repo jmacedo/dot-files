@@ -450,22 +450,7 @@ StartupWMClass=Code
 EOF
 }
 
-# Entry point of the shellscript.
-main() {
-    print_ascii_art
-    validate_environment
-    printf 'Setting up your environment...\n'
-
-    # Runtime variables.
-    START_DATE_TIME="$(date '+%Y%m%d%H%M%S')" # AAAAMMDDHHMMSS
-    BACKUP_EXT="bkp"
-    SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)" # Absolute path
-    LOCAL_BIN_DIR="$HOME/.local/bin"
-    CUSTOM_USER_APPS_DIR="$HOME/Apps"
-    LOCAL_SHARE="$HOME/.local/share"
-    run_no_flatpaks=false
-    run_fast=false
-
+handle_parameters() {
     case "${1:-}" in
     --no-flatpaks|--disable-flatpaks)
         run_no_flatpaks=true
@@ -476,6 +461,7 @@ main() {
         ;;
     help|--help|-h)
         echo "Usage: $0 {--no-flatpaks|--fast-install|--help}"
+        exit 0
         ;;
     "")
         echo "Empty parameter. Use '$0 --help'." >&2
@@ -487,6 +473,25 @@ main() {
         exit 1
         ;;
     esac
+}
+
+# Entry point of the shellscript.
+main() {
+    # Runtime variables.
+    START_DATE_TIME="$(date '+%Y%m%d%H%M%S')" # AAAAMMDDHHMMSS
+    BACKUP_EXT="bkp"
+    SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)" # Absolute path
+    LOCAL_BIN_DIR="$HOME/.local/bin"
+    CUSTOM_USER_APPS_DIR="$HOME/Apps"
+    LOCAL_SHARE="$HOME/.local/share"
+    run_no_flatpaks=false
+    run_fast=false
+
+    handle_parameters
+
+    print_ascii_art
+    validate_environment
+    printf 'Setting up your environment...\n'
 
     # Create custom home directories.
     mkdir -p -- "$CUSTOM_USER_APPS_DIR" \
