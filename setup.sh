@@ -450,7 +450,18 @@ StartupWMClass=Code
 EOF
 }
 
-handle_parameters() {
+# Entry point of the shellscript.
+main() {
+    # Runtime variables.
+    START_DATE_TIME="$(date '+%Y%m%d%H%M%S')" # AAAAMMDDHHMMSS
+    BACKUP_EXT="bkp"
+    SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)" # Absolute path
+    LOCAL_BIN_DIR="$HOME/.local/bin"
+    CUSTOM_USER_APPS_DIR="$HOME/Apps"
+    LOCAL_SHARE="$HOME/.local/share"
+    run_no_flatpaks=false
+    run_fast=false
+
     case "${1:-}" in
     --no-flatpaks|--disable-flatpaks)
         run_no_flatpaks=true
@@ -473,21 +484,6 @@ handle_parameters() {
         exit 1
         ;;
     esac
-}
-
-# Entry point of the shellscript.
-main() {
-    # Runtime variables.
-    START_DATE_TIME="$(date '+%Y%m%d%H%M%S')" # AAAAMMDDHHMMSS
-    BACKUP_EXT="bkp"
-    SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)" # Absolute path
-    LOCAL_BIN_DIR="$HOME/.local/bin"
-    CUSTOM_USER_APPS_DIR="$HOME/Apps"
-    LOCAL_SHARE="$HOME/.local/share"
-    run_no_flatpaks=false
-    run_fast=false
-
-    handle_parameters
 
     print_ascii_art
     validate_environment
