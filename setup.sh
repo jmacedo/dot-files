@@ -175,6 +175,65 @@ install_neovim() {
     rm -f -- "$download_path"
 }
 
+# FZF fuzzy finder from the latest stable official GitHub release.
+install_fzf() {
+    local release_api_url="https://api.github.com/repos/junegunn/fzf/releases/latest"
+    local release_info
+    local download_url
+    local download_path
+    local extraction_dir
+    local install_dir="$CUSTOM_USER_APPS_DIR/fzf"
+
+    # Get latest release download url.
+    release_info="$(
+        curl --fail --silent --show-error --location \
+            --header "Accept: application/vnd.github+json" \
+            "$release_api_url"
+    )"
+
+    download_url="$(
+        printf '%s' "$release_info" | python3 -c '
+import json
+import re
+import sys
+
+release = json.load(sys.stdin)
+asset_pattern = re.compile(r"fzf-\d+(?:\.\d+)*-linux_amd64\.tar\.gz")
+
+for asset in release.get("assets", []):
+    if asset_pattern.fullmatch(asset.get("name", "")):
+        print(asset["browser_download_url"])
+        break
+else:
+    raise SystemExit("Could not find the fzf Linux amd64 release asset.")
+'
+    )"
+
+
+    # Download and extract.
+    download_path="$(mktemp)"
+    extraction_dir="$(mktemp -d)"
+
+    curl --fail --location "$download_url" --output "$download_path"
+    tar --extract --gzip --file "$download_path" --directory "$extraction_dir"
+
+    if [[ ! -x "$extraction_dir/fzf" ]]; then
+        printf 'Missing fzf binary in release asset: %s\n' "$download_url" >&2
+        return 1
+    fi
+
+    # Handle binary.
+    backup_path "$install_dir"
+    mkdir -p -- "$install_dir"
+    install --mode=0755 -- "$extraction_dir/fzf" "$install_dir/fzf"
+    backup_path "$LOCAL_BIN_DIR/fzf"
+    ln -sfn -- "$install_dir/fzf" "$LOCAL_BIN_DIR/fzf"
+
+    # Clean up.
+    rm -f -- "$download_path"
+    rm -rf -- "$extraction_dir"
+}
+
 install_apt_packages() {
     local packages=(
         git
@@ -183,7 +242,6 @@ install_apt_packages() {
         vim
         file
         ffmpeg
-        fzf
         zoxide
         xclip
         wl-clipboard
@@ -526,6 +584,7 @@ main() {
     # Apps.
     install_kitty
     install_neovim
+    install_fzf
 
     # Configs.
     install_config ".config/bash"

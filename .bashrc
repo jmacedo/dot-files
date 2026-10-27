@@ -18,9 +18,9 @@ bashrc_list=(
   "aliases"
   "completion"
   "params"
+  "exports"
   "fzf"
   "ps1"
-  "exports"
   "integrations"
 )
 
