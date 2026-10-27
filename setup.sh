@@ -8,10 +8,12 @@
 # `-o pipefail` - Raise errors inside a chain of commands (`cmdA | cmdB | cmdC`) instead of by default use the last command status code.
 set -euo pipefail
 
-# Verify if is a valid interactive terminal and command `clear` exists.
-if [[ -t 1 && -n "${TERM:-}" ]] && command -v clear >/dev/null 2>&1; then
-    clear || true
-fi
+custom_clear() {
+    # Verify if is a valid interactive terminal and command `clear` exists.
+    if [[ -t 1 && -n "${TERM:-}" ]] && command -v clear >/dev/null 2>&1; then
+        clear || true
+    fi
+}
 
 print_ascii_art() {
     cat <<'EOF'
@@ -485,6 +487,7 @@ main() {
         ;;
     esac
 
+    custom_clear
     print_ascii_art
     validate_environment
     printf 'Setting up your environment...\n'
