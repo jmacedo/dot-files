@@ -103,3 +103,8 @@ Nerd Fonts are downloaded from their latest official release.
       - Standardization of a "install" dir with `<order>_<name>.install.bashrc`:
         - Include `<order><name>.<suffix>` and run `install_<name>_bashrc`
   - ... (TODO)
+  - Organize:
+    - find X fd differences.
+    - All about "bat".
+    - All about ffmpeg.
+    - All about nvim buffers.
