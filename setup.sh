@@ -42,8 +42,8 @@ validate_environment() {
         printf "This setup supports x86_64 only.\n" >&2
         return 1
     fi
-    
-    if [[ ! command_exists apt ]]; then
+
+    if ! command_exists apt; then
         printf "This setup requires apt package manager (a Debian-based distribution).\n" >&2
         return 1
     fi
