@@ -43,25 +43,25 @@ validate_environment() {
         return 1
     fi
     
-    command_exists apt || {
+    if [[ ! command_exists apt ]]; then
         printf "This setup requires apt package manager (a Debian-based distribution).\n" >&2
         return 1
-    }
+    fi
 }
 
 # Perform a backup of given PATH. Include the suffix `.<datetime>.<backup_extension>` - e.g. `~/custom_path` -> `~/custom_path.20261024120135.bkp`.
 backup_path() {
-    local destination="$1"
+    local destination="${1:-}"
 
     if [[ -e "$destination" || -L "$destination" ]]; then
-        mv -f -- "$destination" "${destination}.${START_DATE_TIME:-'old'}.${BACKUP_EXT:-'bkp'}"
+        mv -f -- "$destination" "$destination.${START_DATE_TIME:-'old'}.bkp"
     fi
 }
 
 # Overwrites given HOME config file or directory by an equivalent config of this repository.
 install_config() {
-    local relative_path="$1"
-    local source="$SCRIPT_DIR/$relative_path"
+    local relative_path="${1:-}"
+    local source="${SCRIPT_DIR:-$HOME}/$relative_path"
     local destination="$HOME/$relative_path"
 
     if [[ ! -e "$source" ]]; then
@@ -248,6 +248,7 @@ install_apt_packages() {
         flatpak
         steam-devices
         build-essential
+        gparted
         # LSPs and runtimes available through apt
         clangd
         default-jdk
@@ -350,15 +351,15 @@ install_flatpak_packages() {
     # TODO: Analyse to use these parameters directly in `<app>.desktop`, in `Exec=` call.
     
     # Override flatpak to use x11 engine in Chrome.
-    flatpak override --user \
-        --env=ELECTRON_OZONE_PLATFORM_HINT=x11 \
-        --env=GDK_BACKEND=x11 \
-        com.google.Chrome
+    #flatpak override --user \
+    #    --env=ELECTRON_OZONE_PLATFORM_HINT=x11 \
+    #    --env=GDK_BACKEND=x11 \
+    #    com.google.Chrome
 
     # Disable GPU aceleration in VSCode.
-    flatpak override --user \
-        --env=LIBGL_ALWAYS_SOFTWARE=1 \
-        com.visualstudio.code
+    #flatpak override --user \
+    #    --env=LIBGL_ALWAYS_SOFTWARE=1 \
+    #    com.visualstudio.code
 }
 
 # Laravel language server for nvim.
@@ -562,39 +563,39 @@ main() {
     if [[ "$run_fast" == "$FALSE" ]]; then
         # Apt packages.
         printf "Apt packages...\n"
-        install_apt_packages > /dev/null
+        install_apt_packages
 
         # Fnm.
         printf "fnm...\n"
-        install_fnm > /dev/null
+        install_fnm
 
         # Npm.
         printf "npm installations...\n"
-        install_npm_lsp_tools > /dev/null
+        install_npm_lsp_tools
 
         # Lsp Servers.
         printf "Lsp tools...\n"
 
         # Python, Go, Rust, Laravel, Lua.
-        install_python_lsp_tools > /dev/null
-        install_go_lsp_tools > /dev/null
-        install_rustup > /dev/null
-        install_laravel_lsp > /dev/null
-        install_lua_language_server > /dev/null
+        install_python_lsp_tools
+        install_go_lsp_tools
+        install_rustup
+        install_laravel_lsp
+        install_lua_language_server
 
         # Custom fonts.
         printf "Custom fonts...\n"
-        install_web_font "SourceCodePro" > /dev/null
-        install_web_font "NerdFontsSymbolsOnly" > /dev/null
+        install_web_font "SourceCodePro"
+        install_web_font "NerdFontsSymbolsOnly"
         fc-cache --force
 
         # Kitty terminal.
         printf "Install kitty...\n"
-        install_kitty > /dev/null
+        install_kitty
 
         # Nvim.
         printf "Install nvim...\n"
-        install_neovim > /dev/null
+        install_neovim
 
         # Fzf.
         printf "Install fzf...\n"
@@ -614,7 +615,7 @@ main() {
     # Conditionally install flatpaks.
     if [[ $run_no_flatpaks == "false" && "$run_fast" == "false" ]]; then
         printf "Installing flatpaks...\n"
-        install_flatpak_packages > /dev/null
+        install_flatpak_packages
         override_pop_os_flatpak_launchers
     fi
 
