@@ -143,6 +143,8 @@ install_fzf() {
     local extraction_dir
     local install_dir="$CUSTOM_USER_APPS_DIR/fzf"
 
+    printf "\n\n\n==========\n\n>>>>> release_api_url: %s\n\n==========\n\n\n" $release_api_url
+
     # Download and extract.
     download_url="$(
         curl --fail --silent --show-error --location -- header "Accept: application/vnd.github+json" \
@@ -151,6 +153,9 @@ install_fzf() {
             "linux_amd64.tar.gz" \
             ))'
     )"
+
+    printf "\n\n\n==========\n\n>>>>> download_url: %s\n\n==========\n\n\n" $download_url
+
     download_path="$(mktemp)"
     extraction_dir="$(mktemp -d)"
 
@@ -386,6 +391,9 @@ install_lua_language_server() {
     local extraction_dir="$(mktemp -d)"
     local release_api_url="https://api.github.com/repos/LuaLS/lua-language-server/releases/latest"
 
+
+    printf "\n\n\n==========\n\n>>>>> release_api_url: %s\n\n==========\n\n\n" $release_api_url
+
     # Download and extract.
     download_url="$(
         curl --fail --silent --show-error --location -- header "Accept: application/vnd.github+json" \
@@ -394,6 +402,8 @@ install_lua_language_server() {
             "linux_amd64.tar.gz" \
             ))'
     )"
+
+    printf "\n\n\n==========\n\n>>>>> download_url: %s\n\n==========\n\n\n" $download_url
 
     curl --fail --location "$download_url" --output "$download_path"
     tar --extract --gzip --file "$download_path" --directory "$extraction_dir"
@@ -436,30 +446,6 @@ Type=Application
 Categories=TextEditor;Development;IDE;
 StartupWMClass=Code
 EOF
-}
-
-handle_parameters() {
-    case "${1:-}" in
-    --no-flatpaks|--disable-flatpaks)
-        run_no_flatpaks=true
-        ;;
-    --fast-install|--lite)
-        run_no_flatpaks=true
-        run_fast=true
-        ;;
-    help|--help|-h)
-        echo "Usage: $0 {--no-flatpaks|--fast-install|--help}"
-        exit 0
-        ;;
-    "")
-        ;;
-    *)
-        echo "Unknown parameter: $1" >&2
-        echo "Use '$0 --help'." >&2
-        exit 1
-        ;;
-    esac
-
 }
 
 handle_parameters() {
@@ -517,7 +503,7 @@ handle_parameters() {
 }
 
 main_home_folders() {
-    printf "- Creating HOME folders..."
+    printf "Creating HOME folders..."
     mkdir -p -- "$CUSTOM_USER_APPS_DIR" \
         "$LOCAL_BIN_DIR" \
         "$LOCAL_SHARE" \
@@ -532,22 +518,22 @@ main_home_folders() {
 
 main_install() {
     # Apt packages.
-    printf "- Installing apt packages..."
+    printf "Installing apt packages..."
     install_apt_packages
     printf "Ok\n"
 
     # Fnm.
-    printf "- Installing fnm..."
+    printf "Installing fnm..."
     install_fnm
     printf "Ok\n"
 
     # Npm.
-    printf "- Installing npm LSP tools..."
+    printf "Installing npm LSP tools..."
     install_npm_lsp_tools
     printf "Ok\n"
 
     # Lsp Servers.
-    printf "- Installing general LSP tools (Language Server Protocol)..."
+    printf "Installing general LSP tools (Language Server Protocol)..."
     install_python_lsp_tools
     install_go_lsp_tools
     install_rustup
@@ -556,30 +542,30 @@ main_install() {
     printf "Ok\n"
 
     # Custom fonts.
-    printf "- Installing custom fonts..."
+    printf "Installing custom fonts..."
     install_web_font "SourceCodePro"
     install_web_font "NerdFontsSymbolsOnly"
     fc-cache --force
     printf "Ok\n"
 
     # Kitty terminal.
-    printf "- Installing kitty..."
+    printf "Installing kitty..."
     install_kitty
     printf "Ok\n"
 
     # Nvim.
-    printf "- Installing nvim..."
+    printf "Installing nvim..."
     install_neovim
     printf "Ok\n"
 
     # Fzf.
-    printf "- Installing fzf..."
+    printf "Installing fzf..."
     install_fzf
     printf "Ok\n"
 }
 
 main_configs() {
-    printf "- Copying dot files..."
+    printf "Copying dot files..."
     install_config ".config/bash"
     install_config ".config/kitty"
     install_config ".config/nvim"
@@ -591,7 +577,7 @@ main_configs() {
 }
 
 main_flatpaks() {
-    printf "- Installing flatpaks..."
+    printf "Installing flatpaks..."
     install_flatpak_packages
     override_pop_os_flatpak_launchers
     printf "Ok\n"
