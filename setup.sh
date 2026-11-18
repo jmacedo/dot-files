@@ -147,7 +147,7 @@ install_fzf() {
 
     # Download and extract.
     download_url="$(
-        curl --fail --silent --show-error --location -- header "Accept: application/vnd.github+json" \
+        curl --fail --silent --show-error --location --header "Accept: application/vnd.github+json" \
             "$release_api_url" | jq -r \
             '.assets[].browser_download_url | select(endswith(\
             "linux_amd64.tar.gz" \
@@ -396,7 +396,7 @@ install_lua_language_server() {
 
     # Download and extract.
     download_url="$(
-        curl --fail --silent --show-error --location -- header "Accept: application/vnd.github+json" \
+        curl --fail --silent --show-error --location --header "Accept: application/vnd.github+json" \
             "$release_api_url" | jq -r '.assets[].browser_download_url | select(endswith("linux_amd64.tar.gz"))'
     )"
 
