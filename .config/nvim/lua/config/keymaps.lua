@@ -10,8 +10,8 @@ vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", { desc = "Close terminal mode." })
 -- Save - CTRL + S
 vim.keymap.set({ "n", "i" }, "<C-s>", "<cmd>write<CR>", { desc = "Save document." })
 
--- Close - CTRL + Q
-vim.keymap.set("n", "<C-q>", "<cmd>quit<CR>", { desc = "Close document." })
+-- Close - CTRL + W
+vim.keymap.set("n", "<C-w>", "<cmd>quit<CR>", { desc = "Close document." })
 
 -- Search - CTRL + F
 vim.keymap.set("n", "<C-f>", "/", { desc = "Search in document." })
