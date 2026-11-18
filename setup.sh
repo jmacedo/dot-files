@@ -172,6 +172,43 @@ install_fzf() {
     ln -sfn -- "$install_dir/fzf" "$LOCAL_BIN_DIR/fzf"
 }
 
+install_lazygit() {
+    local release_api_url="https://api.github.com/repos/jesseduffield/lazygit/releases/latest"
+    local release_info
+    local download_url
+    local download_path
+    local extraction_dir
+    local install_dir="$CUSTOM_USER_APPS_DIR/lazygit"
+
+    # Download and extract.
+    download_url="$(
+        curl --fail --silent --show-error --location --header "Accept: application/vnd.github+json" \
+            "$release_api_url" | jq -r '.assets[].browser_download_url | select(endswith("linux_x86_64.tar.gz"))'
+    )"
+
+    download_path="$(mktemp)"
+    extraction_dir="$(mktemp -d)"
+
+    curl --fail --location "$download_url" --output "$download_path"
+    tar --extract --gzip --file "$download_path" --directory "$extraction_dir"
+    rm -f -- "$download_path" # Clean up
+
+    if [[ ! -x "$extraction_dir/lazygit" ]]; then
+        printf 'Missing fzf binary in release asset: %s\n' "$download_url" >&2
+        return 1
+    fi
+
+    # Handle binary.
+    backup_path "$install_dir"
+    mkdir -p -- "$install_dir"
+    
+    install --mode=0755 -- "$extraction_dir/lazygit" "$install_dir/lazygit"
+    rm -rf -- "$extraction_dir" # Clean up
+
+    backup_path "$LOCAL_BIN_DIR/lazygit"
+    ln -sfn -- "$install_dir/lazygit" "$LOCAL_BIN_DIR/lazygit"
+}
+
 install_apt_packages() {
     local packages=(
         git
@@ -546,6 +583,11 @@ main_install() {
     printf "Installing fzf..."
     install_fzf
     printf "Ok\n"
+
+    # Lazygit.
+    printf "Installing lazygit..."
+    install_lazygit
+    printf "Ok\n"
 }
 
 main_configs() {
@@ -554,6 +596,7 @@ main_configs() {
     install_config ".config/kitty"
     install_config ".config/nvim"
     install_config ".config/fzf"
+    install_config ".config/lazygit"
     install_config ".bashrc"
     install_config ".gitconfig"
     install_config ".hidden"
