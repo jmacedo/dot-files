@@ -1,21 +1,14 @@
-alias ls="ls --color"
-alias grep="grep --color"
-alias egrep="egrep --color"
+alias ..="cd .."
 
-alias ll='ls -Alh --block-size=K --time-style="+%Y/%m/%d %H:%M" --time=ctime --file-type --group-directories-first'
+alias ls="ls --color=auto"
+alias grep="grep --color=auto"
+alias egrep="egrep --color=auto"
 
-alias llinverted="ll -r"
+alias ll='ls -Blh --time=mtime --time-style="+%d/%m/%Y %H:%M" --file-type --group-directories-first --hyperlink=auto --quoting-style=shell-escape -p --classify'
+alias lldotfiles='ll -A'
 alias llrecursive="ll -R"
-
-alias ll4csv="ll -m"
-
-alias llctime="ll -t"
-alias llctimeinverted="ll -tr"
-
 alias llfilesize="ll -S"
 alias llfilesizeinverted="ll -Sr"
 
-alias y="yazi"
-alias ycache="yazi --clear-cache"
-
-alias ..="cd .."
+# Study and customize some aliases with specific model, etc.
+alias ai="sbx run opencode ~/Temp"
