@@ -143,18 +143,11 @@ install_fzf() {
     local extraction_dir
     local install_dir="$CUSTOM_USER_APPS_DIR/fzf"
 
-    printf "\n\n\n==========\n\n>>>>> release_api_url: %s\n\n==========\n\n\n" $release_api_url
-
     # Download and extract.
     download_url="$(
         curl --fail --silent --show-error --location --header "Accept: application/vnd.github+json" \
-            "$release_api_url" | jq -r \
-            '.assets[].browser_download_url | select(endswith(\
-            "linux_amd64.tar.gz" \
-            ))'
+            "$release_api_url" | jq -r '.assets[].browser_download_url | select(endswith("linux_amd64.tar.gz"))'
     )"
-
-    printf "\n\n\n==========\n\n>>>>> download_url: %s\n\n==========\n\n\n" $download_url
 
     download_path="$(mktemp)"
     extraction_dir="$(mktemp -d)"
@@ -167,7 +160,6 @@ install_fzf() {
         printf 'Missing fzf binary in release asset: %s\n' "$download_url" >&2
         return 1
     fi
-    
 
     # Handle binary.
     backup_path "$install_dir"
@@ -391,16 +383,11 @@ install_lua_language_server() {
     local extraction_dir="$(mktemp -d)"
     local release_api_url="https://api.github.com/repos/LuaLS/lua-language-server/releases/latest"
 
-
-    printf "\n\n\n==========\n\n>>>>> release_api_url: %s\n\n==========\n\n\n" $release_api_url
-
     # Download and extract.
     download_url="$(
         curl --fail --silent --show-error --location --header "Accept: application/vnd.github+json" \
             "$release_api_url" | jq -r '.assets[].browser_download_url | select(endswith("linux-x64.tar.gz"))'
     )"
-
-    printf "\n\n\n==========\n\n>>>>> download_url: %s\n\n==========\n\n\n" $download_url
 
     curl --fail --location "$download_url" --output "$download_path"
     tar --extract --gzip --file "$download_path" --directory "$extraction_dir"
