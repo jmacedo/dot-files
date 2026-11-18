@@ -397,10 +397,7 @@ install_lua_language_server() {
     # Download and extract.
     download_url="$(
         curl --fail --silent --show-error --location -- header "Accept: application/vnd.github+json" \
-            "$release_api_url" | jq -r \
-            '.assets[].browser_download_url | select(endswith(\
-            "linux_amd64.tar.gz" \
-            ))'
+            "$release_api_url" | jq -r '.assets[].browser_download_url | select(endswith("linux_amd64.tar.gz"))'
     )"
 
     printf "\n\n\n==========\n\n>>>>> download_url: %s\n\n==========\n\n\n" $download_url
