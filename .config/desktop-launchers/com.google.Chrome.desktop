@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Google Chrome
+Exec=flatpak run --user com.google.Chrome --ozone-platform=x11 %U
+Icon=com.google.Chrome
+Type=Application
+Categories=Network;WebBrowser;
+StartupWMClass=google-chrome

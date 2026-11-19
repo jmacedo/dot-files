@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Visual Studio Code
+Exec=flatpak run --user com.visualstudio.code --disable-gpu %F
+Icon=com.visualstudio.code
+Type=Application
+Categories=TextEditor;Development;IDE;
+StartupWMClass=Code
