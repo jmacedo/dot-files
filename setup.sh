@@ -424,6 +424,8 @@ install_zoxide() {
     curl --fail --location "$install_url" --output "$installer_path"
     bash "$installer_path" --bin-dir "$install_dir"
 
+    ln -sf -- "$install_dir/zoxide" "$LOCAL_BIN_DIR/zoxide"
+
     return 0
 }
 
@@ -433,6 +435,9 @@ install_superfile() {
     local download_url=""
     local download_path="$(mktemp)"
     exclude_temp_path "$download_path"
+    local extraction_dir="$(mktemp -d)"
+    exclude_temp_path "$extraction_dir"
+    local binary_path=""
 
     backup_path "$LOCAL_BIN_DIR/spf"
     backup_path "$install_dir"
@@ -445,7 +450,15 @@ install_superfile() {
 
     curl --fail --location "$download_url" --output "$download_path"
 
-    tar -xzf "$download_path" --wildcards '*/spf' -C "$install_dir"
+    tar --extract --gzip --file "$download_path" --directory "$extraction_dir"
+    binary_path="$(find "$extraction_dir" -type f -name spf -print -quit)"
+    
+    if [[ -z "$binary_path" || ! -f "$binary_path" ]]; then
+        printf 'Missing spf binary in release asset: %s\n' "$download_url" >&2
+        return 1
+    fi
+
+    install --mode=0755 -- "$binary_path" "$install_dir/spf"
 
     ln -sfn -- "$install_dir/spf" "$LOCAL_BIN_DIR/spf"
 
