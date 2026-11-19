@@ -265,7 +265,6 @@ install_apt_packages() {
         vim
         file
         ffmpeg
-        zoxide
         xclip
         wl-clipboard
         flatpak
@@ -427,7 +426,7 @@ install_superfile() {
 
     download_url="$(
         curl --fail --silent --show-error --location --header "Accept: application/vnd.github+json" \
-            "$release_api_url" | jq -r '.assets[].browser_download_url | select(test("amd64\\.tar\\.gz$"))'
+            "$release_api_url" | jq -r '.assets[].browser_download_url | select(test("superfile-linux-.*-amd64\\.tar\\.gz$"))'
     )"
 
     curl --fail --location "$download_url" --output "$download_path"
