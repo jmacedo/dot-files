@@ -18,6 +18,20 @@ backup_path() {
     return 0
 }
 
+exclude_temp_path() {
+    CLEANUP_PATHS+=("$1")
+}
+
+cleanup_temp_paths() {
+    local path
+
+    for path in "${CLEANUP_PATHS[@]:-}"; do
+        [[ -n "$path" ]] && rm -rf -- "$path"
+    done
+
+    return 0
+}
+
 install_config() {
     local relative_path="${1:-}"
     local source="${SCRIPT_DIR:-$HOME}/$relative_path"
@@ -67,9 +81,9 @@ install_web_font() {
     local source_url="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/${file_name}.zip"
     local destination="$HOME/.local/share/fonts/$file_name"
     local download_path="$(mktemp)"
-    trap 'rm -rf "$download_path"' EXIT
+    exclude_temp_path "$download_path"
     local extraction_dir="$(mktemp -d)"
-    trap 'rm -rf "$extraction_dir"' EXIT
+    exclude_temp_path "$extraction_dir"
 
     backup_path "$destination"
     mkdir -p -- "$destination"
@@ -84,7 +98,7 @@ install_web_font() {
 
 install_kitty() {
     local installer_path="$(mktemp)"
-    trap 'rm -rf "$installer_path"' EXIT
+    exclude_temp_path "$installer_path"
     local dest=${CUSTOM_USER_APPS_DIR:-$HOME/.local}
     local kitty_folder="$dest/kitty.app"
     
@@ -115,7 +129,7 @@ install_neovim() {
     local source_url="https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz"
     local install_dir="${CUSTOM_USER_APPS_DIR:-}/nvim"
     local download_path="$(mktemp)"
-    trap 'rm -rf "$download_path"' EXIT
+    exclude_temp_path "$download_path"
 
     backup_path "$install_dir"
     mkdir -p -- "$install_dir"
@@ -134,9 +148,9 @@ install_fzf() {
     local download_url=""
     local install_dir="$CUSTOM_USER_APPS_DIR/fzf"
     local download_path="$(mktemp)"
-    trap 'rm -rf "$download_path"' EXIT
+    exclude_temp_path "$download_path"
     local extraction_dir="$(mktemp -d)"
-    trap 'rm -rf "$extraction_dir"' EXIT
+    exclude_temp_path "$extraction_dir"
 
     backup_path "$LOCAL_BIN_DIR/fzf"
     backup_path "$install_dir"
@@ -167,9 +181,9 @@ install_lazygit() {
     local install_dir="$CUSTOM_USER_APPS_DIR/lazygit"
     local download_url=""
     local download_path="$(mktemp)"
-    trap 'rm -rf "$download_path"' EXIT
+    exclude_temp_path "$download_path"
     local extraction_dir="$(mktemp -d)"
-    trap 'rm -rf "$extraction_dir"' EXIT
+    exclude_temp_path "$extraction_dir"
 
     backup_path "$LOCAL_BIN_DIR/lazygit"
     backup_path "$install_dir"
@@ -199,10 +213,10 @@ install_yazi() {
     local release_api_url="https://api.github.com/repos/sxyazi/yazi/releases/latest"
     local install_dir="$CUSTOM_USER_APPS_DIR/yazi"
     local download_url=""
-    local download_path="$(mktemp -d)/yazi.zip"
-    trap 'rm -rf "$download_path"' EXIT
+    local download_path="$(mktemp)"
+    exclude_temp_path "$download_path"
     local extraction_dir="$(mktemp -d)"
-    trap 'rm -rf "$extraction_dir"' EXIT
+    exclude_temp_path "$extraction_dir"
 
     backup_path "$LOCAL_BIN_DIR/yazi"
     backup_path "$install_dir"
@@ -229,9 +243,9 @@ install_treesitter() {
     local install_dir="$CUSTOM_USER_APPS_DIR/tree-sitter"
     local download_url
     local download_path="$(mktemp)"
-    trap 'rm -rf "$download_path"' EXIT
+    exclude_temp_path "$download_path"
     local extraction_dir="$(mktemp -d)"
-    trap 'rm -rf "$extraction_dir"' EXIT
+    exclude_temp_path "$extraction_dir"
 
     backup_path "$LOCAL_BIN_DIR/tree-sitter"
     backup_path "$install_dir"
@@ -250,7 +264,7 @@ install_treesitter() {
         return 1
     fi
 
-    install --mode=0755 -- "$extraction_dir/tree-sitter" "$install_dir/lazygit"
+    install --mode=0755 -- "$extraction_dir/tree-sitter" "$install_dir/tree-sitter"
 
     ln -sfn -- "$install_dir/tree-sitter" "$LOCAL_BIN_DIR/tree-sitter"
 
@@ -331,7 +345,7 @@ has_kvm() {
 install_docker() {
     local apt_source_template="${SCRIPT_DIR:-$HOME}/.config/docker/docker.sources"
     local apt_source_temp="$(mktemp)"
-    trap 'rm -rf "$apt_source_temp"' EXIT
+    exclude_temp_path "$apt_source_temp"
 
     sudo apt remove $(dpkg --get-selections docker.io docker-compose docker-compose-v2 docker-doc docker-buildx podman-docker containerd runc | cut -f1)
     sudo install -m 0755 -d /etc/apt/keyrings
@@ -381,7 +395,7 @@ install_docker() {
 install_fnm() {
     local install_dir="$CUSTOM_USER_APPS_DIR/fnm"
     local installer_path="$(mktemp)"
-    trap 'rm -rf "$installer_path"' EXIT
+    exclude_temp_path "$installer_path"
 
     backup_path "$install_dir"
     mkdir -p -- "$install_dir"
@@ -402,7 +416,7 @@ install_zoxide() {
     local install_url="https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh"
     local install_dir="$CUSTOM_USER_APPS_DIR/zoxide"
     local installer_path="$(mktemp)"
-    trap 'rm -rf "$installer_path"' EXIT
+    exclude_temp_path "$installer_path"
 
     backup_path "$install_dir"
     mkdir -p -- "$install_dir"
@@ -418,7 +432,7 @@ install_superfile() {
     local install_dir="$CUSTOM_USER_APPS_DIR/superfile"
     local download_url=""
     local download_path="$(mktemp)"
-    trap 'rm -rf "$download_path"' EXIT
+    exclude_temp_path "$download_path"
 
     backup_path "$LOCAL_BIN_DIR/spf"
     backup_path "$install_dir"
@@ -488,7 +502,7 @@ install_go_lsp_tools() {
 
 install_rustup() {
     local installer_path="$(mktemp)"
-    trap 'rm -rf "$installer_path"' EXIT
+    exclude_temp_path "$installer_path"
 
     backup_path "$CUSTOM_USER_APPS_DIR/cargo"
     backup_path "$CUSTOM_USER_APPS_DIR/rustup"
@@ -510,9 +524,9 @@ install_lua_language_server() {
     local install_dir="$CUSTOM_USER_APPS_DIR/lua-language-server"
     local download_url=""
     local download_path="$(mktemp)"
-    trap 'rm -rf "$download_path"' EXIT
+    exclude_temp_path "$download_path"
     local extraction_dir="$(mktemp -d)"
-    trap 'rm -rf "$extraction_dir"' EXIT
+    exclude_temp_path "$extraction_dir"
 
     backup_path "$install_dir"
     mkdir -p -- "$install_dir"
@@ -545,29 +559,17 @@ override_pop_os_flatpak_launchers() {
 }
 
 handle_parameters() {
-    run_no_flatpaks=$NULL
-    run_reset=$FALSE
-    run_update=$FALSE
-    run_remove_backups=$FALSE
-    run_full_install=$FALSE
+    #if [[ $# -eq 0 ]]; then ### fi
 
-    if [[ $# -eq 0 ]]; then
-        run_full_install=$TRUE
-    fi
-
-    for parameter in $@; do
+    for parameter in "$@"; do
         case "$parameter" in
             --no-flatpaks)
-                run_no_flatpaks=$TRUE
                 ;;
             --update|--upgrade)
-                run_update=$TRUE
                 ;;
             --reset-dot-files|--reset)
-                run_reset=$TRUE
                 ;;
             --remove-installations-backups|--remove-backups)
-                run_remove_backups=$TRUE
                 ;;
             --help|--h|-h|help)
                 local option_help_text=""
@@ -601,7 +603,6 @@ handle_parameters() {
 }
 
 main_home_folders() {
-    printf "Creating HOME folders..."
     mkdir -p -- "$CUSTOM_USER_APPS_DIR" \
         "$LOCAL_BIN_DIR" \
         "$LOCAL_SHARE" \
@@ -611,7 +612,6 @@ main_home_folders() {
         "$HOME/Dev" \
         "$HOME/Temp" \
         "$HOME/.docker"
-    printf "Ok\n"
 }
 
 main_install() {
@@ -671,33 +671,19 @@ main() {
     local LOCAL_BIN_DIR="$HOME/.local/bin"
     local CUSTOM_USER_APPS_DIR="$HOME/Apps"
     local LOCAL_SHARE="$HOME/.local/share"
-    local FALSE="false"
-    local TRUE="true"
-    local NULL="null"
-    local run_no_flatpaks=$NULL
-    local run_reset=$NULL
-    local run_update=$NULL
-    local run_remove_backups=$NULL
-
+    
     handle_parameters "$@"
 
     command clear
 
     main_home_folders
-
-    if [[ $run_full_install == $TRUE || $run_update == $TRUE ]]; then
-        main_install
-    fi
-
-    if [[ $run_full_install == $TRUE || $run_reset == $TRUE ]]; then
-        main_configs
-    fi
-
-    if [[ $run_no_flatpaks == $FALSE || $run_reset == $FALSE ]]; then
-        main_flatpaks
-    fi
+    main_install
+    main_configs
+    main_flatpaks
 
     echo "Finish!"
 }
 
+CLEANUP_PATHS=()
+trap cleanup_temp_paths EXIT
 main "$@"
