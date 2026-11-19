@@ -239,7 +239,7 @@ install_yazi() {
     backup_path "$install_dir"
     mkdir -p -- "$install_dir"
     
-    cp -rf -- "$extraction_dir/*" "$install_dir"
+    cp -a -- "$extraction_dir/yazi-*/." "$install_dir"
     rm -rf -- "$extraction_dir" # Clean up
 
     backup_path "$LOCAL_BIN_DIR/yazi"
