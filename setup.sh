@@ -216,27 +216,21 @@ install_yazi() {
     local extraction_dir="$(mktemp -d)"
     local download_url
 
-    # Download and extract.
     download_url="$(
         curl --fail --silent --show-error --location --header "Accept: application/vnd.github+json" \
             "$release_api_url" | jq -r '.assets[].browser_download_url | select(test("x86_64-.*linux-gnu\\.zip$"))'
     )"
 
     curl --fail --location "$download_url" --output "$download_path"
+    trap 'rm -rf "$download_path"' EXIT
+
     unzip -q "$download_path" -d "$extraction_dir"
-    rm -f -- "$download_path" # Clean up
+    trap 'rm -rf "$extraction_dir"' EXIT
 
-    if [[ ! -x "$extraction_dir/yazi" ]]; then
-        printf 'Missing yazi binary in release asset: %s\n' "$download_url" >&2
-        return 1
-    fi
-
-    # Handle binary.
     backup_path "$install_dir"
     mkdir -p -- "$install_dir"
     
     cp -a -- "$extraction_dir"/yazi-*/. "$install_dir"
-    rm -rf -- "$extraction_dir" # Clean up
 
     backup_path "$LOCAL_BIN_DIR/yazi"
     ln -sfn -- "$install_dir/yazi" "$LOCAL_BIN_DIR/yazi"
