@@ -1,7 +1,9 @@
 vim.g.mapleader = " "
 
-require("config.options")
-require("config.keymaps")
-require("config.autocmds")
-require("config.user_commands")
-require("plugins")
+require("lazy-boot")
+
+require("configs.options")
+require("configs.keymaps")
+require("configs.autocmds")
+require("configs.user_commands")
+

@@ -194,7 +194,7 @@ install_lazygit() {
     rm -f -- "$download_path" # Clean up
 
     if [[ ! -x "$extraction_dir/lazygit" ]]; then
-        printf 'Missing fzf binary in release asset: %s\n' "$download_url" >&2
+        printf 'Missing lazygit binary in release asset: %s\n' "$download_url" >&2
         return 1
     fi
 
@@ -207,6 +207,80 @@ install_lazygit() {
 
     backup_path "$LOCAL_BIN_DIR/lazygit"
     ln -sfn -- "$install_dir/lazygit" "$LOCAL_BIN_DIR/lazygit"
+}
+
+install_yazi() {
+    local release_api_url="https://api.github.com/repos/sxyazi/yazi/releases/latest"
+    local release_info
+    local download_url
+    local download_path
+    local extraction_dir
+    local install_dir="$CUSTOM_USER_APPS_DIR/yazi"
+
+    # Download and extract.
+    download_url="$(
+        curl --fail --silent --show-error --location --header "Accept: application/vnd.github+json" \
+            "$release_api_url" | jq -r '.assets[].browser_download_url | select(test("x86_64-.*linux-gnu\\.zip$"))'
+    )"
+
+    download_path="$(mktemp)"
+    extraction_dir="$(mktemp -d)"
+
+    curl --fail --location "$download_url" --output "$download_path"
+    unzip -q -- "$download_path" -d "$extraction_dir"
+    rm -f -- "$download_path" # Clean up
+
+    if [[ ! -x "$extraction_dir/yazi" ]]; then
+        printf 'Missing yazi binary in release asset: %s\n' "$download_url" >&2
+        return 1
+    fi
+
+    # Handle binary.
+    backup_path "$install_dir"
+    mkdir -p -- "$install_dir"
+    
+    cp -rf -- "$extraction_dir/*" "$install_dir"
+    rm -rf -- "$extraction_dir" # Clean up
+
+    backup_path "$LOCAL_BIN_DIR/yazi"
+    ln -sfn -- "$install_dir/yazi" "$LOCAL_BIN_DIR/yazi"
+}
+
+install_treesitter() {
+    local release_api_url="https://api.github.com/repos/tree-sitter/tree-sitter/releases/latest"
+    local release_info
+    local download_url
+    local download_path
+    local extraction_dir
+    local install_dir="$CUSTOM_USER_APPS_DIR/tree-sitter"
+
+    # Download and extract.
+    download_url="$(
+        curl --fail --silent --show-error --location --header "Accept: application/vnd.github+json" \
+            "$release_api_url" | jq -r '.assets[].browser_download_url | select(endswith("linux-x64.zip"))'
+    )"
+
+    download_path="$(mktemp)"
+    extraction_dir="$(mktemp -d)"
+
+    curl --fail --location "$download_url" --output "$download_path"
+    unzip -q -- "$download_path" -d "$extraction_dir"
+    rm -f -- "$download_path" # Clean up
+
+    if [[ ! -x "$extraction_dir/tree-sitter" ]]; then
+        printf 'Missing tree-sitter binary in release asset: %s\n' "$download_url" >&2
+        return 1
+    fi
+
+    # Handle binary.
+    backup_path "$install_dir"
+    mkdir -p -- "$install_dir"
+    
+    install --mode=0755 -- "$extraction_dir/tree-sitter" "$install_dir/lazygit"
+    rm -rf -- "$extraction_dir" # Clean up
+
+    backup_path "$LOCAL_BIN_DIR/tree-sitter"
+    ln -sfn -- "$install_dir/tree-sitter" "$LOCAL_BIN_DIR/tree-sitter"
 }
 
 install_apt_packages() {
@@ -226,6 +300,7 @@ install_apt_packages() {
         gparted
         ca-certificates
         jq
+        ripgrep
         # LSPs and runtimes available through apt
         clangd
         default-jdk
@@ -350,6 +425,23 @@ install_fnm() {
     eval "$(fnm env --use-on-cd --shell bash)"
     fnm install --latest # Node LATEST version. (Long Term Support: `--lts` or, Latest release: `--latest`)
     fnm default "$(fnm current)" # Make node available by default.
+}
+
+install_zoxide() {
+    local installer_path="$(mktemp)"
+    local install_url="https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh"
+    local install_dir="$CUSTOM_USER_APPS_DIR/zoxide"
+
+    backup_path "$install_dir"
+    mkdir -p -- "$install_dir"
+
+    curl --fail --location "$install_url" --output "$installer_path"
+    bash "$installer_path" --bin-dir "$install_dir"
+    rm -f -- "$installer_path" # Clean up
+}
+
+install_superfile() {
+    bash -c "$(curl -sLo- https://superfile.dev/install.sh)"
 }
 
 # Laravel language server for nvim.
@@ -588,6 +680,26 @@ main_install() {
     printf "Installing lazygit..."
     install_lazygit
     printf "Ok\n"
+
+    # Tree-sitter.
+    printf "Installing tree-sitter..."
+    install_treesitter
+    printf "Ok\n"
+
+    # Zoxide.
+    printf "Installing zoxide..."
+    install_zoxide
+    printf "Ok\n"
+
+    # Yazi.
+    printf "Installing yazi..."
+    install_yazi
+    printf "Ok\n"
+
+    # Superfile.
+    printf "Installing superfile..."
+    install_superfile
+    printf "Ok\n"
 }
 
 main_configs() {
@@ -597,8 +709,12 @@ main_configs() {
     install_config ".config/nvim"
     install_config ".config/fzf"
     install_config ".config/lazygit"
+    install_config ".config/yazi"
+    install_config ".config/superfile"
     install_config ".bashrc"
     install_config ".gitconfig"
+    install_config ".gitconfig.local.example"
+    install_config ".gitignore"
     install_config ".hidden"
     printf "Ok\n"
 }
