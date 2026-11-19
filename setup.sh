@@ -211,11 +211,10 @@ install_lazygit() {
 
 install_yazi() {
     local release_api_url="https://api.github.com/repos/sxyazi/yazi/releases/latest"
-    local release_info
-    local download_url
-    local download_path
-    local extraction_dir
     local install_dir="$CUSTOM_USER_APPS_DIR/yazi"
+    local download_path="$(mktemp -d)/yazi.zip"
+    local extraction_dir="$(mktemp -d)"
+    local download_url
 
     # Download and extract.
     download_url="$(
@@ -223,11 +222,8 @@ install_yazi() {
             "$release_api_url" | jq -r '.assets[].browser_download_url | select(test("x86_64-.*linux-gnu\\.zip$"))'
     )"
 
-    download_path="$(mktemp)"
-    extraction_dir="$(mktemp -d)"
-
     curl --fail --location "$download_url" --output "$download_path"
-    unzip -qj -- "$download_path" -d "$extraction_dir"
+    unzip -q "$download_path" -d "$extraction_dir"
     rm -f -- "$download_path" # Clean up
 
     if [[ ! -x "$extraction_dir/yazi" ]]; then
@@ -239,7 +235,7 @@ install_yazi() {
     backup_path "$install_dir"
     mkdir -p -- "$install_dir"
     
-    cp -a -- "$extraction_dir/yazi-*/." "$install_dir"
+    cp -a -- "$extraction_dir"/yazi-*/. "$install_dir"
     rm -rf -- "$extraction_dir" # Clean up
 
     backup_path "$LOCAL_BIN_DIR/yazi"
