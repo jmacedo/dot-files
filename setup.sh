@@ -227,7 +227,7 @@ install_yazi() {
     extraction_dir="$(mktemp -d)"
 
     curl --fail --location "$download_url" --output "$download_path"
-    unzip -q -- "$download_path" -d "$extraction_dir"
+    unzip -qj -- "$download_path" -d "$extraction_dir"
     rm -f -- "$download_path" # Clean up
 
     if [[ ! -x "$extraction_dir/yazi" ]]; then
