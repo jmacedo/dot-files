@@ -676,6 +676,43 @@ main_flatpaks() {
     return 0
 }
 
+install_bin_from_github() {
+    local filename_pattern="^.*[linux.*[x86_64|amd64|x64]{1}|[x86_64|amd64|x64]{1}.*linux].*[\.tar\.gz|\.zip]$"
+    local app_name="$1"
+    local repo="$2"
+    local release_api_url="https://api.github.com/repos/$repo/releases/latest"
+    local install_dir="$CUSTOM_USER_APPS_DIR/$app_name"
+    local binary_download_url=""
+    local is_zip=false
+    local temp_file="$(mktemp)"
+    exclude_temp_path "$temp_file"
+    local extraction_dir="$(mktemp -d)"
+    exclude_temp_path "$extraction_dir"
+
+    # TODO: Should I test the URL after curl?
+    binary_download_url="$(curl --fail --silent --show-error --location --header "Accept: application/vnd.github+json" "$release_api_url" | jq -r ".assets[].browser_download_url | select(test('${filename_pattern:-}'))")"
+    is_zip=$("$binary_download_url" == *.* && "$("${binary_download_url#*.}")" == "zip")
+
+    backup_path "$LOCAL_BIN_DIR/$app_name"
+    backup_path "$install_dir"
+    mkdir -p -- "$install_dir"
+
+    curl --fail --location "$binary_download_url" --output "$download_path"
+    is_zip && unzip -q "$download_path" -d "$extraction_dir" || tar --extract --gzip --file "$download_path" --directory "$extraction_dir"
+
+    binary_path="$(find "$extraction_dir" -type f -name "$app_name" -print -quit)"
+    
+    if [[ -z "$binary_path" || ! -f "$binary_path" ]]; then
+        printf 'Missing %s binary in release assets: %s\n' "$app_name" "$binary_download_url" >&2
+        return 1
+    fi
+
+    install --mode=0755 -- "$binary_path" "$install_dir/$app_name"
+    ln -sfn -- "$install_dir/$app_name" "$LOCAL_BIN_DIR/$app_name"
+
+    return 0
+}
+
 main() {
     # Runtime variables.
     local START_DATE_TIME="$(date '+%Y%m%d%H%M%S')" # AAAAMMDDHHMMSS
