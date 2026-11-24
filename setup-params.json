@@ -21,27 +21,21 @@
             "list": [
                 { "package_name": "git", "custom_commands": [] },
                 { "package_name": "curl", "custom_commands": [] },
+                { "package_name": "wget", "custom_commands": [] },
                 { "package_name": "unzip", "custom_commands": [] },
                 { "package_name": "vim", "custom_commands": [] },
-                { "package_name": "file", "custom_commands": [] },
-                { "package_name": "ffmpeg", "custom_commands": [] },
-                { "package_name": "xclip", "custom_commands": [] },
-                { "package_name": "wl-clipboard", "custom_commands": [] },
+                { "package_name": "gparted", "custom_commands": [] },
                 { "package_name": "flatpak", "custom_commands": [] },
                 { "package_name": "steam-devices", "custom_commands": [] },
                 { "package_name": "build-essential", "custom_commands": [] },
-                { "package_name": "gparted", "custom_commands": [] },
                 { "package_name": "ca-certificates", "custom_commands": [] },
+                { "package_name": "xclip", "custom_commands": [] },
+                { "package_name": "wl-clipboard", "custom_commands": [] },
+                { "package_name": "file", "custom_commands": [] },
+                { "package_name": "ffmpeg", "custom_commands": [] },
                 { "package_name": "jq", "custom_commands": [] },
                 { "package_name": "ripgrep", "custom_commands": [] },
-                { "package_name": "libarchive-tools", "custom_commands": [] },
-                { "package_name": "clangd", "custom_commands": [] },
-                { "package_name": "default-jdk", "custom_commands": [] },
-                { "package_name": "golang-go", "custom_commands": [] },
-                { "package_name": "pipx", "custom_commands": [] },
-                { "package_name": "python3-venv", "custom_commands": [] },
-                { "package_name": "php-cli", "custom_commands": [] },
-                { "package_name": "composer", "custom_commands": [] }
+                { "package_name": "libarchive-tools", "custom_commands": [] }
             ]
         },
         "flatpak": {
@@ -61,6 +55,7 @@
             "list":[
                 {
                     "repo": "neovim/neovim",
+                    "version": "latest",
                     "bin_name": "nvim",
                     "strip_components": 1,
                     "asset_pattern": "linux-x86_64\\.tar\\.gz$",
@@ -68,6 +63,7 @@
                 },
                 { 
                     "repo": "junegunn/fzf",
+                    "version": "latest",
                     "bin_name": "fzf",
                     "strip_components": 0,
                     "asset_pattern": "linux_amd64\\.tar\\.gz$",
@@ -75,6 +71,7 @@
                 },
                 { 
                     "repo": "jesseduffield/lazygit",
+                    "version": "latest",
                     "bin_name": "lazygit",
                     "strip_components": 0,
                     "asset_pattern": "linux_x86_64\\.tar\\.gz$",
@@ -82,6 +79,7 @@
                 },
                 { 
                     "repo": "ajeetdsouza/zoxide",
+                    "version": "latest",
                     "bin_name": "zoxide",
                     "strip_components": 0,
                     "asset_pattern": "x86_64-unknown-linux-musl\\.tar\\.gz$",
@@ -89,6 +87,7 @@
                 },
                 { 
                     "repo": "yorukot/superfile",
+                    "version": "latest",
                     "bin_name": "spf",
                     "strip_components": 2,
                     "asset_pattern": "linux.*amd64\\.tar\\.gz$",
@@ -96,6 +95,7 @@
                 },
                 { 
                     "repo": "tree-sitter/tree-sitter",
+                    "version": "latest",
                     "bin_name": "tree-sitter",
                     "strip_components": 0,
                     "asset_pattern": "linux-x64\\.zip$",
@@ -103,6 +103,7 @@
                 },                
                 { 
                     "repo": "sxyazi/yazi",
+                    "version": "latest",
                     "bin_name": "yazi",
                     "strip_components": 1,
                     "asset_pattern": "x86_64-unknown-linux-gnu\\.zip$",
@@ -110,6 +111,7 @@
                 },                
                 { 
                     "repo": "kovidgoyal/kitty",
+                    "version": "latest",
                     "bin_name": "kitty",
                     "strip_components": 0,
                     "asset_pattern": "kitty-.*-x86_64\\.txz$",

@@ -7,6 +7,15 @@ Personal desktop setup for Debian-based `x86_64` Linux systems.
 
 ## Maintainer notes
 
+- Old used packages to handle manually LSP's:
+  - `setup-params.json`:
+    - `{ "package_name": "clangd", "custom_commands": [] }`
+    - `{ "package_name": "default-jdk", "custom_commands": [] }`
+    - `{ "package_name": "golang-go", "custom_commands": [] }`
+    - `{ "package_name": "pipx", "custom_commands": [] }`
+    - `{ "package_name": "python3-venv", "custom_commands": [] }`
+    - `{ "package_name": "php-cli", "custom_commands": [] }`
+    - `{ "package_name": "composer", "custom_commands": [] }`
 - Local font files can be installed with `install_local_font`; the configured Nerd Fonts are downloaded by `install_web_font` during setup.
 - Roadmap 1.0:
   - [x] Configure spaces between ps1 blocks.

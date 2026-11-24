@@ -103,12 +103,14 @@ install_config() {
 }
 
 install_bin_from_github() {
-    # Linux x64 platform.
-    local repository="$1"
-    local binary_name="${2:-"${repository#*/}"}"
-    local strip_components="${3:-0}"
-    local filename_pattern="${4:?"Missing asset pattern"}"
-    local release_api_url="https://api.github.com/repos/$repository/releases/latest"
+    # Params: $repo_name $version $asset_pattern $bin_name $strip_components
+    local repository="${1:-}"
+    local version="${2:-'latest'}"
+    local filename_pattern="${3:?"Missing asset pattern for github binary"}"
+    local binary_name="${4:-"${repository#*/}"}"
+    local strip_components="${5:-0}"
+
+    local release_api_url="https://api.github.com/repos/${repository}/releases/${version}"
     local install_dir="$CUSTOM_USER_APPS_DIR/$binary_name"
     local binary_download_url=""
     local binary_download_url_cache_file="$SCRIPT_DIR/$binary_name.bin-url.cache"
@@ -117,6 +119,11 @@ install_bin_from_github() {
     exclude_temp_path "$temp_file"
     local extraction_dir="$(mktemp -d)"
     exclude_temp_path "$extraction_dir"
+
+    if [[ -z "$repository" ]]; then
+        printf "Invalid empty repository for binary install from github.\n"
+        return 1
+    fi
 
     if [[ -f "$binary_download_url_cache_file" ]]; then
         binary_download_url=$(cat "$binary_download_url_cache_file")

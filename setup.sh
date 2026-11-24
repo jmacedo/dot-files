@@ -76,10 +76,11 @@ main_install() {
     while IFS= read -r binary_object; do
         local repo_name="$(jq -r ".repo" <<< "$binary_object")"
         local bin_name="$(jq -r ".bin_name" <<< "$binary_object")"
+        local version="$(jq -r ".version" <<< "$binary_object")"
         local strip_components="$(jq -r ".strip_components" <<< "$binary_object")"
         local asset_pattern="$(jq -r ".asset_pattern" <<< "$binary_object")"
 
-        install_bin_from_github "$repo_name" "$bin_name" "$strip_components" "$asset_pattern"
+        install_bin_from_github "$repo_name" "$version" "$asset_pattern" "$bin_name" "$strip_components"
 
         while IFS= read -r command; do
             if [[ -z "$command" ]]; then
