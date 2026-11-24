@@ -9,22 +9,55 @@
 set -euo pipefail
 
 install_docker() {
+    # Initialize.
     local apt_source_template="${SCRIPT_DIR:-$HOME}/.config/docker/docker.sources"
-    local apt_source_temp="$(mktemp)"
+    local code_name=""
+    local architecture=""
+    local apt_source_temp=""
+    local gpg_temp=""
+
+    apt_source_temp="$(mktemp)" || return 1
     exclude_temp_path "$apt_source_temp"
 
-    sudo apt remove docker.io docker-compose docker-compose-v2 docker-doc docker-buildx podman-docker containerd runc
-    sudo install -m 0755 -d /etc/apt/keyrings
-    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-    sudo chmod a+r /etc/apt/keyrings/docker.asc
+    gpg_temp="$(mktemp)" || return 1
+    exclude_temp_path "$gpg_temp"
 
-    sed -e "s|@@CODE_NAME@@|$(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")|g" \
-        -e "s|@@ARCHITECTURE@@|$(dpkg --print-architecture)|g" \
-        "$apt_source_template" > "$apt_source_temp"
-    
-    sudo cp -f -- "$apt_source_temp" /etc/apt/sources.list.d/docker.sources
-    
+    # Some validations.
+    [[ -f "$apt_source_template" ]] || {
+        printf "Docker apt template not found: %s\n" "$apt_source_template" >&2
+        return 1
+    }
+
+    if ! has_kvm; then
+        printf "Docker sandboxes requires KVM for local sandboxes (mainly AI).\n"
+        return 1
+    fi
+
+    # Remove conflicting packages.
+    sudo apt remove -y docker.io docker-compose docker-compose-v2 docker-doc docker-buildx podman-docker containerd runc
+
+    # Install gpg keyrings.
+    sudo install -m 0755 -d /etc/apt/keyrings
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o "$gpg_temp" || return 1
+    sudo install -m 0644 "$gpg_temp" /etc/apt/keyrings/docker.asc
+
+    # Docker source list.
+    code_name="$(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")"
+    architecture="$(dpkg --print-architecture)"
+
+    sed -e "s|@@CODE_NAME@@|${code_name}|g" \
+        -e "s|@@ARCHITECTURE@@|${architecture}|g" \
+        "$apt_source_template" > "$apt_source_temp" || return 1
+
+    if grep -q '@@' "$apt_source_temp"; then
+        printf "Unresolved placeholder in Docker APT template.\n" >&2
+        return 1
+    fi
+
+    sudo install -m 0644 "$apt_source_temp" "/etc/apt/sources.list.d/docker.sources"
     sudo apt update
+
+    # Main installation.
     sudo apt install -y \
         docker-ce \
         docker-ce-cli \
@@ -33,22 +66,13 @@ install_docker() {
         docker-compose-plugin \
         docker-sbx
 
+    # Permissions.
     sudo groupadd -f docker
-    sudo usermod -aG docker $USER
-    newgrp docker
-    sudo chown "$USER":"$USER" /home/"$USER"/.docker -R
-    sudo chmod g+rwx "$HOME/.docker" -R
+    sudo usermod -aG docker,kvm "$USER"
 
-    sudo systemctl enable docker.service
-    sudo systemctl enable containerd.service
-
-    # Verify KVM for docker sandboxes for AI
-    if ! has_kvm; then
-        printf "Docker needs KVM to be loaded to build AI sandboxes.\n See %s --help\n" "$0"
-        return 1
-    fi
-    sudo usermod -aG kvm $USER
-    newgrp kvm
+    # Services.
+    sudo systemctl enable --now docker.service
+    sudo systemctl enable --now containerd.service
 
     return 0
 }
