@@ -66,7 +66,8 @@ main_install() {
 
         while IFS= read -r command; do
             if ! eval "$command"; then
-                printf "Warning for '%s' apt installation.\nError running the command:\n%s" "$package_name" "$command"
+                printf "Failed installing '%s' apt installation.\nError running the command:\n%s" "$package_name" "$command"
+                return 1
             fi
         done < <(jq -r ".custom_commands[]" <<< "$apt_object")
     done < <(jq -r ".applications.apt.list[]" "$JSON_PARAMETERS_PATH")
