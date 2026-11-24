@@ -15,10 +15,14 @@ alias ai="sbx run opencode ~/Temp"
 
 function cd() {
     local new_directory="$*"
+    
+    builtin clear
 
-    if [ $# -eq 0]; then
-        new_directory=${HOME:-}
+    if [[ -n "$1"]]; then
+        builtin cd ~ && ll
+        return 0
     fi
 
-    builtin cd "$new_directory" && ll
+    builtin cd "$1" && ll
+    return 0
 }
