@@ -80,7 +80,7 @@ install_web_font() {
 
 install_bin_from_github() {
     # Linux x64 platform.
-    local filename_pattern="^.*[.*(linux|linux-gnu).*|(linux|linux-gnu).*[x86_64|amd64|x64]+|[x86_64|amd64|x64]+.*(linux|linux-gnu)].*[\.tar\.gz|\.zip]$"
+    local filename_pattern="^.*[.*(linux|linux\-gnu).*|(linux|linux\-gnu).*[x86_64|amd64|x64]+|[x86_64|amd64|x64]+.*(linux|linux\-gnu)].*[\.tar\.gz|\.zip]$"
     local binary_name="$1"
     local repo="$2"
     local cmd=""
