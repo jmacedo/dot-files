@@ -90,11 +90,10 @@ main_install() {
                 return 1
             fi
 
-            parsed_command=$(printf '%s' "$command" |
-                sed -E 's/@@([A-Za-z_][A-Za-z0-9_]*)@@/\$\1/g')
+            parsed_command=$(expand_variables "$command")
 
             if ! eval "$parsed_command"; then
-                printf "Installation of '%s' failed.\nError running the command:\n%s\n" "$repo_name" "$command"
+                printf "Installation of '%s' failed.\nError running the command:\n%s\n" "$repo_name" "$parsed_command"
                 return 1
             fi
         done < <(jq -r ".custom_commands[]" <<< "$binary_object")

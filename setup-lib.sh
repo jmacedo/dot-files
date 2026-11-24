@@ -102,6 +102,21 @@ install_config() {
     return 1
 }
 
+expand_variables() {
+    local input="$1"
+    local variable=""
+    local value=""
+
+    while [[ "$input" =~ @@([A-Za-z_][A-Za-z0-9_]*)@@ ]]; do
+        variable="${BASH_REMATCH[1]}"
+        value="${!variable}"
+
+        input="${input//@@${variable}@@/$value}"
+    done
+
+    printf '%s' "$input"
+}
+
 install_bin_from_github() {
     # Params: $repo_name $version $asset_pattern $bin_name $strip_components
     local repository="${1:-}"
