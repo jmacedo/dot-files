@@ -104,17 +104,14 @@ install_config() {
 
 install_bin_from_github() {
     # Linux x64 platform.
-    local filename_pattern="^((.*[linux|linux\-gnu].*[x86_64|amd64|x64].*)|(.*[x86_64|amd64|x64].*[linux|linux\-gnu].*))(\.tar\.gz|\.zip|\.txz)$"
     local repository="$1"
-    local binary_name="${2:-$("${repository#*/}")}"
+    local binary_name="${2:-"${repository#*/}"}"
     local strip_components="${3:-0}"
-    local cmd=""
+    local filename_pattern="${4:?"Missing asset pattern"}"
     local release_api_url="https://api.github.com/repos/$repository/releases/latest"
     local install_dir="$CUSTOM_USER_APPS_DIR/$binary_name"
     local binary_download_url=""
     local binary_path=""
-    local is_zip=false
-    local is_txz=false
     local temp_file="$(mktemp)"
     exclude_temp_path "$temp_file"
     local extraction_dir="$(mktemp -d)"
@@ -125,16 +122,15 @@ install_bin_from_github() {
         return 1;
     fi
 
-    binary_download_url="$(curl --fail --silent --show-error --location --header "Accept: application/vnd.github+json" "$release_api_url" | jq -r ".assets[].browser_download_url | select(test('${filename_pattern:-}'))")"
-
-    if ! curl -sSf -o /dev/null "$binary_download_url"; then # Validates the binary URL got in github api.
-        printf "Installation of '%s' failed.\nThe binary address '%s' doesn't seem to be working." "$binary_name" "$binary_download_url"
-        return 1;
-    fi
-
-    if [[ "$binary_download_url" == *.* ]]; then
-        is_zip=$("${binary_download_url#*.}" == "zip")
-        is_txz=$("${binary_download_url#*.}" == "txz")
+    if ! binary_download_url="$(
+        curl --fail --silent --show-error --location \
+            --header "Accept: application/vnd.github+json" "$release_api_url" |
+            jq -er --arg pattern "$filename_pattern" \
+                '[.assets[].browser_download_url | select(test($pattern))] |
+                if length == 1 then .[0] else empty end'
+    )"; then
+        printf "Installation of '%s' failed.\nExpected one matching release asset.\n" "$binary_name" >&2
+        return 1
     fi
 
     # Backup current.
@@ -145,13 +141,21 @@ install_bin_from_github() {
     curl --fail --location "$binary_download_url" --output "$temp_file"
     
     # Extract files.
-    if [[ "$is_zip" == "true" ]]; then
-        bsdtar -xf "$temp_file" --strip-components "$strip_components" -C "$extraction_dir"
-    elif [[ "$is_txz" == "true" ]]; then
-        tar --extract --xz --strip-components="$strip_components" --file "$temp_file" --directory "$extraction_dir"
-    else
-        tar --extract --gzip --strip-components="$strip_components" --file "$temp_file" --directory "$extraction_dir"
-    fi
+    case "$binary_download_url" in
+        *.zip)
+            bsdtar -xf "$temp_file" --strip-components "$strip_components" -C "$extraction_dir"
+            ;;
+        *.tar.gz)
+            tar --extract --gzip --strip-components="$strip_components" --file "$temp_file" --directory "$extraction_dir"
+            ;;
+        *.txz)
+            tar --extract --xz --strip-components="$strip_components" --file "$temp_file" --directory "$extraction_dir"
+            ;;
+        *)
+            printf "Invalid archive URL: '%s'\n" "$binary_download_url" >&2
+            return 1
+            ;;
+    esac
 
     binary_path="$(find "$extraction_dir" -type f -name "$binary_name" -print -quit)"
     if [[ -z "$binary_path" || ! -f "$binary_path" ]]; then # Validates the extracted binary.

@@ -76,8 +76,9 @@ main_install() {
         local repo_name="$(jq -r ".repo" <<< "$binary_object")"
         local bin_name="$(jq -r ".bin_name" <<< "$binary_object")"
         local strip_components="$(jq -r ".strip_components" <<< "$binary_object")"
+        local asset_pattern="$(jq -r ".asset_pattern" <<< "$binary_object")"
 
-        install_bin_from_github "$repo_name" "$bin_name" "$strip_components"
+        install_bin_from_github "$repo_name" "$bin_name" "$strip_components" "$asset_pattern"
 
         while IFS= read -r command; do
             if [[ -z "$command" ]]; then
@@ -154,31 +155,31 @@ main_fonts() {
 }
 
 main() {
-    # External libraries.
-    source "$SCRIPT_DIR/setup-lib.sh"
-
     # Initialize.
-    local SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)" # Absolute path
     local LOCAL_BIN_DIR="$HOME/.local/bin"
+    local SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)" # Absolute path
     local JSON_PARAMETERS_PATH="$SCRIPT_DIR/setup-params.json"
-    
-    local __datetime_pattern=$(jq -r ".installations_backups.datetime_pattern", "$JSON_PARAMETERS_PATH")
-    local __bkp_extension=$(jq -r ".installations_backups.backup_extension", "$JSON_PARAMETERS_PATH")
-    local __apps_dir=$(jq -r ".custom_directories.apps_dir", "$JSON_PARAMETERS_PATH")
-
+    local __datetime_pattern="$(jq -r ".installations_backups.datetime_pattern", "$JSON_PARAMETERS_PATH")"
+    local __bkp_extension="$(jq -r ".installations_backups.backup_extension", "$JSON_PARAMETERS_PATH")"
+    local __apps_dir="$(jq -r ".custom_directories.apps_dir", "$JSON_PARAMETERS_PATH")"
+    local CUSTOM_USER_APPS_DIR="$HOME/$__apps_dir"
     local START_DATE_TIME="$(date "$__datetime_pattern")"
     local BACKUP_EXT="$__bkp_extension"
-    local CUSTOM_USER_APPS_DIR="$HOME/$__apps_dir"
+
+    # Include external libraries.
+    while IFS= read -r external_library; do
+        source "$SCRIPT_DIR/$external_library"
+    done < <(jq -r ".runtime.external_libraries[]" "$JSON_PARAMETERS_PATH")
 
     # Home folders structure.
     mkdir -p -- "$LOCAL_BIN_DIR" \
+        "$CUSTOM_USER_APPS_DIR" \
         "$HOME/.local/share/flatpak" \
         "$HOME/.local/share/applications" \
-        "$HOME/.local/share/zoxide" \
-        "$CUSTOM_USER_APPS_DIR"
+        "$HOME/.local/share/zoxide"
 
     while IFS= read -r directory; do
-        mkdir -p -- "$directory"
+        mkdir -p -- "${directory}"
     done < <(jq -r ".custom_directories.list[]" "$JSON_PARAMETERS_PATH")
 
     # Main execution.
