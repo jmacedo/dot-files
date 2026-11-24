@@ -82,13 +82,15 @@ install_bin_from_github() {
     # Linux x64 platform.
     local filename_pattern="^((.*[linux|linux\-gnu].*[x86_64|amd64|x64].*)|(.*[x86_64|amd64|x64].*[linux|linux\-gnu].*))(\.tar\.gz|\.zip)$"
     local repository="$1"
-    local binary_name="${repository#*/}"
+    local binary_name="${2:-$("${repository#*/}")}"
+    local strip_components="${3:-0}"
     local cmd=""
     local release_api_url="https://api.github.com/repos/$repository/releases/latest"
     local install_dir="$CUSTOM_USER_APPS_DIR/$binary_name"
     local binary_download_url=""
     local binary_path=""
     local is_zip=false
+    local is_txz=false
     local temp_file="$(mktemp)"
     exclude_temp_path "$temp_file"
     local extraction_dir="$(mktemp -d)"
@@ -106,7 +108,10 @@ install_bin_from_github() {
         return 1;
     fi
 
-    is_zip=$("$binary_download_url" == *.* && "$("${binary_download_url#*.}")" == "zip")
+    if [[ "$binary_download_url" == *.* ]]; then
+        is_zip=$("${binary_download_url#*.}" == "zip")
+        is_txz=$("${binary_download_url#*.}" == "txz")
+    fi
 
     # Backup current.
     backup_path "$LOCAL_BIN_DIR/$binary_name"
@@ -114,59 +119,27 @@ install_bin_from_github() {
     mkdir -p -- "$install_dir"
 
     curl --fail --location "$binary_download_url" --output "$temp_file"
+    
     # Extract files.
-    is_zip && unzip -q "$temp_file" -d "$extraction_dir" || tar --extract --gzip --file "$temp_file" --directory "$extraction_dir"
+    if is_zip; then
+        bsdtar -xf "$temp_file" --strip-components "$strip_components" -C "$extraction_dir"
+    elif is_txz; then
+        tar --extract --xz --strip-components="$strip_components" --file "$temp_file" --directory "$extraction_dir"
+    else
+        tar --extract --gzip --strip-components="$strip_components" --file "$temp_file" --directory "$extraction_dir"
+    fi
 
     binary_path="$(find "$extraction_dir" -type f -name "$binary_name" -print -quit)"
-    
     if [[ -z "$binary_path" || ! -f "$binary_path" ]]; then # Validates the extracted binary.
         printf 'Installation of '%s' failed.\nMissing '%s' binary in release asset: %s\n' "$binary_name" "$binary_download_url" >&2
         return 1
     fi
 
-    install --mode=0755 -- "$binary_path" "$install_dir/$binary_name"
-    ln -sfn -- "$install_dir/$binary_name" "$LOCAL_BIN_DIR/$binary_name"
+    # Copy/install files.
+    cp -a -- "$extraction_dir/." "$install_dir"
 
-    if (( ${#POST_GITHUB_INSTALL_COMMANDS[@]} > 0 )); then
-        for cmd in "${POST_GITHUB_INSTALL_COMMANDS[@]}"; do
-            if [[ -z "$cmd" ]]; then
-                printf "Installation of '%s' failed.\nInvalid empty command '%s'." "$binary_name" "$cmd"
-                return 1;
-            fi
-
-            if ! eval "$cmd"; then
-                printf "Warning for '%s' installation.\nError running the command:\n%s" "$binary_name" "$cmd"
-            fi
-        done
-    fi
-
-    return 0
-}
-
-install_apt_packages() {
-    local packages_array_name="${1:-}"
-
-    if [[ -z "$packages_array_name" ]]; then
-        printf "Failed installing apt packages. No array name provided.\n" >&2
-        return 1
-    fi
-
-    if ! declare -p "$packages_array_name" > /dev/null 2>&1; then
-        printf "Failed installing apt packages. Unknown array: %s\n" "$packages_array_name"
-        return 1
-    fi
-
-    local -n packages="$packages_array_name"
-    if (( ${#packages[@]} == 0 )); then
-        printf "Failed installing apt packages. Packages array is empty."
-        return 1
-    fi
-
-    sudo apt update -y
-    sudo apt upgrade -y
-    sudo apt autoremove -y
-    sudo apt autoclean
-    sudo apt install -y "${packages[@]}"
+    binary_path="$(find "$install_dir" -type f -name "$binary_name" -print -quit)"
+    ln -sfn -- "$binary_path" "$LOCAL_BIN_DIR/$binary_name"
 
     return 0
 }

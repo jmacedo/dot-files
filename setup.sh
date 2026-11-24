@@ -91,26 +91,45 @@ override_pop_os_flatpak_launchers() {
 }
 
 main_install() {
-    # Apt
-    local apt_packages=()
-    while IFS= read -r package; do
-        apt_packages+=("$package")
-    done < <(jq -r ".applications.apt.list[]" "$JSON_PARAMETERS_PATH")
-    install_apt_packages apt_packages
+    # Apt packages.
+    sudo apt update -y
+    sudo apt upgrade -y
+    sudo apt autoremove -y
+    sudo apt autoclean
 
-    # Binary
+    while IFS= read -r apt_object; do
+        local package_name="$(jq -r ".package_name" <<< "$apt_object")"
+        sudo apt install -y "$package_name"
+
+        while IFS= read -r command; do
+            if ! eval "$command"; then
+                printf "Warning for '%s' apt installation.\nError running the command:\n%s" "$package_name" "$command"
+            fi
+        done < <(jq -r ".custom_commands[]" <<< "$apt_object")
+    done < <(jq -r ".applications.apt.list[]" "$JSON_PARAMETERS_PATH")
+
+    # Binaries packages.
     while IFS= read -r binary_object; do
         local repo_name=$(jq -r ".repo" <<< "$binary_object")
+        local bin_name=$(jq -r ".bin_name" <<< "$binary_object")
+        local strip_components=$(jq -r ".stip_components" <<< "$binary_object")
 
-        POST_GITHUB_INSTALL_COMMANDS=()
+        install_bin_from_github "$repo_name" "$bin_name" "$strip_components"
+
         while IFS= read -r command; do
-            POST_GITHUB_INSTALL_COMMANDS+=("$command")
-        done < <(jq -r ".custom_commands[]" <<< "$binary_object")
+            if [[ -z "$command" ]]; then
+                printf "Installation of '%s' failed.\nInvalid empty command '%s'." "$repo_name" "$command"
+                return 1
+            fi
 
-        install_bin_from_github "$repo_name"
+            if ! eval "$command"; then
+                printf "Installation of '%s' failed.\nError running the command:\n%s" "$repo_name" "$command"
+                return 1
+            fi
+        done < <(jq -r ".custom_commands[]" <<< "$binary_object")
     done < <(jq -r ".applications.binary.list[]" "$JSON_PARAMETERS_PATH")
 
-    # Docker.
+    # Docker installation.
     install_docker
 
     return 0
@@ -155,7 +174,6 @@ main() {
     # Initialize.
     local SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)" # Absolute path
     local LOCAL_BIN_DIR="$HOME/.local/bin"
-    local LOCAL_SHARE="$HOME/.local/share"
     local JSON_PARAMETERS_PATH="$SCRIPT_DIR/setup-params.json"
 
     #handle_parameters "$@"
@@ -169,16 +187,15 @@ main() {
     local CUSTOM_USER_APPS_DIR="$HOME/$__apps_dir"
 
     # Home folders structure.
-    mkdir -p -- "$CUSTOM_USER_APPS_DIR"
-    
+    mkdir -p -- "$LOCAL_BIN_DIR" \
+        "$HOME/.local/share/flatpak" \
+        "$HOME/.local/share/applications" \
+        "$HOME/.local/share/zoxide" \
+        "$CUSTOM_USER_APPS_DIR"
+
     while IFS= read -r directory; do
         mkdir -p -- "$directory"
     done < <(jq -r ".custom_directories.list[]" "$JSON_PARAMETERS_PATH")
-
-    mkdir -p -- "$HOME/.local/bin" \
-        "$HOME/.local/share/flatpak" \
-        "$HOME/.local/share/applications" \
-        "$HOME/.local/share/zoxide"
 
     # External libraries.
     source "$SCRIPT_DIR/setup-lib.sh"

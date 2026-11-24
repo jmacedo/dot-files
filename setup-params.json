@@ -14,55 +14,92 @@
     "applications": {
         "apt": {
             "list": [
-                "git",
-                "curl",
-                "unzip",
-                "vim",
-                "file",
-                "ffmpeg",
-                "xclip",
-                "wl-clipboard",
-                "flatpak",
-                "steam-devices",
-                "build-essential",
-                "gparted",
-                "ca-certificates",
-                "jq",
-                "ripgrep",
-                "clangd",
-                "default-jdk",
-                "golang-go",
-                "pipx",
-                "python3-venv",
-                "php-cli",
-                "composer"
-            ],
-            "custom_commands": {}
+                { "package_name": "git", "custom_commands": [] },
+                { "package_name": "curl", "custom_commands": [] },
+                { "package_name": "unzip", "custom_commands": [] },
+                { "package_name": "vim", "custom_commands": [] },
+                { "package_name": "file", "custom_commands": [] },
+                { "package_name": "ffmpeg", "custom_commands": [] },
+                { "package_name": "xclip", "custom_commands": [] },
+                { "package_name": "wl-clipboard", "custom_commands": [] },
+                { "package_name": "flatpak", "custom_commands": [] },
+                { "package_name": "steam-devices", "custom_commands": [] },
+                { "package_name": "build-essential", "custom_commands": [] },
+                { "package_name": "gparted", "custom_commands": [] },
+                { "package_name": "ca-certificates", "custom_commands": [] },
+                { "package_name": "jq", "custom_commands": [] },
+                { "package_name": "ripgrep", "custom_commands": [] },
+                { "package_name": "libarchive-tools", "custom_commands": [] },
+                { "package_name": "clangd", "custom_commands": [] },
+                { "package_name": "default-jdk", "custom_commands": [] },
+                { "package_name": "golang-go", "custom_commands": [] },
+                { "package_name": "pipx", "custom_commands": [] },
+                { "package_name": "python3-venv", "custom_commands": [] },
+                { "package_name": "php-cli", "custom_commands": [] },
+                { "package_name": "composer", "custom_commands": [] }
+            ]
         },
         "flatpak": {
             "list": [
-                "com.dropbox.Client",
-                "com.google.Chrome",
-                "com.valvesoftware.Steam",
-                "com.visualstudio.code",
-                "io.github.kolunmi.Bazaar",
-                "org.onlyoffice.desktopeditors",
-                "org.gnome.gedit",
-                "de.swsnr.turnon",
-                "org.videolan.VLC"
-            ],
-            "custom_commands": {}
+                { "package_name": "com.dropbox.Client", "custom_commands": [] },
+                { "package_name": "com.google.Chrome", "custom_commands": [] },
+                { "package_name": "com.valvesoftware.Steam", "custom_commands": [] },
+                { "package_name": "com.visualstudio.code", "custom_commands": [] },
+                { "package_name": "io.github.kolunmi.Bazaar", "custom_commands": [] },
+                { "package_name": "org.onlyoffice.desktopeditors", "custom_commands": [] },
+                { "package_name": "org.gnome.gedit", "custom_commands": [] },
+                { "package_name": "de.swsnr.turnon", "custom_commands": [] },
+                { "package_name": "org.videolan.VLC", "custom_commands": [] }
+            ]
         },
         "binary": {
             "list":[
-                { "repo": "neovim/neovim", "custom_commands": [] },
-                { "repo": "junegunn/fzf", "custom_commands": [] },
-                { "repo": "jesseduffield/lazygit", "custom_commands": [] },
-                { "repo": "tree-sitter/tree-sitter", "custom_commands": [] },
-                { "repo": "ajeetdsouza/zoxide", "custom_commands": [] },
-                { "repo": "sxyazi/yazi", "custom_commands": [] },
-                { "repo": "yorukot/superfile", "custom_commands": [] },
-                { "repo": "kovidgoyal/kitty",
+                { 
+                    "repo": "neovim/neovim", 
+                    "bin_name": "nvim", 
+                    "strip_components": 1, 
+                    "custom_commands": [] 
+                },
+                { 
+                    "repo": "junegunn/fzf", 
+                    "bin_name": "fzf", 
+                    "strip_components": 0, 
+                    "custom_commands": [] 
+                },
+                { 
+                    "repo": "jesseduffield/lazygit", 
+                    "bin_name": "lazygit", 
+                    "strip_components": 0, 
+                    "custom_commands": [] 
+                },
+                { 
+                    "repo": "ajeetdsouza/zoxide", 
+                    "bin_name": "zoxide", 
+                    "strip_components": 0, 
+                    "custom_commands": [] 
+                },
+                { 
+                    "repo": "yorukot/superfile", 
+                    "bin_name": "spf", 
+                    "strip_components": 2, 
+                    "custom_commands": [] 
+                },
+                { 
+                    "repo": "tree-sitter/tree-sitter", 
+                    "bin_name": "tree-sitter",
+                    "strip_components": 0, 
+                    "custom_commands": [] 
+                },                
+                { 
+                    "repo": "sxyazi/yazi",
+                    "bin_name": "yazi",
+                    "strip_components": 1,
+                    "custom_commands": []
+                },                
+                { 
+                    "repo": "kovidgoyal/kitty",
+                    "bin_name": "kitty",
+                    "strip_components": 0,
                     "custom_commands": [
                         "cp -f -- '$CUSTOM_USER_APPS_DIR/kitty/share/applications/kitty.desktop' '$HOME/.local/share/applications/kitty.desktop'",
                         "cp -f -- '$CUSTOM_USER_APPS_DIR/kitty/share/applications/kitty-open.desktop' '$HOME/.local/share/applications/kitty-open.desktop'",
