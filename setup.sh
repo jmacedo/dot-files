@@ -87,14 +87,14 @@ install_nodejs() {
     local install_directory="$CUSTOM_USER_APPS_DIR/nodejs"
     local temp_file=""
     
-    temp_file="$(mktemp)"
-    exclude_temp_path "$temp_file"
+    temp_dir="$(mktemp -d)"
+    exclude_temp_path "$temp_dir"
 
     backup_path "$install_directory"
     mkdir -p -- "$install_directory"
 
-    curl --fail --silent --show-error --location --output "${temp_file}"
-    tar -xJvf "node-${version}-${platform}.tar.gz" -C "$install_directory"
+    curl --fail --silent --show-error --location --output-dir "${temp_dir}" -O "${binary_download_url}"
+    tar -xJvf "${temp_dir}/node-${version}-${platform}.tar.gz" --strip-components=1 -C "$install_directory"
 
     return 0
 }
