@@ -70,7 +70,7 @@ main_install() {
                 return 1
             fi
         done < <(jq -r ".custom_commands[]" <<< "$apt_object")
-    done < <(jq -r ".applications.apt.list[]" "$JSON_PARAMETERS_PATH")
+    done < <(jq -rc ".applications.apt.list[]" "$JSON_PARAMETERS_PATH")
 
     # Binaries packages.
     while IFS= read -r binary_object; do
@@ -92,7 +92,7 @@ main_install() {
                 return 1
             fi
         done < <(jq -r ".custom_commands[]" <<< "$binary_object")
-    done < <(jq -r ".applications.binary.list[]" "$JSON_PARAMETERS_PATH")
+    done < <(jq -rc ".applications.binary.list[]" "$JSON_PARAMETERS_PATH")
 
     # Docker installation.
     install_docker
@@ -127,7 +127,7 @@ main_flatpaks() {
                 return 1
             fi
         done < <(jq -r ".custom_commands[]" <<< "$flatpak_object")
-    done < <(jq -r ".applications.flatpak.list[]" "$JSON_PARAMETERS_PATH")
+    done < <(jq -rc ".applications.flatpak.list[]" "$JSON_PARAMETERS_PATH")
 
     # On PopOS 24.04, some flatpak apps bugged to launch.
     # The code below configures a work-around to fix it, once launchers in `~/.local/share/applications` have priority.
