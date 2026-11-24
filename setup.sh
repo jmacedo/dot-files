@@ -352,31 +352,31 @@ handle_parameters() {
 
 main_install() {
     local apt_packages=(
-        git
-        curl
-        unzip
-        vim
-        file
-        ffmpeg
-        xclip
-        wl-clipboard
-        flatpak
-        steam-devices
-        build-essential
-        gparted
-        ca-certificates
-        jq
-        ripgrep
+        "git"
+        "curl"
+        "unzip"
+        "vim"
+        "file"
+        "ffmpeg"
+        "xclip"
+        "wl-clipboard"
+        "flatpak"
+        "steam-devices"
+        "build-essential"
+        "gparted"
+        "ca-certificates"
+        "jq"
+        "ripgrep"
         # LSPs and runtimes available through apt
-        clangd
-        default-jdk
-        golang-go
-        pipx
-        python3-venv
-        php-cli
-        composer
+        "clangd"
+        "default-jdk"
+        "golang-go"
+        "pipx"
+        "python3-venv"
+        "php-cli"
+        "composer"
     )
-    install_apt_packages "${apt_packages[@]:-()}"
+    install_apt_packages apt_packages
     
     # Nodejs and npm packages.
     #POST_GITHUB_INSTALL_COMMANDS=()
@@ -520,19 +520,19 @@ main_configs() {
 
 main_flatpaks() {
     local apps=(
-        com.dropbox.Client
-        com.google.Chrome
-        com.valvesoftware.Steam
-        com.visualstudio.code
-        io.github.kolunmi.Bazaar
-        org.onlyoffice.desktopeditors
-        org.gnome.gedit
-        de.swsnr.turnon
-        org.videolan.VLC
+        "com.dropbox.Client"
+        "com.google.Chrome"
+        "com.valvesoftware.Steam"
+        "com.visualstudio.code"
+        "io.github.kolunmi.Bazaar"
+        "org.onlyoffice.desktopeditors"
+        "org.gnome.gedit"
+        "de.swsnr.turnon"
+        "org.videolan.VLC"
     )
 
     install_flatpak_remote_flathub
-    install_flatpak_packages "${apps[@]:-()}"
+    install_flatpak_packages apps
     override_pop_os_flatpak_launchers
 
     return 0

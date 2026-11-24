@@ -35,8 +35,7 @@ cleanup_temp_paths() {
         [[ -n "$path" ]] && rm -rf -- "$path"
     done
 
-    POST_GITHUB_INSTALL_COMMANDS=NULL
-    unset $POST_GITHUB_INSTALL_COMMANDS
+    POST_GITHUB_INSTALL_COMMANDS=()
 
     return 0
 }
@@ -84,7 +83,7 @@ install_bin_from_github() {
     local filename_pattern="^.*[.*(linux|linux-gnu).*|(linux|linux-gnu).*[x86_64|amd64|x64]+|[x86_64|amd64|x64]+.*(linux|linux-gnu)].*[\.tar\.gz|\.zip]$"
     local binary_name="$1"
     local repo="$2"
-    local $cmd=""
+    local cmd=""
     local release_api_url="https://api.github.com/repos/$repo/releases/latest"
     local install_dir="$CUSTOM_USER_APPS_DIR/$binary_name"
     local binary_download_url=""
@@ -114,9 +113,9 @@ install_bin_from_github() {
     backup_path "$install_dir"
     mkdir -p -- "$install_dir"
 
-    curl --fail --location "$binary_download_url" --output "$download_path"
+    curl --fail --location "$binary_download_url" --output "$temp_file"
     # Extract files.
-    is_zip && unzip -q "$download_path" -d "$extraction_dir" || tar --extract --gzip --file "$download_path" --directory "$extraction_dir"
+    is_zip && unzip -q "$temp_file" -d "$extraction_dir" || tar --extract --gzip --file "$download_path" --directory "$extraction_dir"
 
     binary_path="$(find "$extraction_dir" -type f -name "$binary_name" -print -quit)"
     
@@ -128,7 +127,7 @@ install_bin_from_github() {
     install --mode=0755 -- "$binary_path" "$install_dir/$binary_name"
     ln -sfn -- "$install_dir/$binary_name" "$LOCAL_BIN_DIR/$binary_name"
 
-    if (( ${#POST_GITHUB_INSTALL_COMMANDS[@] > 0} )); then
+    if (( ${#POST_GITHUB_INSTALL_COMMANDS[@]} > 0 )); then
         for cmd in "${POST_GITHUB_INSTALL_COMMANDS[@]}"; do
             if [[ -z "$cmd" ]]; then
                 printf "Installation of '%s' failed.\nInvalid empty command '%s'." "$binary_name" "$cmd"
@@ -145,9 +144,19 @@ install_bin_from_github() {
 }
 
 install_apt_packages() {
-    local -n packages=${1:-()}
+    local packages_array_name="${1:-}"
 
-    if (( ${#packages[@]} == 0 )); then
+    if [[ -z "$packages_array_name" ]]; then
+        printf "Failed installing apt packages. No array name provided.\n" >&2
+        return 1
+    fi
+
+    if ! declare -p "$packages_array_name" > /dev/null 2>&1; then
+        printf "Failed installing apt packages. Unknown array: %s\n" "$packages_array_name"
+        return 1
+    fi
+
+    if (( ${#packages_array_name[@]} == 0 )); then
         printf "Failed installing apt packages. Packages array is empty."
         return 1
     fi
@@ -156,7 +165,7 @@ install_apt_packages() {
     sudo apt upgrade -y
     sudo apt autoremove -y
     sudo apt autoclean
-    sudo apt install -y "${packages[@]}"
+    sudo apt install -y "${packages_array_name[@]}"
 
     return 0
 }
@@ -170,8 +179,19 @@ install_flatpak_remote_flathub() {
 install_flatpak_packages_flathub() {
     local app=""
     local -n apps=${1:-()}
+    local apps_array_name="${1:-}"
 
-    for app in "${apps[@]}"; do
+    if [[ -z "$apps_array_name" ]]; then
+        printf "Failed installing flatpak packages. No array name provided.\n" >&2
+        return 1
+    fi
+
+    if ! declare -p "$apps_array_name" >/dev/null 2>&1; then
+        printf "Failed installing flatpak packages. Unknown array: %s\n" "$apps_array_name"
+        return 1
+    fi
+
+    for app in "${apps_array_name[@]}"; do
         flatpak install --user --noninteractive --or-update "$app"
     done
 

@@ -12,3 +12,13 @@ alias llfilesizeinverted="ll -Sr"
 
 # Study and customize some aliases with specific model, etc.
 alias ai="sbx run opencode ~/Temp"
+
+function cd() {
+    local new_directory="$*"
+
+    if [ $# -eq 0]; then
+        new_directory=${HOME:-}
+    fi
+
+    builtin cd "$new_directory" && ll
+}
