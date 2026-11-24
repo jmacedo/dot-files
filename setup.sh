@@ -4,9 +4,15 @@
 # Run from any directory: paths are resolved relative to this script.
 
 # `-u`: nounset - Unset variables raises error. Misspeling variables will not be treated as empty values.
+# `-E`: Inherit ERR trap in functions and subshells.
 # `-e`: errexit - Exit script on errors.
 # `-o pipefail` - Raise errors inside a chain of commands (`cmdA | cmdB | cmdC`) instead of by default use the last command status code.
-set -euo pipefail
+set -Eeuo pipefail
+
+if [[ ! -t 0 ]]; then
+    echo "This script requires user interactive shell." >&2
+    exit 1
+fi
 
 install_docker() {
     # Initialize.
@@ -79,11 +85,6 @@ install_docker() {
 
 main_install() {
     # Apt packages.
-    sudo apt update -y
-    sudo apt upgrade -y
-    sudo apt autoremove -y
-    sudo apt autoclean
-
     while IFS= read -r apt_object; do
         local package_name="$(jq -r ".package_name" <<< "$apt_object")"
         sudo apt install -y "$package_name"
@@ -186,6 +187,12 @@ main_fonts() {
 
 main() {
     # Initialize.
+    sudo apt update -y
+    sudo apt upgrade -y
+    sudo apt autoremove -y
+    sudo apt autoclean
+    sudo apt install -y jq || exit 1
+
     local LOCAL_BIN_DIR="$HOME/.local/bin"
     local SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)" # Absolute path
     local JSON_PARAMETERS_PATH="$SCRIPT_DIR/setup-params.json"
@@ -221,8 +228,7 @@ main() {
 
     # Finalize.
     echo "Finish!"
-    echo "For testing docker, run: docker run hello-world"
-    echo "For login to docker, run: sbx login"
+    echo "Remember to login to docker with: sbx login."
 }
 
 CLEANUP_PATHS=()
