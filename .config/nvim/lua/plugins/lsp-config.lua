@@ -4,15 +4,15 @@ return {
 		opts = {
 			ensure_installed = {
 				"bashls",
-				"black",
+				--"black",
 				"cssls",
 				"eslint_d",
 				"html",
 				"intelephense",
-				"isort",
+				--"isort",
 				"laravel_ls",
 				"lua_ls",
-				"prettier",
+				--"prettier",
 				"stylua",
 				"symfony_lsp",
 				"ts_ls",
@@ -53,29 +53,29 @@ return {
 					})
 
 					vim.lsp.config("bashls", {capabilities = capabilities,})
-					vim.lsp.config("black", {capabilities = capabilities,})
+					--vim.lsp.config("black", {capabilities = capabilities,})
 					vim.lsp.config("cssls", {capabilities = capabilities,})
 					vim.lsp.config("eslint_d", {capabilities = capabilities,})
 					vim.lsp.config("html", {capabilities = capabilities,})
 					vim.lsp.config("intelephense", {capabilities = capabilities,})
-					vim.lsp.config("isort", {capabilities = capabilities,})
+					--vim.lsp.config("isort", {capabilities = capabilities,})
 					vim.lsp.config("laravel_ls", {capabilities = capabilities,})
-					vim.lsp.config("prettier", {capabilities = capabilities,})
+					--vim.lsp.config("prettier", {capabilities = capabilities,})
 					vim.lsp.config("stylua", {capabilities = capabilities,})
 					vim.lsp.config("symfony_lsp", {capabilities = capabilities,})
 					vim.lsp.config("ts_ls", {capabilities = capabilities,})
 
 					vim.lsp.enable({
 						"bashls",
-						"black",
+						--"black",
 						"cssls",
 						"eslint_d",
 						"html",
 						"intelephense",
-						"isort",
+						--"isort",
 						"laravel_ls",
 						"lua_ls",
-						"prettier",
+						--"prettier",
 						"stylua",
 						"symfony_lsp",
 						"ts_ls",

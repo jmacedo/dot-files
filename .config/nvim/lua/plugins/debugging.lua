@@ -4,7 +4,9 @@ return {
         { "rcarriga/nvim-dap-ui" },
         {
             "leoluz/nvim-dap-go",
-            dependencies = { "nvim-neotest/nvim-nio", }
+            dependencies = {
+                { "nvim-neotest/nvim-nio", },
+            },
         },
     },
     config = function()

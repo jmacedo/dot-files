@@ -9,9 +9,6 @@
 # `-o pipefail` - Raise errors inside a chain of commands (`cmdA | cmdB | cmdC`) instead of by default use the last command status code.
 set -Eeuo pipefail
 
-# Interactive shell.
-[[ $- != *i* ]] && return 1
-
 install_docker() {
     # Initialize.
     local apt_source_template="${SCRIPT_DIR:-$HOME}/.config/docker/docker.sources"

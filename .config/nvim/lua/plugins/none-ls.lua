@@ -5,9 +5,9 @@ return {
         null_ls.setup({
             sources = {
                 null_ls.builtins.formatting.stylua, -- Lua
-                null_ls.builtins.formatting.prettier, -- Javascript
-                null_ls.builtins.formatting.black, -- Python
-                null_ls.builtins.formatting.isort, -- Python imports
+                --null_ls.builtins.formatting.prettier, -- Javascript
+                --null_ls.builtins.formatting.black, -- Python
+                --null_ls.builtins.formatting.isort, -- Python imports
                 --null_ls.builtins.diagnostics.eslint_d, -- Javascript
             },
         })
