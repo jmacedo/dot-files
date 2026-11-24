@@ -9,10 +9,8 @@
 # `-o pipefail` - Raise errors inside a chain of commands (`cmdA | cmdB | cmdC`) instead of by default use the last command status code.
 set -Eeuo pipefail
 
-if [[ ! -t 0 ]]; then
-    echo "This script requires user interactive shell." >&2
-    exit 1
-fi
+# Interactive shell.
+[[ $- != *i* ]] && return 1
 
 install_docker() {
     # Initialize.
@@ -196,9 +194,9 @@ main() {
     local LOCAL_BIN_DIR="$HOME/.local/bin"
     local SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)" # Absolute path
     local JSON_PARAMETERS_PATH="$SCRIPT_DIR/setup-params.json"
-    local __datetime_pattern="$(jq -r ".installations_backups.datetime_pattern", "$JSON_PARAMETERS_PATH")"
-    local __bkp_extension="$(jq -r ".installations_backups.backup_extension", "$JSON_PARAMETERS_PATH")"
-    local __apps_dir="$(jq -r ".custom_directories.apps_directory", "$JSON_PARAMETERS_PATH")"
+    local __datetime_pattern="$(jq -r '.installations_backups.datetime_pattern' "$JSON_PARAMETERS_PATH")"
+    local __bkp_extension="$(jq -r '.installations_backups.backup_extension' "$JSON_PARAMETERS_PATH")"
+    local __apps_dir="$(jq -r '.custom_directories.apps_directory' "$JSON_PARAMETERS_PATH")"
     local CUSTOM_USER_APPS_DIR="$HOME/$__apps_dir"
     local START_DATE_TIME="$(date "$__datetime_pattern")"
     local BACKUP_EXT="$__bkp_extension"
