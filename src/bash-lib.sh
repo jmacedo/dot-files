@@ -156,7 +156,8 @@ install_apt_packages() {
         return 1
     fi
 
-    if (( ${#packages_array_name[@]} == 0 )); then
+    local -n packages="$packages_array_name"
+    if (( ${#packages[@]} == 0 )); then
         printf "Failed installing apt packages. Packages array is empty."
         return 1
     fi
@@ -165,7 +166,7 @@ install_apt_packages() {
     sudo apt upgrade -y
     sudo apt autoremove -y
     sudo apt autoclean
-    sudo apt install -y "${packages_array_name[@]}"
+    sudo apt install -y "${packages[@]}"
 
     return 0
 }
@@ -176,9 +177,8 @@ install_flatpak_remote_flathub() {
     return 0
 }
 
-install_flatpak_packages_flathub() {
+install_flatpak_packages() {
     local app=""
-    local -n apps=${1:-()}
     local apps_array_name="${1:-}"
 
     if [[ -z "$apps_array_name" ]]; then
@@ -191,7 +191,8 @@ install_flatpak_packages_flathub() {
         return 1
     fi
 
-    for app in "${apps_array_name[@]}"; do
+    local -n apps="$apps_array_name"
+    for app in "${apps[@]}"; do
         flatpak install --user --noninteractive --or-update "$app"
     done
 
