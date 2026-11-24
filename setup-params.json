@@ -53,72 +53,64 @@
         },
         "binary": {
             "list":[
-                {
-                    "repo": "neovim/neovim",
+                { "repo": "neovim/neovim",
                     "version": "latest",
                     "bin_name": "nvim",
                     "strip_components": 1,
                     "asset_pattern": "linux-x86_64\\.tar\\.gz$",
                     "custom_commands": []
                 },
-                { 
-                    "repo": "junegunn/fzf",
+                { "repo": "junegunn/fzf",
                     "version": "latest",
                     "bin_name": "fzf",
                     "strip_components": 0,
                     "asset_pattern": "linux_amd64\\.tar\\.gz$",
                     "custom_commands": []
                 },
-                { 
-                    "repo": "jesseduffield/lazygit",
+                { "repo": "jesseduffield/lazygit",
                     "version": "latest",
                     "bin_name": "lazygit",
                     "strip_components": 0,
                     "asset_pattern": "linux_x86_64\\.tar\\.gz$",
                     "custom_commands": []
                 },
-                { 
-                    "repo": "ajeetdsouza/zoxide",
+                { "repo": "ajeetdsouza/zoxide",
                     "version": "latest",
                     "bin_name": "zoxide",
                     "strip_components": 0,
                     "asset_pattern": "x86_64-unknown-linux-musl\\.tar\\.gz$",
                     "custom_commands": []
                 },
-                { 
-                    "repo": "yorukot/superfile",
+                { "repo": "yorukot/superfile",
                     "version": "latest",
                     "bin_name": "spf",
                     "strip_components": 2,
                     "asset_pattern": "linux.*amd64\\.tar\\.gz$",
                     "custom_commands": []
                 },
-                { 
-                    "repo": "tree-sitter/tree-sitter",
+                { "repo": "tree-sitter/tree-sitter",
                     "version": "latest",
                     "bin_name": "tree-sitter",
                     "strip_components": 0,
                     "asset_pattern": "linux-x64\\.zip$",
                     "custom_commands": []
                 },                
-                { 
-                    "repo": "sxyazi/yazi",
+                { "repo": "sxyazi/yazi",
                     "version": "latest",
                     "bin_name": "yazi",
                     "strip_components": 1,
                     "asset_pattern": "x86_64-unknown-linux-gnu\\.zip$",
                     "custom_commands": []
                 },                
-                { 
-                    "repo": "kovidgoyal/kitty",
+                { "repo": "kovidgoyal/kitty",
                     "version": "latest",
                     "bin_name": "kitty",
                     "strip_components": 0,
                     "asset_pattern": "kitty-.*-x86_64\\.txz$",
                     "custom_commands": [
-                        "cp -f -- '$CUSTOM_USER_APPS_DIR/kitty/share/applications/kitty.desktop' '$HOME/.local/share/applications/kitty.desktop'",
-                        "cp -f -- '$CUSTOM_USER_APPS_DIR/kitty/share/applications/kitty-open.desktop' '$HOME/.local/share/applications/kitty-open.desktop'",
-                        "sed -i -e \"s|^Icon=kitty$|Icon=$CUSTOM_USER_APPS_DIR/kitty/share/icons/hicolor/256x256/apps/kitty.png|\" \"$HOME/.local/share/applications/kitty.desktop\" \"$HOME/.local/share/applications/kitty-open.desktop\""
+                        "cp -f -- '@@CUSTOM_USER_APPS_DIR@@/kitty/share/applications/kitty.desktop' '@@HOME@@/.local/share/applications/kitty.desktop'",
+                        "cp -f -- '@@CUSTOM_USER_APPS_DIR@@/kitty/share/applications/kitty-open.desktop' '@@HOME@@/.local/share/applications/kitty-open.desktop'",
+                        "sed -i -e \"s|^Icon=kitty$|Icon=@@CUSTOM_USER_APPS_DIR@@/kitty/share/icons/hicolor/256x256/apps/kitty.png|\" \"@@HOME@@/.local/share/applications/kitty.desktop\" \"@@HOME@@/.local/share/applications/kitty-open.desktop\""
                     ]
                 }
             ]

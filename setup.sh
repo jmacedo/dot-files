@@ -83,12 +83,17 @@ main_install() {
         install_bin_from_github "$repo_name" "$version" "$asset_pattern" "$bin_name" "$strip_components"
 
         while IFS= read -r command; do
+            local parsed_command=""
+
             if [[ -z "$command" ]]; then
                 printf "Installation of '%s' failed.\nInvalid empty command '%s'.\n" "$repo_name" "$command"
                 return 1
             fi
 
-            if ! eval "$command"; then
+            parsed_command=$(printf '%s' "$command" |
+                sed -E 's/@@([A-Za-z_][A-Za-z0-9_]*)@@/\$\1/g')
+
+            if ! eval "$parsed_command"; then
                 printf "Installation of '%s' failed.\nError running the command:\n%s\n" "$repo_name" "$command"
                 return 1
             fi
