@@ -118,7 +118,7 @@ install_bin_from_github() {
     exclude_temp_path "$extraction_dir"
 
     if ! curl -sSf -o /dev/null "$release_api_url"; then # Validates releases URL from github API.
-        printf "Installation of '%s' failed.\nThe releases address '%s' doesn't seem to be working." "$binary_name" "$release_api_url"
+        printf "Installation of '%s' failed.\nThe releases address '%s' doesn't seem to be working.\n" "$binary_name" "$release_api_url"
         return 1;
     fi
 

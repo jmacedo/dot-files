@@ -66,7 +66,7 @@ main_install() {
 
         while IFS= read -r command; do
             if ! eval "$command"; then
-                printf "Failed installing '%s' apt installation.\nError running the command:\n%s" "$package_name" "$command"
+                printf "Failed installing '%s' apt installation.\nError running the command:\n%s\n" "$package_name" "$command"
                 return 1
             fi
         done < <(jq -r ".custom_commands[]" <<< "$apt_object")
@@ -83,12 +83,12 @@ main_install() {
 
         while IFS= read -r command; do
             if [[ -z "$command" ]]; then
-                printf "Installation of '%s' failed.\nInvalid empty command '%s'." "$repo_name" "$command"
+                printf "Installation of '%s' failed.\nInvalid empty command '%s'.\n" "$repo_name" "$command"
                 return 1
             fi
 
             if ! eval "$command"; then
-                printf "Installation of '%s' failed.\nError running the command:\n%s" "$repo_name" "$command"
+                printf "Installation of '%s' failed.\nError running the command:\n%s\n" "$repo_name" "$command"
                 return 1
             fi
         done < <(jq -r ".custom_commands[]" <<< "$binary_object")
@@ -118,12 +118,12 @@ main_flatpaks() {
 
         while IFS= read -r command; do
             if [[ -z "$command" ]]; then
-                printf "Installation of '%s' failed.\nInvalid empty command '%s'." "$package_name" "$command"
+                printf "Installation of '%s' failed.\nInvalid empty command '%s'.\n" "$package_name" "$command"
                 return 1
             fi
 
             if ! eval "$command"; then
-                printf "Installation of '%s' failed.\nError running the command:\n%s" "$package_name" "$command"
+                printf "Installation of '%s' failed.\nError running the command:\n%s\n" "$package_name" "$command"
                 return 1
             fi
         done < <(jq -r ".custom_commands[]" <<< "$flatpak_object")
