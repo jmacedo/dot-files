@@ -9,20 +9,3 @@ alias lldotfiles='ll -A'
 alias llrecursive="ll -R"
 alias llfilesize="ll -S"
 alias llfilesizeinverted="ll -Sr"
-
-# Study and customize some aliases with specific model, etc.
-alias ai="sbx run opencode ~/Temp"
-
-function cd() {
-    local new_directory="$*"
-    
-    builtin clear
-
-    if [[ -n "$1"]]; then
-        builtin cd ~ && ll
-        return 0
-    fi
-
-    builtin cd "$1" && ll
-    return 0
-}
