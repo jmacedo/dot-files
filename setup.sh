@@ -94,7 +94,7 @@ install_nodejs() {
     mkdir -p -- "$install_directory"
 
     curl --fail --silent --show-error --location --output-dir "${temp_dir}" -O "${binary_download_url}"
-    tar -xJvf "${temp_dir}/node-${version}-${platform}.tar.gz" --strip-components=1 -C "$install_directory"
+    tar --extract --gzip --file="${temp_dir}/node-${version}-${platform}.tar.gz" --strip-components=1 -C "$install_directory"
 
     return 0
 }
