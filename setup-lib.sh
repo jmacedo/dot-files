@@ -16,16 +16,6 @@ exclude_temp_path() {
     return 0
 }
 
-cleanup_temp_paths() {
-    local path
-
-    for path in "${CLEANUP_PATHS[@]:-}"; do
-        [[ -n "$path" ]] && rm -rf -- "$path"
-    done
-
-    return 0
-}
-
 has_kvm() {
     while read -r module _; do
         case "${module:-}" in

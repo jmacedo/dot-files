@@ -250,6 +250,13 @@ main() {
     echo "Remember to login to docker with: sbx login."
 }
 
+cleanup_temp_paths() {
+    local path=""
+    for path in "${CLEANUP_PATHS[@]:-}"; do
+        [[ -n "$path" ]] && rm -rf -- "$path"
+    done
+    return 0
+}
 CLEANUP_PATHS=()
 trap cleanup_temp_paths EXIT
 main "$@"
