@@ -406,6 +406,7 @@ main_install() {
     #install_bin_from_github "lua-language-server" "LuaLS/lua-language-server"
 
     # Kitty terminal.
+    local kitty_folder="$CUSTOM_USER_APPS_DIR/kitty.app"
     POST_GITHUB_INSTALL_COMMANDS=()
     POST_GITHUB_INSTALL_COMMANDS=("cp -f -- '$kitty_folder/share/applications/kitty.desktop' '$HOME/.local/share/applications/kitty.desktop'")
     POST_GITHUB_INSTALL_COMMANDS=("cp -f -- '$kitty_folder/share/applications/kitty-open.desktop' '$HOME/.local/share/applications/kitty-open.desktop'")
