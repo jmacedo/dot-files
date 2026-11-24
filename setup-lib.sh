@@ -111,26 +111,28 @@ install_bin_from_github() {
     local release_api_url="https://api.github.com/repos/$repository/releases/latest"
     local install_dir="$CUSTOM_USER_APPS_DIR/$binary_name"
     local binary_download_url=""
+    local binary_download_url_cache_file="$SCRIPT_DIR/$binary_name.bin-url.cache"
     local binary_path=""
     local temp_file="$(mktemp)"
     exclude_temp_path "$temp_file"
     local extraction_dir="$(mktemp -d)"
     exclude_temp_path "$extraction_dir"
 
-    if ! curl -sSf -o /dev/null "$release_api_url"; then # Validates releases URL from github API.
-        printf "Installation of '%s' failed.\nThe releases address '%s' doesn't seem to be working.\n" "$binary_name" "$release_api_url"
-        return 1;
-    fi
-
-    if ! binary_download_url="$(
-        curl --fail --silent --show-error --location \
-            --header "Accept: application/vnd.github+json" "$release_api_url" |
-            jq -er --arg pattern "$filename_pattern" \
-                '[.assets[].browser_download_url | select(test($pattern))] |
-                if length == 1 then .[0] else empty end'
-    )"; then
-        printf "Installation of '%s' failed.\nExpected one matching release asset.\n" "$binary_name" >&2
-        return 1
+    if [[ -f "$binary_download_url_cache_file" ]]; then
+        binary_download_url=$(cat "$binary_download_url_cache_file")
+    else
+        if ! binary_download_url="$(
+            curl --fail --silent --show-error --location \
+                --header "Accept: application/vnd.github+json" "$release_api_url" |
+                jq -er --arg pattern "$filename_pattern" \
+                    '[.assets[].browser_download_url | select(test($pattern))] |
+                    if length == 1 then .[0] else empty end'
+        )"; then
+            printf "Installation of '%s' failed.\nExpected one matching release asset.\n" "$binary_name" >&2
+            return 1
+        else
+            echo "$binary_download_url" > "$binary_download_url_cache_file"
+        fi
     fi
 
     # Backup current.
