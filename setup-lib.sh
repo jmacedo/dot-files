@@ -60,7 +60,7 @@ install_local_font() {
 
 install_web_font() {
     local file_name="$1"
-    local source_url="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/${file_name}.zip"
+    local source_url="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/$file_name.zip"
     local destination="$HOME/.local/share/fonts/$file_name"
     local download_path="$(mktemp)"
     exclude_temp_path "$download_path"
@@ -80,11 +80,11 @@ install_web_font() {
 
 install_bin_from_github() {
     # Linux x64 platform.
-    local filename_pattern="^.*[.*(linux|linux\-gnu).*|(linux|linux\-gnu).*[x86_64|amd64|x64]+|[x86_64|amd64|x64]+.*(linux|linux\-gnu)].*[\.tar\.gz|\.zip]$"
-    local binary_name="$1"
-    local repo="$2"
+    local filename_pattern="^((.*[linux|linux\-gnu].*[x86_64|amd64|x64].*)|(.*[x86_64|amd64|x64].*[linux|linux\-gnu].*))(\.tar\.gz|\.zip)$"
+    local repository="$1"
+    local binary_name="${repository#*/}"
     local cmd=""
-    local release_api_url="https://api.github.com/repos/$repo/releases/latest"
+    local release_api_url="https://api.github.com/repos/$repository/releases/latest"
     local install_dir="$CUSTOM_USER_APPS_DIR/$binary_name"
     local binary_download_url=""
     local binary_path=""
@@ -115,7 +115,7 @@ install_bin_from_github() {
 
     curl --fail --location "$binary_download_url" --output "$temp_file"
     # Extract files.
-    is_zip && unzip -q "$temp_file" -d "$extraction_dir" || tar --extract --gzip --file "$download_path" --directory "$extraction_dir"
+    is_zip && unzip -q "$temp_file" -d "$extraction_dir" || tar --extract --gzip --file "$temp_file" --directory "$extraction_dir"
 
     binary_path="$(find "$extraction_dir" -type f -name "$binary_name" -print -quit)"
     
@@ -167,12 +167,6 @@ install_apt_packages() {
     sudo apt autoremove -y
     sudo apt autoclean
     sudo apt install -y "${packages[@]}"
-
-    return 0
-}
-
-install_flatpak_remote_flathub() {
-    flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
     return 0
 }

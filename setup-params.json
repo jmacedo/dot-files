@@ -1,0 +1,96 @@
+{
+    "custom_directories": {
+        "apps_dir": "Apps",
+        "list": [
+            "Dev",
+            "Temp",
+            ".docker"
+        ]
+    },
+    "installations_backups": {
+        "backup_extension": "bkp",
+        "datetime_pattern": "+%Y%m%d%H%M%S"
+    },
+    "applications": {
+        "apt": {
+            "list": [
+                "git",
+                "curl",
+                "unzip",
+                "vim",
+                "file",
+                "ffmpeg",
+                "xclip",
+                "wl-clipboard",
+                "flatpak",
+                "steam-devices",
+                "build-essential",
+                "gparted",
+                "ca-certificates",
+                "jq",
+                "ripgrep",
+                "clangd",
+                "default-jdk",
+                "golang-go",
+                "pipx",
+                "python3-venv",
+                "php-cli",
+                "composer"
+            ],
+            "custom_commands": {}
+        },
+        "flatpak": {
+            "list": [
+                "com.dropbox.Client",
+                "com.google.Chrome",
+                "com.valvesoftware.Steam",
+                "com.visualstudio.code",
+                "io.github.kolunmi.Bazaar",
+                "org.onlyoffice.desktopeditors",
+                "org.gnome.gedit",
+                "de.swsnr.turnon",
+                "org.videolan.VLC"
+            ],
+            "custom_commands": {}
+        },
+        "binary": {
+            "list":[
+                { "repo": "neovim/neovim", "custom_commands": [] },
+                { "repo": "junegunn/fzf", "custom_commands": [] },
+                { "repo": "jesseduffield/lazygit", "custom_commands": [] },
+                { "repo": "tree-sitter/tree-sitter", "custom_commands": [] },
+                { "repo": "ajeetdsouza/zoxide", "custom_commands": [] },
+                { "repo": "sxyazi/yazi", "custom_commands": [] },
+                { "repo": "yorukot/superfile", "custom_commands": [] },
+                { "repo": "kovidgoyal/kitty",
+                    "custom_commands": [
+                        "cp -f -- '$CUSTOM_USER_APPS_DIR/kitty/share/applications/kitty.desktop' '$HOME/.local/share/applications/kitty.desktop'",
+                        "cp -f -- '$CUSTOM_USER_APPS_DIR/kitty/share/applications/kitty-open.desktop' '$HOME/.local/share/applications/kitty-open.desktop'",
+                        "sed -i -e \"s|^Icon=kitty$|Icon=$CUSTOM_USER_APPS_DIR/kitty/share/icons/hicolor/256x256/apps/kitty.png|\" \"$HOME/.local/share/applications/kitty.desktop\" \"$HOME/.local/share/applications/kitty-open.desktop\""
+                    ]
+                }
+            ]
+        }
+    },
+    "fonts": {
+        "nerd_fonts": [
+            "SourceCodePro",
+            "NerdFontsSymbolsOnly"
+        ],
+        "local_fonts": []
+    },
+    "dot_files": [
+        ".config/bash",
+        ".config/kitty",
+        ".config/nvim",
+        ".config/fzf",
+        ".config/lazygit",
+        ".config/yazi",
+        ".config/superfile",
+        ".bashrc",
+        ".gitconfig",
+        ".gitconfig.local.example",
+        ".gitignore",
+        ".hidden"
+    ]
+}
