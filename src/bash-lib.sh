@@ -2,7 +2,7 @@
 
 has_kvm() {
     while read -r module _; do
-        case "$module" in
+        case "${module:-}" in
             kvm|kvm_intel|kvm_amd)
                 return 0
                 ;;
@@ -23,7 +23,9 @@ backup_path() {
 }
 
 exclude_temp_path() {
-    CLEANUP_PATHS+=("$1")
+    CLEANUP_PATHS+=("${1:-}")
+
+    return 0
 }
 
 cleanup_temp_paths() {
@@ -143,9 +145,9 @@ install_bin_from_github() {
 }
 
 install_apt_packages() {
-    local -n packages=$1
+    local -n packages=${1:-()}
 
-    if (( ${#packages[@] == 0} )); then
+    if (( ${#packages[@]} == 0 )); then
         printf "Failed installing apt packages. Packages array is empty."
         return 1
     fi
@@ -161,11 +163,13 @@ install_apt_packages() {
 
 install_flatpak_remote_flathub() {
     flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+    return 0
 }
 
 install_flatpak_packages_flathub() {
     local app=""
-    local -n apps=$2
+    local -n apps=${1:-()}
 
     for app in "${apps[@]}"; do
         flatpak install --user --noninteractive --or-update "$app"
