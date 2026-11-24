@@ -1,21 +1,26 @@
 -- Lazy nvim
-vim.keymap.set("n", "<leader>pp", ":Lazy<CR>")
+vim.keymap.set("n", "<leader>pp", ":Lazy<CR>", { desc = "Open lazy nvim screen." })
 
 -- Mason LSP manager
-vim.keymap.set("n", "<leader>pm", ":Mason<CR>")
+vim.keymap.set("n", "<leader>pm", ":Mason<CR>", { desc = "Open mason screen." })
 
 -- Neotree
-vim.keymap.set("n", "<leader>e", ":Neotree toggle<CR>")
-vim.keymap.set("n", "<C-e>", ":Neotree toggle<CR>")
+vim.keymap.set("n", "<leader>e", ":Neotree toggle<CR>", { desc = "Toggle Neotree visualization." })
+vim.keymap.set("n", "<C-e>", ":Neotree toggle<CR>", { desc = "Toggle Neotree visualization." })
 
 -- Terminal mode: Use <Esc> to exit
 vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", { desc = "Close terminal mode." })
 
+-- Reload configs
+vim.keymap.set("n", "<leader>r", ":update<CR>:source<CR>", { desc = "Reload nvim configurations." })
+
 -- Save - CTRL + S
-vim.keymap.set({ "n", "i" }, "<C-s>", "<cmd>write<CR>", { desc = "Save document." })
+vim.keymap.set({ "n", "i" }, "<C-s>", ":write<CR>", { desc = "Save document." })
+vim.keymap.set({ "n", "i" }, "<C-S>", ":write<CR>:quit<CR>", { desc = "Save document and quit." })
 
 -- Close - CTRL + W
-vim.keymap.set("n", "<C-w>", "<cmd>quit<CR>", { desc = "Close document." })
+vim.keymap.set("n", "<C-w>", ":quit<CR>", { desc = "Close document." })
+vim.keymap.set("n", "<C-W>", ":quit!<CR>", { desc = "Force close document without saving changes." })
 
 -- Select all - CTRL + A
 vim.keymap.set("n", "<C-a>", "ggVG", { desc = "Select all text." })
@@ -47,13 +52,6 @@ vim.keymap.set("n", "<C-S-a>", function()
         math.max(sc, ec - 1)
     })
 end, { desc = "Select syntatic context." })
-
--- Folding: based on tree-sitter.
-vim.opt.foldmethod = "expr"
-vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
-vim.opt.foldlevel = 99
-vim.opt.foldlevelstart = 99 -- Starts with all foldings open.
-vim.opt.foldcolumn = "1" -- Shows folding column.
 
 -- Toggle folding - CTRL + ALT + F
 vim.keymap.set("n", "<C-M-f>", "za", { desc = "Toggle folding" })
