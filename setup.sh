@@ -78,6 +78,27 @@ install_docker() {
     return 0
 }
 
+install_nodejs() {
+    local version="v26.13.1"
+    local platform="linux-x64"
+    local package_name="node-${version}-${platform}.tar.gz"
+
+    local binary_download_url="https://nodejs.org/dist/${version}/node-${version}-${platform}.tar.gz"
+    local install_directory="$CUSTOM_USER_APPS_DIR/nodejs"
+    local temp_file=""
+    
+    temp_file="$(mktemp)"
+    exclude_temp_path "$temp_file"
+
+    backup_path "$install_directory"
+    mkdir -p -- "$install_directory"
+
+    curl --fail --silent --show-error --location --output "${temp_file}"
+    tar -xJvf "node-${version}-${platform}.tar.gz" -C "$install_directory"
+
+    return 0
+}
+
 main_install() {
     # Apt packages.
     while IFS= read -r apt_object; do
@@ -121,6 +142,9 @@ main_install() {
 
     # Docker installation.
     install_docker
+
+    # Nodejs installation.
+    install_nodejs
 
     return 0
 }
