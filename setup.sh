@@ -8,24 +8,6 @@
 # `-o pipefail` - Raise errors inside a chain of commands (`cmdA | cmdB | cmdC`) instead of by default use the last command status code.
 set -euo pipefail
 
-handle_parameters() {
-    #if [[ $# -eq 0 ]]; then ### fi
-
-    #for parameter in "$@"; do
-    #    case "$parameter" in
-    #        --my-parameter|--another-parameter)
-    #            ;;
-    #        *)
-    #            printf "Unknown parameter: %s" $parameter >&2
-    #            printf "Use '%s --help'." $0 >&2
-    #            exit 1
-    #            ;;
-    #    esac
-    #done
-
-    return 0
-}
-
 install_docker() {
     local apt_source_template="${SCRIPT_DIR:-$HOME}/.config/docker/docker.sources"
     local apt_source_temp="$(mktemp)"
@@ -71,25 +53,6 @@ install_docker() {
     return 0
 }
 
-install_flatpak_remotes() {
-    flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-
-    return 0
-}
-
-override_pop_os_flatpak_launchers() {
-    # On PopOS 24.04, some flatpak apps bugged to launch.
-    # This function configure a work-around to fix it.
-
-    # Google Chrome launcher (run as X11).
-    cp -f -- "$SCRIPT_DIR/.config/desktop-launchers/com.google.Chrome.desktop" "$HOME/.local/share/applications"
-
-    # VS Code launcher (run without gpu aceleration).
-    cp -f -- "$SCRIPT_DIR/.config/desktop-launchers/com.visualstudio.code.desktop" "$HOME/.local/share/applications"
-
-    return 0
-}
-
 main_install() {
     # Apt packages.
     sudo apt update -y
@@ -110,9 +73,9 @@ main_install() {
 
     # Binaries packages.
     while IFS= read -r binary_object; do
-        local repo_name=$(jq -r ".repo" <<< "$binary_object")
-        local bin_name=$(jq -r ".bin_name" <<< "$binary_object")
-        local strip_components=$(jq -r ".stip_components" <<< "$binary_object")
+        local repo_name="$(jq -r ".repo" <<< "$binary_object")"
+        local bin_name="$(jq -r ".bin_name" <<< "$binary_object")"
+        local strip_components="$(jq -r ".strip_components" <<< "$binary_object")"
 
         install_bin_from_github "$repo_name" "$bin_name" "$strip_components"
 
@@ -144,14 +107,34 @@ main_configs() {
 }
 
 main_flatpaks() {
-    local apps=()
-    while IFS= read -r package; do
-        apps+=("$package")
+    flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+    while IFS= read -r flatpak_object; do
+        local package_name="$(jq -r ".package_name" <<< "$flatpak_object")"
+
+        flatpak install --user --noninteractive --or-update flathub "$package_name"
+
+        while IFS= read -r command; do
+            if [[ -z "$command" ]]; then
+                printf "Installation of '%s' failed.\nInvalid empty command '%s'." "$package_name" "$command"
+                return 1
+            fi
+
+            if ! eval "$command"; then
+                printf "Installation of '%s' failed.\nError running the command:\n%s" "$package_name" "$command"
+                return 1
+            fi
+        done < <(jq -r ".custom_commands[]" <<< "$flatpak_object")
     done < <(jq -r ".applications.flatpak.list[]" "$JSON_PARAMETERS_PATH")
 
-    install_flatpak_remotes
-    install_flatpak_packages apps
-    override_pop_os_flatpak_launchers
+    # On PopOS 24.04, some flatpak apps bugged to launch.
+    # The code below configures a work-around to fix it, once launchers in `~/.local/share/applications` have priority.
+
+    # Google Chrome launcher (run as X11).
+    cp -f -- "$SCRIPT_DIR/.config/desktop-launchers/com.google.Chrome.desktop" "$HOME/.local/share/applications"
+
+    # VS Code launcher (run without gpu aceleration).
+    cp -f -- "$SCRIPT_DIR/.config/desktop-launchers/com.visualstudio.code.desktop" "$HOME/.local/share/applications"
 
     return 0
 }
@@ -171,13 +154,14 @@ main_fonts() {
 }
 
 main() {
+    # External libraries.
+    source "$SCRIPT_DIR/setup-lib.sh"
+
     # Initialize.
     local SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)" # Absolute path
     local LOCAL_BIN_DIR="$HOME/.local/bin"
     local JSON_PARAMETERS_PATH="$SCRIPT_DIR/setup-params.json"
-
-    #handle_parameters "$@"
-
+    
     local __datetime_pattern=$(jq -r ".installations_backups.datetime_pattern", "$JSON_PARAMETERS_PATH")
     local __bkp_extension=$(jq -r ".installations_backups.backup_extension", "$JSON_PARAMETERS_PATH")
     local __apps_dir=$(jq -r ".custom_directories.apps_dir", "$JSON_PARAMETERS_PATH")
@@ -197,9 +181,6 @@ main() {
         mkdir -p -- "$directory"
     done < <(jq -r ".custom_directories.list[]" "$JSON_PARAMETERS_PATH")
 
-    # External libraries.
-    source "$SCRIPT_DIR/setup-lib.sh"
-
     # Main execution.
     command clear
     main_install
@@ -214,6 +195,5 @@ main() {
 }
 
 CLEANUP_PATHS=()
-POST_GITHUB_INSTALL_COMMANDS=()
 trap cleanup_temp_paths EXIT
 main "$@"

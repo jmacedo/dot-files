@@ -1,17 +1,5 @@
 #!/usr/bin/env bash
 
-has_kvm() {
-    while read -r module _; do
-        case "${module:-}" in
-            kvm|kvm_intel|kvm_amd)
-                return 0
-                ;;
-        esac
-    done < /proc/modules
-    
-    return 1
-}
-
 backup_path() {
     local destination="${1:-}"
 
@@ -35,9 +23,19 @@ cleanup_temp_paths() {
         [[ -n "$path" ]] && rm -rf -- "$path"
     done
 
-    POST_GITHUB_INSTALL_COMMANDS=()
-
     return 0
+}
+
+has_kvm() {
+    while read -r module _; do
+        case "${module:-}" in
+            kvm|kvm_intel|kvm_amd)
+                return 0
+                ;;
+        esac
+    done < /proc/modules
+    
+    return 1
 }
 
 install_local_font() {
@@ -78,9 +76,35 @@ install_web_font() {
     return 0
 }
 
+install_config() {
+    local relative_path="${1:-}"
+    local source="${SCRIPT_DIR:-$HOME}/$relative_path"
+    local destination="$HOME/$relative_path"
+
+    if [[ ! -e "$source" ]]; then
+        printf "Missing source file or directory: '%s'\n" "$source" >&2
+        return 1
+    fi
+
+    backup_path "$destination"
+    mkdir -p -- "$(dirname -- "$destination")"
+
+    if [[ -f "$source" ]]; then
+        cp -f -- "$source" "$destination"
+        return 0
+    fi
+
+    if [[ -d "$source" ]]; then
+        cp -rf -- "$source" "$destination"
+        return 0
+    fi
+
+    return 1
+}
+
 install_bin_from_github() {
     # Linux x64 platform.
-    local filename_pattern="^((.*[linux|linux\-gnu].*[x86_64|amd64|x64].*)|(.*[x86_64|amd64|x64].*[linux|linux\-gnu].*))(\.tar\.gz|\.zip)$"
+    local filename_pattern="^((.*[linux|linux\-gnu].*[x86_64|amd64|x64].*)|(.*[x86_64|amd64|x64].*[linux|linux\-gnu].*))(\.tar\.gz|\.zip|\.txz)$"
     local repository="$1"
     local binary_name="${2:-$("${repository#*/}")}"
     local strip_components="${3:-0}"
@@ -121,9 +145,9 @@ install_bin_from_github() {
     curl --fail --location "$binary_download_url" --output "$temp_file"
     
     # Extract files.
-    if is_zip; then
+    if [[ "$is_zip" == "true" ]]; then
         bsdtar -xf "$temp_file" --strip-components "$strip_components" -C "$extraction_dir"
-    elif is_txz; then
+    elif [[ "$is_txz" == "true" ]]; then
         tar --extract --xz --strip-components="$strip_components" --file "$temp_file" --directory "$extraction_dir"
     else
         tar --extract --gzip --strip-components="$strip_components" --file "$temp_file" --directory "$extraction_dir"
@@ -142,52 +166,4 @@ install_bin_from_github() {
     ln -sfn -- "$binary_path" "$LOCAL_BIN_DIR/$binary_name"
 
     return 0
-}
-
-install_flatpak_packages() {
-    local app=""
-    local apps_array_name="${1:-}"
-
-    if [[ -z "$apps_array_name" ]]; then
-        printf "Failed installing flatpak packages. No array name provided.\n" >&2
-        return 1
-    fi
-
-    if ! declare -p "$apps_array_name" >/dev/null 2>&1; then
-        printf "Failed installing flatpak packages. Unknown array: %s\n" "$apps_array_name"
-        return 1
-    fi
-
-    local -n apps="$apps_array_name"
-    for app in "${apps[@]}"; do
-        flatpak install --user --noninteractive --or-update "$app"
-    done
-
-    return 0
-}
-
-install_config() {
-    local relative_path="${1:-}"
-    local source="${SCRIPT_DIR:-$HOME}/$relative_path"
-    local destination="$HOME/$relative_path"
-
-    if [[ ! -e "$source" ]]; then
-        printf "Missing source file or directory: '%s'\n" "$source" >&2
-        return 1
-    fi
-
-    backup_path "$destination"
-    mkdir -p -- "$(dirname -- "$destination")"
-
-    if [[ -f "$source" ]]; then
-        cp -f -- "$source" "$destination"
-        return 0
-    fi
-
-    if [[ -d "$source" ]]; then
-        cp -rf -- "$source" "$destination"
-        return 0
-    fi
-
-    return 1
 }
