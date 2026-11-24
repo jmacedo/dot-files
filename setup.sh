@@ -168,7 +168,7 @@ main() {
     local JSON_PARAMETERS_PATH="$SCRIPT_DIR/setup-params.json"
     local __datetime_pattern="$(jq -r ".installations_backups.datetime_pattern", "$JSON_PARAMETERS_PATH")"
     local __bkp_extension="$(jq -r ".installations_backups.backup_extension", "$JSON_PARAMETERS_PATH")"
-    local __apps_dir="$(jq -r ".custom_directories.apps_dir", "$JSON_PARAMETERS_PATH")"
+    local __apps_dir="$(jq -r ".custom_directories.apps_directory", "$JSON_PARAMETERS_PATH")"
     local CUSTOM_USER_APPS_DIR="$HOME/$__apps_dir"
     local START_DATE_TIME="$(date "$__datetime_pattern")"
     local BACKUP_EXT="$__bkp_extension"
@@ -186,7 +186,7 @@ main() {
         "$HOME/.local/share/zoxide"
 
     while IFS= read -r directory; do
-        mkdir -p -- "${directory}"
+        mkdir -p -- "$HOME/$directory"
     done < <(jq -r ".custom_directories.list[]" "$JSON_PARAMETERS_PATH")
 
     # Main execution.
