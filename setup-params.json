@@ -119,6 +119,13 @@
                         "cp -f -- '@@CUSTOM_USER_APPS_DIR@@/kitty/share/applications/kitty-open.desktop' '@@HOME@@/.local/share/applications/kitty-open.desktop'",
                         "sed -i -e \"s|^Icon=kitty$|Icon=@@CUSTOM_USER_APPS_DIR@@/kitty/share/icons/hicolor/256x256/apps/kitty.png|\" \"@@HOME@@/.local/share/applications/kitty.desktop\" \"@@HOME@@/.local/share/applications/kitty-open.desktop\""
                     ]
+                },
+                { "repo": "eza-community/eza",
+                    "version": "latest",
+                    "bin_name": "eza",
+                    "strip_components": 0,
+                    "asset_pattern": "eza.*x86_64.*linux-gnu.*\\.tar\\.gz",
+                    "custom_commands": []
                 }
             ]
         }
