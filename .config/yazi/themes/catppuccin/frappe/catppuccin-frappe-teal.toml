@@ -135,7 +135,7 @@ tbl_cell = { fg = "#81c8be", reversed = true }
 tbl_col = { bold = true }
 
 [icon]
-dirs = [
+prepend_dirs = [
 	{ name = ".config", text = "", fg = "#81c8be" },
 	{ name = ".git", text = "", fg = "#81c8be" },
 	{ name = ".github", text = "", fg = "#81c8be" },
@@ -151,7 +151,7 @@ dirs = [
 	{ name = "Public", text = "", fg = "#81c8be" },
 	{ name = "Videos", text = "", fg = "#81c8be" },
 ]
-conds = [
+prepend_conds = [
 	# Special files
 	{ if = "orphan", text = "", fg = "#c6d0f5" },
 	{ if = "link", text = "", fg = "#a5adce" },
@@ -168,7 +168,7 @@ conds = [
 	{ if = "!dir", text = "", fg = "#c6d0f5" },
 ]
 
-files = [
+prepend_files = [
 	{ name = "eslint.config.cjs", text = "", fg = "#51576d" },
 	{ name = "hyprlandd.conf", text = "", fg = "#81c8be" },
 	{ name = "settings.gradle", text = "", fg = "#51576d" },
@@ -387,7 +387,7 @@ files = [
 	{ name = "nuxt.config.cjs", text = "󱄆", fg = "#81c8be" },
 	{ name = ".eslintignore", text = "", fg = "#51576d" },
 ]
-exts = [
+prepend_exts = [
 	{ name = "txt", text = "󰈙", fg = "#a6d189" },
 	{ name = "kicad_dru", text = "", fg = "#f2d5cf" },
 	{ name = "cbl", text = "", fg = "#51576d" },

@@ -121,6 +121,8 @@ main_install() {
         local version="$(jq -r ".version" <<< "$binary_object")"
         local strip_components="$(jq -r ".strip_components" <<< "$binary_object")"
         local asset_pattern="$(jq -r ".asset_pattern" <<< "$binary_object")"
+        local catppuccin_flavor="$(jq -r ".catppuccin.flavor" <<< "$binary_object")"
+        local catppuccin_variant="$(jq -r ".catppuccin.variant" <<< "$binary_object")"
 
         install_bin_from_github "$repo_name" "$version" "$asset_pattern" "$bin_name" "$strip_components"
 
@@ -132,6 +134,13 @@ main_install() {
                 return 1
             fi
 
+            # On installation Yazi custom commands demands these variables to expand the placeholders inside custom commands.
+            # See: expand_variables() - Setup internal function
+            if [[ "$bin_name" == "yazi" && (-z "$YAZI_FLAVOR" || -z "$YAZI_FLAVOR_VARIANT") ]]; then
+                export YAZI_FLAVOR="$catppuccin_flavor"
+                export YAZI_FLAVOR_VARIANT="$catppuccin_variant"
+            fi
+            
             parsed_command=$(expand_variables "$command")
 
             if ! eval "$parsed_command"; then

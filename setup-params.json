@@ -101,7 +101,13 @@
                     "bin_name": "yazi",
                     "strip_components": 1,
                     "asset_pattern": "x86_64-unknown-linux-gnu\\.zip$",
-                    "custom_commands": []
+                    "catppuccin": {
+                        "flavor": "frappe",
+                        "variant": "lavender"
+                    },
+                    "custom_commands": [
+                        "install_config '.config/yazi' && rm -f -- '@@HOME@@/.config/yazi/theme.toml' && ln -s -- '@@HOME@@/.config/yazi/themes/catppuccin/@@YAZI_FLAVOR@@/catppuccin-@@YAZI_FLAVOR@@-@@YAZI_FLAVOR_VARIANT@@.toml' '@@HOME@@/.config/yazi/theme.toml'"
+                    ]
                 },                
                 { "repo": "kovidgoyal/kitty",
                     "version": "latest",
@@ -130,7 +136,6 @@
         ".config/nvim",
         ".config/fzf",
         ".config/lazygit",
-        ".config/yazi",
         ".config/superfile",
         ".bashrc",
         ".gitconfig",

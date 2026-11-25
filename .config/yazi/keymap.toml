@@ -1,0 +1,26 @@
+#:schema https://yazi-rs.github.io/schemas/keymap.json
+
+[[mgr.prepend_keymap]]
+on   = "<C-o>"
+run  = "shell --block -- nvim %h"
+desc = "Editar o arquivo com Neovim"
+
+[[mgr.prepend_keymap]]
+on   = "<C-g>"
+run  = "shell --block -- lazygit"
+desc = "Abrir o Lazygit no diretório atual"
+
+[[mgr.prepend_keymap]]
+on   = "<C-y>"
+run  = "copy path"
+desc = "Copiar caminho dos arquivos selecionados"
+
+[[mgr.prepend_keymap]]
+on   = [ "<C-.>", "<C-h>" ]
+run  = "hidden toggle"
+desc = "Alternar arquivos ocultos"
+
+[[mgr.prepend_keymap]]
+on   = [ "g", "r" ]
+run  = 'shell --block -- git -C %d rev-parse --show-toplevel'
+desc = "Mostrar a raiz do repositório Git"
