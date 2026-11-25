@@ -1,56 +1,12 @@
-# Config relating to the Lazygit UI
+confirmOnQuit: false
+os:
+  edit: "nvim {{filename}}"
 gui:
   tabWidth: 4
   mouseEvents: true
-  # If true, increase the height of the focused side window; creating an accordion
-  # effect.
   expandFocusedSidePanel: true
-  # The weight of the expanded side panel, relative to the other panels. 2 means
-  # twice as tall as the other panels. Only relevant if `expandFocusedSidePanel`
-  # is true.
   expandedSidePanelWeight: 3
-
-  # If true, don't give a side panel more height than it needs to show its
-  # content; when all panels fit, the leftover height is shared among them so that
-  # they still fill the screen.
   shrinkSidePanelsToContent: true
-
-  # The side panels, in the order they appear from top to bottom.
-  # Each entry is a list of one or more names that share a single panel as tabs
-  # (cycle through them with the next-tab/previous-tab keys).
-  # Omit a name to hide it; give a name its own one-element list to promote a tab
-  # to a top-level panel.
-  # Valid names are: 'status', 'files', 'worktrees', 'submodules', 'branches',
-  # 'remotes', 'tags', 'commits', 'reflog', 'stash'. 'files', 'branches', and
-  # 'commits' must always be included; they can't be hidden.
-  # sidePanels:
-  #  - [status]
-  #  - [files, worktrees, submodules]
-  #  - [branches, remotes, tags]
-  #  - [commits, reflog]
-  #  - [stash]
-
-  # One of: 'auto' (default) | 'dark' | 'light'
   colorScheme: dark
-
-  # If true, show a random tip in the command log when Lazygit starts
   showRandomTip: false
-
-  # Nerd fonts version to use.
-  # One of: '2' | '3' | empty string (default)
-  # If empty, do not show icons.
   nerdFontsVersion: "3"
-
-# If true, show a confirmation popup before quitting Lazygit
-confirmOnQuit: true
-
-# Config relating to things outside of Lazygit like how files are opened, copying to clipboard, etc.
-os:
-  # Command for editing a file. Should contain "{{filename}}".
-  edit: "nvim {{filename}}"
-
-  # Command for editing a file at a given line number. Should contain "{{filename}}", and may optionally contain "{{line}}".
-  #editAtLine: ""
-
-  # Same as EditAtLine, except that the command needs to wait until the window is closed.
-  #editAtLineAndWait: ""
