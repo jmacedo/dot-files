@@ -5,7 +5,7 @@ return {
     config = function()
         require("bufferline").setup({
             options = {
-                mode = "buffers", -- "buffers" | "tabs"
+                mode = "tabs", -- "buffers" | "tabs"
                 numbers = "ordinal", -- "ordinal" | "buffer_id" | "both" | "function()"
                 right_mouse_command = nil,
                 middle_mouse_command = "bdelete! %d",
@@ -13,7 +13,7 @@ return {
                     style = "underline", -- "icon" | "underline" | "none"
                 },
                 tabsize = 20,
-                separator_style = "padded_slant", -- "thin" | "thick" | "slant" | "padded_slant" | -- "slope" | "padded_slope" | { "left", "right" }
+                separator_style = "slant", -- "thin" | "thick" | "slant" | "padded_slant" | -- "slope" | "padded_slope" | { "left", "right" }
                 show_buffer_icons = true,
                 show_buffer_close_icons = true,
                 show_close_icon = true,
@@ -21,7 +21,7 @@ return {
                 show_duplicate_prefix = true,
                 always_show_bufferline = true,
                 persist_buffer_sort = true,
-                sort_by = "tabs", -- "id" | "insert_after_current" | "insert_at_end" | "extension" | "relative_directory" | "directory" | "tabs" | função
+                sort_by = "insert_after_current", -- "id" | "insert_after_current" | "insert_at_end" | "extension" | "relative_directory" | "directory" | "tabs" | função
                 diagnostics = "nvim_lsp",
             },
         })
