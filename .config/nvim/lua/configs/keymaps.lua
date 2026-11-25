@@ -61,3 +61,14 @@ vim.keymap.set("n", "<C-A-S-K>", function()
         vim.cmd("normal! zM")
     end
 end, { desc = "Toggle all foldings." })
+
+-- Abas (buffers)
+vim.keymap.set("n", "<S-D-PageUp>", "<cmd>BufferLineCyclePrev<CR>", { desc = "Previous tab" })
+vim.keymap.set("n", "<S-D-PageDown>", "<cmd>BufferLineCycleNext<CR>", { desc = "Next tab" })
+vim.keymap.set("n", "<S-D-w>bd", "<cmd>bdelete<CR>", { desc = "Close tab" })
+
+for i = 1, 9 do
+    vim.keymap.set("n", "<S-D>" .. i, function()
+        require("bufferline").go_to(i, true)
+    end, { desc = "Go to tab " .. i })
+end
