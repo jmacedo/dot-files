@@ -6,24 +6,24 @@ vim.keymap.set("n", "<leader>pm", ":Mason<CR>", { desc = "Open mason screen." })
 
 -- Neotree
 vim.keymap.set("n", "<leader>e", ":Neotree toggle<CR>", { desc = "Toggle Neotree visualization." })
-vim.keymap.set({"n", "i"}, "<C-e>", "<Esc>:Neotree toggle<CR>", { desc = "Toggle Neotree visualization." })
+vim.keymap.set({"n", "i"}, "<C-e>", "normal :Neotree toggle<CR>", { desc = "Toggle Neotree visualization." })
 
 -- Reload configs
 vim.keymap.set("n", "<leader>r", ":update<CR>:source<CR>", { desc = "Reload nvim configurations." })
 
 -- Save - CTRL + S
-vim.keymap.set({ "n", "i" }, "<C-s>", "<Esc>:w<CR>", { desc = "Save document." })
-vim.keymap.set({ "n", "i" }, "<C-S>", "<Esc>:wq<CR>", { desc = "Save document and quit." })
+vim.keymap.set({ "n", "i" }, "<C-s>", "normal! :w<CR>", { desc = "Save document." })
+vim.keymap.set({ "n", "i" }, "<C-S-s>", "normal! :wq<CR>", { desc = "Save document and quit." })
 
 -- Close - CTRL + W
-vim.keymap.set({"n", "i"}, "<C-w>", "<Esc>:q<CR>", { desc = "Close document." })
-vim.keymap.set({"n", "i"}, "<C-W>", "<Esc>:q!<CR>", { desc = "Force close document without saving changes." })
+vim.keymap.set({"n", "i"}, "<C-w>", "normal! :q<CR>", { desc = "Close document." })
+vim.keymap.set({"n", "i"}, "<C-S-W>", "normal! :q!<CR>", { desc = "Force close document without saving changes." })
 
 -- Select all - CTRL + A
-vim.keymap.set({"n", "i"}, "<C-a>", "<Esc>ggVG", { desc = "Select all text." })
+vim.keymap.set({"n", "i"}, "<C-a>", "normal! ggVG", { desc = "Select all text." })
 
 -- Select word - CTRL + P
-vim.keymap.set({"n", "i"}, "<C-p>", "<Esc>viw", { desc = "Select the word under cursor." })
+vim.keymap.set({"n", "i"}, "<C-p>", "normal! viw", { desc = "Select the word under cursor." })
 
 -- Select context - CTRL + SHIFT + A
 vim.keymap.set({"n", "i"}, "<C-S-a>", function()
@@ -51,13 +51,13 @@ vim.keymap.set({"n", "i"}, "<C-S-a>", function()
 end, { desc = "Select syntatic context." })
 
 -- Toggle folding - CTRL + ALT + F
-vim.keymap.set({"n", "i"}, "<C-A-f>", "<Esc>za", { desc = "Toggle folding" })
+vim.keymap.set("n", "<C-A-k>", "<Esc>za", { desc = "Toggle folding" })
 
 -- Toggle all foldings - CTRL + ALT + SHIFT + F
-vim.keymap.set({"n", "i"}, "<C-A-S-F>", function()
-    if vim.fn.foldclosed(".") == -1 then
-        vim.cmd("normal! zM") -- Close all
+vim.keymap.set("n", "<C-A-S-K>", function()
+    if vim.wo.foldlevel == 0 then
+        vim.cmd("normal! zR")
     else
-        vim.cmd("normal! zR") -- Open all
+        vim.cmd("normal! zM")
     end
 end, { desc = "Toggle all foldings." })

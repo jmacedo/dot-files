@@ -69,11 +69,12 @@ install_docker() {
 
     # Permissions.
     sudo groupadd -f docker
-    sudo usermod -aG docker,kvm "$USER"
+    sudo usermod -aG docker,kvm "$(whoami)"
+    newgrp docker
+    newgrp kvm
 
     # Services.
-    sudo systemctl enable --now docker.service
-    sudo systemctl enable --now containerd.service
+    sudo systemctl enable --now docker.service containerd.service
 
     return 0
 }

@@ -46,7 +46,7 @@ vim.o.autocomplete = true
 
 -- Folding
 vim.o.foldenable = true
-vim.o.foldmethod = "indent"
+vim.o.foldmethod = "manual"
 vim.o.foldopen = "all"
 vim.o.foldclose = "all"
 vim.o.foldlevel = 99 -- All opened
