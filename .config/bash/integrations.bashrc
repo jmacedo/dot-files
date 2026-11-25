@@ -5,5 +5,5 @@ eval "$(dircolors -b)"
 command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init bash)"
 
 # Fzf.
-command -v fzf >/dev/null 2>&1 || return 0
+command -v fzf >/dev/null 2>&1
 eval "$(fzf --bash)"
