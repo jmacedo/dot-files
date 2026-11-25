@@ -20,7 +20,7 @@ vim.o.cursorline = true
 vim.o.cursorcolumn = true
 vim.o.number = true
 vim.o.relativenumber = false
-vim.o.numberwidth = 10
+vim.o.numberwidth = 2
 vim.o.scrolloff = 10 -- Keep this many screen lines above/below the cursor.
 
 -- Visual and formating
@@ -67,5 +67,4 @@ vim.o.mousescroll = "ver:4,hor:2"
 vim.o.clipboard = "unnamed,unnamedplus"
 
 -- Encoding
-vim.o.fileencoding = "utf-8"
 vim.o.fileencodings = "utf-8,default,latin1"
