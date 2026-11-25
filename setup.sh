@@ -136,7 +136,7 @@ main_install() {
 
             # On installation Yazi custom commands demands these variables to expand the placeholders inside custom commands.
             # See: expand_variables() - Setup internal function
-            if [[ "$bin_name" == "yazi" && (-z "$YAZI_FLAVOR" || -z "$YAZI_FLAVOR_VARIANT") ]]; then
+            if [[ "$bin_name" == "yazi" && (-z "${YAZI_FLAVOR:-}" || -z "${YAZI_FLAVOR_VARIANT:-}") ]]; then
                 export YAZI_FLAVOR="$catppuccin_flavor"
                 export YAZI_FLAVOR_VARIANT="$catppuccin_variant"
             fi

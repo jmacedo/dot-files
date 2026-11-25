@@ -6,7 +6,7 @@ vim.keymap.set("n", "<leader>pm", ":Mason<CR>", { desc = "Open mason screen." })
 
 -- Neotree
 vim.keymap.set("n", "<leader>e", ":Neotree toggle<CR>", { desc = "Toggle Neotree visualization." })
-vim.keymap.set({"n", "i"}, "<C-e>", "normal :Neotree toggle<CR>", { desc = "Toggle Neotree visualization." })
+vim.keymap.set({"n", "i"}, "<C-e>", ":Neotree toggle<CR>", { desc = "Toggle Neotree visualization." })
 
 -- Reload configs
 vim.keymap.set("n", "<leader>r", ":update<CR>:source<CR>", { desc = "Reload nvim configurations." })
