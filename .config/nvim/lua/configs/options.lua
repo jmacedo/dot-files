@@ -62,10 +62,9 @@ vim.o.mousemodel = "popup_setpos"
 vim.o.pumborder = "rounded"
 vim.o.mousemoveevent = false
 vim.o.mousescroll = "ver:4,hor:2"
-vim.o.mouseshape = "n:arrow,i:busy,v:beam"
 
 -- Clipboard
-vim.o.clipboard = "unnamed,unnamedplus,autoselect,autoselectplus,html"
+vim.o.clipboard = "unnamed,unnamedplus"
 
 -- Encoding
 vim.o.fileencoding = "utf-8"

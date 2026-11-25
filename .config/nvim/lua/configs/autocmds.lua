@@ -10,6 +10,6 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 -- See `:h "clipboard"`
 --vim.api.nvim_create_autocmd("UIEnter", {
 --  callback = function()
---    vim.o.clipboard = "unnamed,unnamedplus,autoselect,autoselectplus,html"
+--    vim.o.clipboard = "unnamed,unnamedplus"
 --  end,
 --})
