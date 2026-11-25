@@ -6,10 +6,7 @@ vim.keymap.set("n", "<leader>pm", ":Mason<CR>", { desc = "Open mason screen." })
 
 -- Neotree
 vim.keymap.set("n", "<leader>e", ":Neotree toggle<CR>", { desc = "Toggle Neotree visualization." })
-vim.keymap.set("n", "<C-e>", ":Neotree toggle<CR>", { desc = "Toggle Neotree visualization." })
-
--- Terminal mode: Use <Esc> to exit
-vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", { desc = "Close terminal mode." })
+vim.keymap.set({"n", "i"}, "<C-e>", "<Esc>:Neotree toggle<CR>", { desc = "Toggle Neotree visualization." })
 
 -- Reload configs
 vim.keymap.set("n", "<leader>r", ":update<CR>:source<CR>", { desc = "Reload nvim configurations." })
@@ -38,26 +35,26 @@ vim.keymap.set({"n", "i"}, "<C-S-a>", function()
         return
     end
 
-    local sr, sc, er, ec = node:range()
+    local start_row, start_column, end_row, end_column = node:range()
 
     -- Put the cursor at start of the context node text.
-    vim.api.nvim_win_set_cursor(0, { sr + 1, sc })
+    vim.api.nvim_win_set_cursor(0, { start_row + 1, start_column })
 
     -- Starts nvim"s visual mode.
     vim.cmd("normal! v")
 
     -- Move the cursor to the end of the context node text.
     vim.api.nvim_win_set_cursor(0, {
-        er + 1,
-        math.max(sc, ec - 1)
+        end_row + 1,
+        math.max(start_column, end_column - 1)
     })
 end, { desc = "Select syntatic context." })
 
 -- Toggle folding - CTRL + ALT + F
-vim.keymap.set({"n", "i"}, "<C-M-f>", "<Esc>za", { desc = "Toggle folding" })
+vim.keymap.set({"n", "i"}, "<C-A-f>", "<Esc>za", { desc = "Toggle folding" })
 
 -- Toggle all foldings - CTRL + ALT + SHIFT + F
-vim.keymap.set({"n", "i"}, "<C-M-S-f>", function()
+vim.keymap.set({"n", "i"}, "<C-A-S-F>", function()
     if vim.fn.foldclosed(".") == -1 then
         vim.cmd("normal! zM") -- Close all
     else
