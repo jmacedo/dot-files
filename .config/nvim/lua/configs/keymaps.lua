@@ -1,4 +1,7 @@
--- Lazy nvim
+-- Reload configs
+vim.keymap.set("n", "<leader>r", ":update<CR>:source<CR>", { desc = "Reload nvim configurations." })
+
+-- Plugin Manager: Lazy nvim
 vim.keymap.set("n", "<leader>pp", ":Lazy<CR>", { desc = "Open lazy nvim screen." })
 
 -- Mason LSP manager
@@ -8,16 +11,13 @@ vim.keymap.set("n", "<leader>pm", ":Mason<CR>", { desc = "Open mason screen." })
 vim.keymap.set("n", "<leader>e", ":Neotree toggle<CR>", { desc = "Toggle Neotree visualization." })
 vim.keymap.set({"n", "i"}, "<C-e>", ":Neotree toggle<CR>", { desc = "Toggle Neotree visualization." })
 
--- Reload configs
-vim.keymap.set("n", "<leader>r", ":update<CR>:source<CR>", { desc = "Reload nvim configurations." })
-
 -- Save - CTRL + S
-vim.keymap.set({ "n", "i" }, "<C-s>", "normal! :w<CR>", { desc = "Save document." })
-vim.keymap.set({ "n", "i" }, "<C-S-s>", "normal! :wq<CR>", { desc = "Save document and quit." })
+vim.keymap.set({ "n", "i" }, "<C-s>", "<Esc>:w<CR>", { desc = "Save document." })
+vim.keymap.set({ "n", "i" }, "<C-S-s>", "<Esc>:wq<CR>", { desc = "Save document and quit." })
 
 -- Close - CTRL + W
-vim.keymap.set({"n", "i"}, "<C-w>", "normal! :q<CR>", { desc = "Close document." })
-vim.keymap.set({"n", "i"}, "<C-S-W>", "normal! :q!<CR>", { desc = "Force close document without saving changes." })
+vim.keymap.set({"n", "i"}, "<C-w>", "<Esc>:q<CR>", { desc = "Close document." })
+vim.keymap.set({"n", "i"}, "<C-S-W>", "<Esc>:q!<CR>", { desc = "Force close document without saving changes." })
 
 -- Select all - CTRL + A
 vim.keymap.set({"n", "i"}, "<C-a>", "normal! ggVG", { desc = "Select all text." })
@@ -50,11 +50,11 @@ vim.keymap.set({"n", "i"}, "<C-S-a>", function()
     })
 end, { desc = "Select syntatic context." })
 
--- Toggle folding - CTRL + ALT + F
-vim.keymap.set("n", "<C-A-k>", "<Esc>za", { desc = "Toggle folding" })
+-- Toggle folding - Leader + z (lowercase)
+vim.keymap.set("n", "<leader>z", "za", { desc = "Toggle folding" })
 
--- Toggle all foldings - CTRL + ALT + SHIFT + F
-vim.keymap.set("n", "<C-A-S-K>", function()
+-- Toggle all foldings - Leader + Z (uppercase)
+vim.keymap.set("n", "<leader>Z", function()
     if vim.wo.foldlevel == 0 then
         vim.cmd("normal! zR")
     else
@@ -63,12 +63,13 @@ vim.keymap.set("n", "<C-A-S-K>", function()
 end, { desc = "Toggle all foldings." })
 
 -- Abas (buffers)
-vim.keymap.set("n", "<S-D-PageUp>", "<cmd>BufferLineCyclePrev<CR>", { desc = "Previous tab" })
-vim.keymap.set("n", "<S-D-PageDown>", "<cmd>BufferLineCycleNext<CR>", { desc = "Next tab" })
-vim.keymap.set("n", "<S-D-w>bd", "<cmd>bdelete<CR>", { desc = "Close tab" })
+vim.keymap.set("n", "<leader>tn", "<cmd>TablineNew<CR>")
+vim.keymap.set("n", "<leader>tq", "<cmd>TablineClose<CR>")
+vim.keymap.set("n", "<C-D-PageUp>", "<cmd>TablinePrevious<CR>")
+vim.keymap.set("n", "<C-D-PageDown>", "<cmd>TablineNext<CR>")
 
-for i = 1, 9 do
-    vim.keymap.set("n", "<S-D>" .. i, function()
-        require("bufferline").go_to(i, true)
-    end, { desc = "Go to tab " .. i })
-end
+--for i = 1, 9 do
+--    vim.keymap.set("n", "<S-D>" .. i, function()
+--        require("bufferline").go_to(i, true)
+--    end, { desc = "Go to tab " .. i })
+--end
