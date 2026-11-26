@@ -36,7 +36,8 @@
                 { "package_name": "jq", "custom_commands": [] },
                 { "package_name": "ripgrep", "custom_commands": [] },
                 { "package_name": "libarchive-tools", "custom_commands": [] },
-                { "package_name": "imagemagick", "custom_commands": [] }
+                { "package_name": "imagemagick", "custom_commands": [] },
+                { "package_name": "util-linux-extra", "custom_commands": [] }
             ]
         },
         "flatpak": {
