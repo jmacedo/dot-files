@@ -1,11 +1,22 @@
 local M = {}
 
-local colors = {
-    "#F5C2E7", -- Rosa
-    "#CBA6F7", -- Roxo
-    "#B4BEFE", -- Lavanda
-    "#89B4FA", -- Azul
-}
+-- O dashboard-nvim aplica DashboardHeader com prioridade 4096
+-- (nvim_buf_add_highlight). O gradiente precisa ficar acima disso.
+local PRIORITY = 4097
+
+local fallback = { "#F5C2E7", "#CBA6F7", "#B4BEFE", "#89B4FA" }
+
+local function palette()
+    local ok, p = pcall(function()
+        return require("catppuccin.palettes").get_palette()
+    end)
+
+    if ok and type(p) == "table" and p.pink and p.mauve and p.lavender and p.blue then
+        return { p.pink, p.mauve, p.lavender, p.blue }
+    end
+
+    return fallback
+end
 
 local function hex_to_rgb(hex)
     return {
@@ -15,75 +26,96 @@ local function hex_to_rgb(hex)
     }
 end
 
-local function rgb_to_hex(rgb)
-    return string.format(
-        "#%02X%02X%02X",
-        rgb[1], rgb[2], rgb[3]
-    )
-end
-
 local function interpolate(a, b, t)
-    local rgb_a = hex_to_rgb(a)
-    local rgb_b = hex_to_rgb(b)
+    local ca, cb = hex_to_rgb(a), hex_to_rgb(b)
     local result = {}
 
     for i = 1, 3 do
-        result[i] = math.floor(
-            rgb_a[i] + (rgb_b[i] - rgb_a[i]) * t
+        result[i] = math.floor(ca[i] + (cb[i] - ca[i]) * t)
+    end
+
+    return string.format("#%02X%02X%02X", result[1], result[2], result[3])
+end
+
+-- `steps` cores distribuídas uniformemente entre as cores da paleta.
+local function gradient(steps)
+    local colors = palette()
+    local result = {}
+
+    if steps <= 0 then
+        return result
+    end
+
+    if steps == 1 then
+        return { colors[1] }
+    end
+
+    local segments = #colors - 1
+
+    for i = 1, steps do
+        local pos = (i - 1) / (steps - 1) * segments
+        local segment = math.min(math.floor(pos) + 1, segments)
+
+        result[i] = interpolate(
+            colors[segment],
+            colors[segment + 1],
+            pos - (segment - 1)
         )
     end
 
-    return rgb_to_hex(result)
+    return result
 end
 
-local function get_gradient_color(index, total)
-    local position = (index - 1) / math.max(total - 1, 1)
-    local segments = #colors - 1
-    local segment = math.min(
-        math.floor(position * segments) + 1,
-        segments
-    )
-
-    local local_t = position * segments - (segment - 1)
-
-    return interpolate(
-        colors[segment],
-        colors[segment + 1],
-        local_t
-    )
+local function trim(line)
+    return (line:match("^%s*(.-)%s*$"))
 end
 
 function M.apply(buf, header)
     local ns = vim.api.nvim_create_namespace("DashboardGradient")
-    local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+    vim.api.nvim_buf_clear_namespace(buf, ns, 0, -1)
 
-    for i, art_line in ipairs(header) do
-        for row, buffer_line in ipairs(lines) do
-            local start_col = buffer_line:find(art_line, 1, true)
+    -- Mapeia o conteúdo visível de cada linha da arte para a sua ordem.
+    local art_index = {}
+    local art_order = {}
 
-            if start_col then
-                local group = "DashboardGradient" .. i
-                local color = get_gradient_color(i, #header)
+    for i, line in ipairs(header) do
+        local text = trim(line)
 
-                vim.api.nvim_set_hl(0, group, {
-                    fg = color,
-                    bold = true,
-                })
+        if text ~= "" then
+            art_index[text] = art_index[text] or i
+            art_order[#art_order + 1] = i
+        end
+    end
 
-                vim.api.nvim_buf_set_extmark(
-                    buf,
-                    ns,
-                    row - 1,
-                    start_col - 1,
-                    {
-                        end_col = start_col - 1 + #art_line,
-                        hl_group = group,
-                        priority = 200,
-                    }
-                )
+    if #art_order == 0 then
+        return
+    end
 
-                break
-            end
+    local step = {}
+    for position, i in ipairs(art_order) do
+        step[i] = position
+    end
+
+    local colors = gradient(#art_order)
+
+    for row, line in ipairs(vim.api.nvim_buf_get_lines(buf, 0, -1, false)) do
+        local text = trim(line)
+        local i = art_index[text]
+
+        if i then
+            local start_col = line:find(text, 1, true)
+            local group = "DashboardGradient" .. step[i]
+
+            vim.api.nvim_set_hl(0, group, {
+                fg = colors[step[i]],
+                bold = true,
+            })
+
+            vim.api.nvim_buf_set_extmark(buf, ns, row - 1, start_col - 1, {
+                end_col = start_col - 1 + #text,
+                hl_group = group,
+                priority = PRIORITY,
+            })
         end
     end
 end

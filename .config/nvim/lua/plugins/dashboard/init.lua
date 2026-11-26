@@ -1,24 +1,4 @@
-local function get_random_header()
-    local images_dir = vim.fn.stdpath("config")
-        .. "/lua/plugins/dashboard/ascii_art/images"
-    local files = vim.fn.glob(images_dir .. "/*.ascii.art", false, true)
-    local header = {}
-
-    if #files == 0 then
-        return header
-    end
-
-    local file = files[math.random(#files)]
-
-    for line in io.lines(file) do
-        table.insert(header, line)
-    end
-
-    return header
-end
-
-math.randomseed(tonumber(vim.uv.hrtime() % 2147483647))
-local random_header = get_random_header()
+local random_header = require("plugins.dashboard.ascii_art.header").get()
 
 local plugin = {
     "nvimdev/dashboard-nvim",
@@ -41,31 +21,31 @@ local plugin = {
                 shortcut = {
                     {
                         desc = "󰈔  New file",
-                        group = "DashboardShortcut",
+                        group = "DashboardShortCut",
                         action = "enew",
                         key = "n",
                     },
                     {
                         desc = "󰙅  File explorer",
-                        group = "DashboardShortcut",
+                        group = "DashboardShortCut",
                         action = "Neotree toggle",
                         key = "e",
                     },
                     {
                         desc = "󰄉  Recent files",
-                        group = "DashboardShortcut",
+                        group = "DashboardShortCut",
                         action = "Telescope oldfiles",
                         key = "r",
                     },
                     {
                         desc = "󰒲  Plugin manager",
-                        group = "DashboardShortcut",
+                        group = "DashboardShortCut",
                         action = "Lazy",
                         key = "l",
                     },
                     {
                         desc = "󰗼  Quit Neovim",
-                        group = "DashboardShortcut",
+                        group = "DashboardShortCut",
                         action = "qa",
                         key = "q",
                     },
@@ -107,7 +87,5 @@ local plugin = {
         })
     end,
 }
-
-plugin.header = random_header
 
 return plugin

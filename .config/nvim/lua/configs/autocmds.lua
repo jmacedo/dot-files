@@ -10,9 +10,8 @@ vim.api.nvim_create_autocmd("User", {
   pattern = "DashboardLoaded",
   callback = function(args)
     local gradient = require("plugins.dashboard.ascii_art.colorscheme")
-    local header = require("plugins.dashboard").header
 
-    gradient.apply(args.buf, header)
+    gradient.apply(args.buf, require("plugins.dashboard.ascii_art.header").get())
   end,
 })
 
