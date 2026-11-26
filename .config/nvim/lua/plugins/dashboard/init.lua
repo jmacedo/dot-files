@@ -1,4 +1,26 @@
-return {
+local function get_random_header()
+    local images_dir = vim.fn.stdpath("config")
+        .. "/lua/plugins/dashboard/ascii_art/images"
+    local files = vim.fn.glob(images_dir .. "/*.ascii.art", false, true)
+    local header = {}
+
+    if #files == 0 then
+        return header
+    end
+
+    local file = files[math.random(#files)]
+
+    for line in io.lines(file) do
+        table.insert(header, line)
+    end
+
+    return header
+end
+
+math.randomseed(tonumber(vim.uv.hrtime() % 2147483647))
+local random_header = get_random_header()
+
+local plugin = {
     "nvimdev/dashboard-nvim",
     event = "VimEnter",
     dependencies = {
@@ -15,6 +37,7 @@ return {
                 winbar = false,
             },
             config = {
+                header = random_header,
                 shortcut = {
                     {
                         desc = "󰈔  New file",
@@ -84,3 +107,7 @@ return {
         })
     end,
 }
+
+plugin.header = random_header
+
+return plugin
