@@ -7,10 +7,9 @@ function M.get()
         return header
     end
 
-    math.randomseed(tonumber(vim.uv.hrtime() % 2147483647))
+    math.randomseed(vim.uv.hrtime() % 2147483647)
 
-    local images_dir = vim.fn.stdpath("config")
-        .. "/lua/plugins/dashboard/ascii_art/images"
+    local images_dir = vim.fn.stdpath("config") .. "/lua/plugins/dashboard/ascii_art/images"
     local files = vim.fn.glob(images_dir .. "/*.ascii.art", false, true)
 
     header = {}

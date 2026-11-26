@@ -1,15 +1,13 @@
-local random_header = require("plugins.dashboard.ascii_art.header").get()
-
-local plugin = {
+return {
     "nvimdev/dashboard-nvim",
     event = "VimEnter",
     dependencies = {
         "nvim-tree/nvim-web-devicons",
     },
     config = function()
-        local dashboard = require("dashboard")
+        local random_header = require("plugins.dashboard.ascii_art.header").get()
 
-        dashboard.setup({
+        require("dashboard").setup({
             theme = "hyper",
             hide = {
                 statusline = false,
@@ -87,5 +85,3 @@ local plugin = {
         })
     end,
 }
-
-return plugin

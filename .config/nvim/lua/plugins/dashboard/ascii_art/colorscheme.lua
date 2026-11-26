@@ -1,9 +1,7 @@
 local M = {}
 
--- O dashboard-nvim aplica DashboardHeader com prioridade 4096
--- (nvim_buf_add_highlight). O gradiente precisa ficar acima disso.
+-- AI: dashboard-nvim applies DashboardHeader with priority 4096 (nvim_buf_add_highlight)
 local PRIORITY = 4097
-
 local fallback = { "#F5C2E7", "#CBA6F7", "#B4BEFE", "#89B4FA" }
 
 local function palette()
@@ -37,7 +35,6 @@ local function interpolate(a, b, t)
     return string.format("#%02X%02X%02X", result[1], result[2], result[3])
 end
 
--- `steps` cores distribuídas uniformemente entre as cores da paleta.
 local function gradient(steps)
     local colors = palette()
     local result = {}
@@ -74,7 +71,6 @@ function M.apply(buf, header)
     local ns = vim.api.nvim_create_namespace("DashboardGradient")
     vim.api.nvim_buf_clear_namespace(buf, ns, 0, -1)
 
-    -- Mapeia o conteúdo visível de cada linha da arte para a sua ordem.
     local art_index = {}
     local art_order = {}
 
