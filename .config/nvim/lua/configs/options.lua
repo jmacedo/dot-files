@@ -11,7 +11,7 @@ vim.o.smarttab = true
 -- Window
 vim.o.winborder = "rounded"
 vim.o.signcolumn = "yes:1"
-vim.o.showtabline = 2
+vim.o.showtabline = 1
 vim.o.ruler = true
 vim.o.rulerformat = "%l (%L):%c - %p%%"
 
