@@ -66,6 +66,7 @@ end, { desc = "Toggle all foldings." })
 -- Abas (buffers)
 vim.keymap.set("n", "<leader>tn", "<cmd>TablineNew<CR>")
 vim.keymap.set("n", "<leader>tq", "<cmd>TablineClose<CR>")
+vim.keymap.set("n", "<leader>tr", "<cmd>TablineRename<CR>")
 vim.keymap.set("n", "<C-D-PageUp>", "<cmd>TablinePrevious<CR>")
 vim.keymap.set("n", "<C-D-PageDown>", "<cmd>TablineNext<CR>")
 

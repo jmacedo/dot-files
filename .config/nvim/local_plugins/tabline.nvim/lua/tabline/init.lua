@@ -20,6 +20,9 @@ M.config = {
             bg = "#181818",
         },
     },
+    event_listeners = {
+        autocmd_group = "TablineListeners",
+    },
 }
 
 M.runtime = {
@@ -31,6 +34,9 @@ M.runtime = {
         list = {
             { id = nil, autocmd_id = nil },
         },
+    },
+    event_listeners = {
+        autocmd_group = nil,
     },
 }
 
@@ -185,6 +191,16 @@ function M._get_tab_buffer(tabpage)
 end
 
 function M._get_tab_label(tabpage)
+    local ok, custom_name = pcall(
+        vim.api.nvim_tabpage_get_var,
+        tabpage,
+        "tabline_name"
+    )
+
+    if ok and custom_name ~= "" then
+        return custom_name
+    end
+
     local buffer_id = M._get_tab_buffer(tabpage)
 
     local buffer_name = M._get_buffer_name(buffer_id)
@@ -241,11 +257,21 @@ function M.close_tab(buffer_id)
             local windows_list = vim.api.nvim_tabpage_list_wins(tabpage)
 
             for _, window in ipairs(windows_list) do
-                if vim.api.nvim_win_get_buf(window) == buffer_id then
+                local bufnr = vim.api.nvim_win_get_buf(window)
+
+                if bufnr == buffer_id then
                     if #windows_list > 1 then
                         vim.api.nvim_win_close(window, true)
                     else
                         if #tabpages_list == 1 then
+                            vim.cmd("quit")
+                        else
+                            vim.api.nvim_set_current_tabpage(tabpage)
+                            vim.cmd("tabclose")
+                        end
+                    end
+                else if #windows_list == 2 and vim.bo[bufnr].filetype == "neo-tree" then
+                    if #tabpages_list == 1 then
                             vim.cmd("quit")
                         else
                             vim.api.nvim_set_current_tabpage(tabpage)
@@ -271,7 +297,33 @@ function M.move_previous_tab()
 end
 
 function M.rename_tab()
-    -- TODO: Not implemented yet.
+    local tabpage = vim.api.nvim_get_current_tabpage()
+
+    local ok, current_name = pcall(
+        vim.api.nvim_tabpage_get_var,
+        tabpage,
+        "tabline_name"
+    )
+
+    vim.ui.input(
+        {
+            prompt = "Rename tab: ",
+            default = ok and current_name or "",
+        },
+        function(name)
+            if name == nil then
+                return
+            end
+
+            if name == "" then
+                pcall(vim.api.nvim_tabpage_del_var, tabpage, "tabline_name")
+            else
+                vim.api.nvim_tabpage_set_var(tabpage, "tabline_name", name)
+            end
+
+            vim.cmd("redrawtabline")
+        end
+    )
 end
 
 return M
