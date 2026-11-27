@@ -178,27 +178,25 @@ __ps1_align_three_columns() {
 }
 
 __ps1_prompt_command() {
+    printf -v current_datetime "%(%d/%m/%Y %H:%M)T" -1
+    local current_datetime+="h"
+
+    local git_modified_icon=""
+    local current_dir=""
+    local left_visible=""
+    local center_visible=""
+    local right_visible=""
+    local left_rendered=""
+    local center_rendered=""
+    local right_rendered=""
+    local top_line=""
+    local git_visible=""
+    local git_rendered=""
+    local last_exec_status=""
+    local last_exec_status_color=""
+
     local last_exec_status_code=$?
-    local git_branch
-    local user_icon
-    local os_icon
-    local dir_icon
-    local clock_icon
-    local git_icon
-    local git_modified_icon
-    local success_icon
-    local failure_icon
-    local prompt_icon
-    local left_border_up
-    local left_border_down
-    local current_datetime
-    local color_green
-    local color_red
-    local color_blue
-    local color_purple
-    local color_light_red
-    local color_gray
-    local color_yellow
+    local short_hostname="${HOSTNAME%%.*}" # Match the short host name displayed by \h.
     local _color_green=${THEME_COLOR2_RGB[@]}
     local _color_red=${THEME_COLOR1_RGB[@]}
     local _color_blue=${THEME_COLOR4_RGB[@]}
@@ -206,42 +204,26 @@ __ps1_prompt_command() {
     local _color_light_red=${THEME_COLOR9_RGB[@]}
     local _color_gray=${THEME_COLOR8_RGB[@]}
     local _color_yellow=${THEME_COLOR11_RGB[@]}
-    local style_reset
-    local current_dir
-    local short_hostname
-    local git_visible=""
-    local git_rendered=""
-    local left_visible
-    local center_visible
-    local right_visible
-    local left_rendered
-    local center_rendered
-    local right_rendered
-    local top_line
-    local last_exec_status=""
-    local last_exec_status_color=""
 
-    git_branch=$(__ps1_get_git_branch)
-    user_icon=$(__ps1_get_user_icon)
-    os_icon=$(__ps1_get_os_icon)
-    dir_icon=$(__ps1_get_dir_icon)
-    clock_icon=$(__ps1_get_clock_icon)
-    git_icon=$(__ps1_get_git_icon)
-    success_icon=$(__ps1_get_success_icon)
-    failure_icon=$(__ps1_get_failure_icon)
-    prompt_icon=$(__ps1_get_prompt_icon)
-    left_border_up=$(__ps1_get_left_border_up)
-    left_border_down=$(__ps1_get_left_border_down)
-    printf -v current_datetime "%(%d/%m/%Y %H:%M)T" -1
-    current_datetime+="h"
-    color_green=$(__ps1_sty_color ${_color_green[@]})
-    color_red=$(__ps1_sty_color ${_color_red[@]})
-    color_blue=$(__ps1_sty_color ${_color_blue[@]})
-    color_purple=$(__ps1_sty_color ${_color_purple[@]})
-    color_light_red=$(__ps1_sty_color ${_color_light_red[@]})
-    color_gray=$(__ps1_sty_color ${_color_gray[@]})
-    color_yellow=$(__ps1_sty_color ${_color_yellow[@]})
-    style_reset=$(__ps1_sty_reset)
+    local git_branch=$(__ps1_get_git_branch)
+    local user_icon=$(__ps1_get_user_icon)
+    local os_icon=$(__ps1_get_os_icon)
+    local dir_icon=$(__ps1_get_dir_icon)
+    local clock_icon=$(__ps1_get_clock_icon)
+    local git_icon=$(__ps1_get_git_icon)
+    local success_icon=$(__ps1_get_success_icon)
+    local failure_icon=$(__ps1_get_failure_icon)
+    local prompt_icon=$(__ps1_get_prompt_icon)
+    local left_border_up=$(__ps1_get_left_border_up)
+    local left_border_down=$(__ps1_get_left_border_down)
+    local color_green=$(__ps1_sty_color ${_color_green[@]})
+    local color_red=$(__ps1_sty_color ${_color_red[@]})
+    local color_blue=$(__ps1_sty_color ${_color_blue[@]})
+    local color_purple=$(__ps1_sty_color ${_color_purple[@]})
+    local color_light_red=$(__ps1_sty_color ${_color_light_red[@]})
+    local color_gray=$(__ps1_sty_color ${_color_gray[@]})
+    local color_yellow=$(__ps1_sty_color ${_color_yellow[@]})
+    local style_reset=$(__ps1_sty_reset)
 
     # Convert $PWD to a short path equivalent to \w.
     if [[ "$PWD" == "$HOME" ]]; then
@@ -251,9 +233,6 @@ __ps1_prompt_command() {
     else
         current_dir=$PWD
     fi
-
-    # Match the short host name displayed by \h.
-    short_hostname="${HOSTNAME%%.*}"
 
     # Build Git sections without and with ANSI escape sequences.
     if [[ -n "$git_branch" ]]; then
@@ -316,6 +295,7 @@ __ps1_prompt_command() {
     builtin history -n
 }
 
+# TODO: I have to make some validations here.
 source "$HOME/.config/bash/themes/$THEME_CURRENT.theme.bashrc"
 CUSTOM_USER_PS1="\u@\h - \w"
 PROMPT_COMMAND="__ps1_prompt_command"

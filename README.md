@@ -1,22 +1,11 @@
 # dot-files
 
 Personal desktop setup for Debian-based `x86_64` Linux systems.
-
 - Review the package list and versions inside `setup.sh`.
 - The setup makes timestamped backups (`.<timestamp>.bkp`) of every managed destination it replaces.
 
 ## Maintainer notes
 
-- Old used packages to handle manually LSP's:
-  - `setup-params.json`:
-    - `{ "package_name": "clangd", "custom_commands": [] }`
-    - `{ "package_name": "default-jdk", "custom_commands": [] }`
-    - `{ "package_name": "golang-go", "custom_commands": [] }`
-    - `{ "package_name": "pipx", "custom_commands": [] }`
-    - `{ "package_name": "python3-venv", "custom_commands": [] }`
-    - `{ "package_name": "php-cli", "custom_commands": [] }`
-    - `{ "package_name": "composer", "custom_commands": [] }`
-- Local font files can be installed with `install_local_font`; the configured Nerd Fonts are downloaded by `install_web_font` during setup.
 - Roadmap 1.0:
   - [x] Configure spaces between ps1 blocks.
   - [x] fzf
@@ -52,20 +41,25 @@ Personal desktop setup for Debian-based `x86_64` Linux systems.
   - [ ] Finalize nvim base configs
     - [ ] LSP with visual completion.
     - [ ] Tabs.
-    - [ ] File explorer with CTRL+O mapped.
+    - [x] File explorer with CTRL+O mapped.
     - [ ] Fuzzy finding (CTRL+F) and definitions search (CTRL+ALT+F ???).
     - [ ] Code folding.
-    - [ ] SHIFT+[LEFT|RIGHT]: select text.
-    - [ ] CTRL+SHIFT+[LEFT|RIGHT]: select text faster between words.
-    - [ ] CTRL+[LEFT|RIGHT]: navigate faster between words.
-    - [ ] [CTRL|CTRL+SHIFT]+[HOME|END]: TODO: description.
-  - ... (TODO)
+  - [ ] Study about AI agent development to structure my environment and projects.
 - Roadmap 2.0 (totally brainstorming):
-  - Implement "pill style" in ps1 blocks.
-  - Fabrix Bash (.config/fabrix-bash):
-  - ... (TODO)
+  - [ ] Implement "pill style" in ps1 blocks.
+  - [ ] Fabrix Bash (.config/fabrix-bash):
+  - [ ] ... (TODO)
   - Organize:
     - find X fd differences.
-    - All about "bat".
-    - All about ffmpeg.
-    - All about nvim buffers.
+    - [ ] All about "bat".
+    - [ ] All about ffmpeg.
+    - [x] All about nvim buffers.
+- Old packages used to handle manually LSP's:
+  - `setup-params.json`:
+    - `{ "package_name": "clangd", "custom_commands": [] }`
+    - `{ "package_name": "default-jdk", "custom_commands": [] }`
+    - `{ "package_name": "golang-go", "custom_commands": [] }`
+    - `{ "package_name": "pipx", "custom_commands": [] }`
+    - `{ "package_name": "python3-venv", "custom_commands": [] }`
+    - `{ "package_name": "php-cli", "custom_commands": [] }`
+    - `{ "package_name": "composer", "custom_commands": [] }`

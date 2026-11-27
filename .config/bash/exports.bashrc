@@ -7,14 +7,11 @@ export PATH="$HOME/.local/bin:$PATH"
 export EDITOR="nvim"
 export VISUAL="nvim"
 
-# Go, cargo, npm, fnm, composer
-#export PATH="$HOME/Apps/fnm:$PATH"
+# BASH THEME (`~/.config/bash/themes/<name>.theme.bashrc`)
+export THEME_CURRENT="catppuccin-frappe"
 
 # Zoxide
 export _ZO_DATA_DIR="$XDG_DATA_HOME/zoxide"
-
-# BASH THEME (`~/.config/bash/themes/<name>.theme.bashrc`)
-export THEME_CURRENT="catppuccin-frappe"
 
 # Fzf theme
 export FZF_THEME="catppuccin-frappe"

@@ -1,9 +1,4 @@
 {
-    "runtime": {
-        "external_libraries": [
-            "setup-lib.sh"
-        ]
-    },
     "custom_directories": {
         "apps_directory": "Apps",
         "list": [
@@ -12,10 +7,19 @@
             ".docker"
         ]
     },
-    "installations_backups": {
-        "backup_extension": "bkp",
-        "datetime_pattern": "+%Y%m%d%H%M%S"
-    },
+    "dot_files": [
+        ".config/bash",
+        ".config/kitty",
+        ".config/nvim",
+        ".config/fzf",
+        ".config/lazygit",
+        ".config/superfile",
+        ".bashrc",
+        ".gitconfig",
+        ".gitconfig.local.example",
+        ".gitignore",
+        ".hidden"
+    ],
     "applications": {
         "apt": {
             "list": [
@@ -138,17 +142,13 @@
         ],
         "local_fonts": []
     },
-    "dot_files": [
-        ".config/bash",
-        ".config/kitty",
-        ".config/nvim",
-        ".config/fzf",
-        ".config/lazygit",
-        ".config/superfile",
-        ".bashrc",
-        ".gitconfig",
-        ".gitconfig.local.example",
-        ".gitignore",
-        ".hidden"
-    ]
+    "runtime": {
+        "external_libraries": [
+            "setup-lib.sh"
+        ]
+    },
+    "installations_backups": {
+        "backup_extension": "bkp",
+        "datetime_pattern": "+%Y%m%d%H%M%S"
+    }
 }

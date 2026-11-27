@@ -21,10 +21,10 @@ vim.keymap.set({"n", "i"}, "<C-w>", "<Esc>:q<CR>", { desc = "Close document." })
 vim.keymap.set({"n", "i"}, "<C-S-W>", "<Esc>:q!<CR>", { desc = "Force close document without saving changes." })
 
 -- Select all - CTRL + A
-vim.keymap.set({"n", "i"}, "<C-a>", "normal! ggVG", { desc = "Select all text." })
+vim.keymap.set("n", "<C-a>", "ggVG", { desc = "Select all text." })
 
 -- Select word - CTRL + P
-vim.keymap.set({"n", "i"}, "<C-p>", "normal! viw", { desc = "Select the word under cursor." })
+vim.keymap.set("n", "<C-p>", "viw", { desc = "Select the word under cursor." })
 
 -- Select context - CTRL + SHIFT + A
 vim.keymap.set({"n", "i"}, "<C-S-a>", function()

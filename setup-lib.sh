@@ -1,5 +1,17 @@
 #!/usr/bin/env bash
 
+has_kvm() {
+    while read -r module _; do
+        case "${module:-}" in
+            kvm|kvm_intel|kvm_amd)
+                return 0
+                ;;
+        esac
+    done < /proc/modules
+    
+    return 1
+}
+
 backup_path() {
     local destination="${1:-}"
 
@@ -14,18 +26,6 @@ exclude_temp_path() {
     CLEANUP_PATHS+=("${1:-}")
 
     return 0
-}
-
-has_kvm() {
-    while read -r module _; do
-        case "${module:-}" in
-            kvm|kvm_intel|kvm_amd)
-                return 0
-                ;;
-        esac
-    done < /proc/modules
-    
-    return 1
 }
 
 install_local_font() {
@@ -107,8 +107,13 @@ expand_variables() {
     printf '%s' "$input"
 }
 
+# Parameters:
+# @repo_name: Repository name like "<user>/<repo>".
+# @version: Version.
+# @$asset_pattern: Pattern to filter URL's to download the package.
+# @bin_name: Name of the main binary of the app and also used to name the ~/Apps/<app_name> folder.
+# @strip_components: Number of "root folders" inside compressed file before real root level.
 install_bin_from_github() {
-    # Params: $repo_name $version $asset_pattern $bin_name $strip_components
     local repository="${1:-}"
     local version="${2:-'latest'}"
     local filename_pattern="${3:?"Missing asset pattern for github binary"}"

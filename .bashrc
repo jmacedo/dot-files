@@ -13,7 +13,7 @@ esac
 BASH_CONFIG_DIR="$HOME/.config/bash"
 
 # External .bashrc configs: "~/.config/bash/<name>.bashrc".
-# Pay attention to the order to load each one.
+# :ATTENTION: Pay attention to the order to load each one.
 bashrc_list=(
   "aliases"
   "completion"

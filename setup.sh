@@ -10,7 +10,6 @@
 set -Eeuo pipefail
 
 install_docker() {
-    # Initialize.
     local apt_source_template="${SCRIPT_DIR:-$HOME}/.config/docker/docker.sources"
     local code_name=""
     local architecture=""
@@ -68,16 +67,19 @@ install_docker() {
         docker-sbx
 
     # Permissions.
+    # TODO: Verify if this is working.
     sudo groupadd -f docker
     sudo usermod -aG docker,kvm "$(whoami)"
 
     # Services.
+    # TODO: Verify if this is working.
     sudo systemctl enable --now docker.service containerd.service
 
     return 0
 }
 
 install_nodejs() {
+    # TODO: Update to get last version dinamically.
     local version="v26.13.1"
     local platform="linux-x64"
     local package_name="node-${version}-${platform}.tar.gz"
@@ -157,14 +159,6 @@ main_install() {
     return 0
 }
 
-main_configs() {
-    while IFS= read -r dot_file; do
-        install_config "$dot_file"
-    done < <(jq -r ".dot_files[]" "$JSON_PARAMETERS_PATH")
-
-    return 0
-}
-
 main_flatpaks() {
     flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
@@ -186,6 +180,7 @@ main_flatpaks() {
         done < <(jq -r ".custom_commands[]" <<< "$flatpak_object")
     done < <(jq -rc ".applications.flatpak.list[]" "$JSON_PARAMETERS_PATH")
 
+    # TODO: Verify if this is a "VM situation", or a real PopOS issue (including new 26.04 update).
     # On PopOS 24.04, some flatpak apps bugged to launch.
     # The code below configures a work-around to fix it, once launchers in `~/.local/share/applications` have priority.
 
@@ -198,11 +193,21 @@ main_flatpaks() {
     return 0
 }
 
+main_configs() {
+    while IFS= read -r dot_file; do
+        install_config "$dot_file"
+    done < <(jq -r ".dot_files[]" "$JSON_PARAMETERS_PATH")
+
+    return 0
+}
+
 main_fonts() {
+    # NerdFonts.
     while IFS= read -r nerd_font; do
         install_web_font "$nerd_font"
     done < <(jq -r ".fonts.nerd_fonts[]" "$JSON_PARAMETERS_PATH")
 
+    # Local fonts.
     while IFS= read -r local_font; do
         install_local_font "$local_font"
     done < <(jq -r ".fonts.local_fonts[]" "$JSON_PARAMETERS_PATH")
@@ -213,7 +218,6 @@ main_fonts() {
 }
 
 main() {
-    # Initialize.
     sudo apt update -y
     sudo apt upgrade -y
     sudo apt autoremove -y
@@ -242,6 +246,7 @@ main() {
         "$HOME/.local/share/applications" \
         "$HOME/.local/share/zoxide"
 
+    # Custom directories.
     while IFS= read -r directory; do
         mkdir -p -- "$HOME/$directory"
     done < <(jq -r ".custom_directories.list[]" "$JSON_PARAMETERS_PATH")
@@ -267,4 +272,5 @@ cleanup_temp_paths() {
 }
 CLEANUP_PATHS=()
 trap cleanup_temp_paths EXIT
+
 main "$@"
