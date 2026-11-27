@@ -64,8 +64,8 @@
 - Tabs:
     - [CTRL+n]: Open new tab
     - [CTRL+q]: Close current tab
-    - [CTRL+[PageUp|PageDown]]: Navigate between tabs
-    - [CTRL+Shift+[PageUp|PageDown]]: Move current tab [Backward|Forward]
+    - [CTRL+CMD+[PageUp|PageDown]]: Navigate between tabs
+    - [CTRL+CMD+Shift+[PageUp|PageDown]]: Move current tab [Backward|Forward]
     - [CTRL+Shift+r]: Rename current tab
 - Panels:
     - [CTRL+Alt+h]: Create a side panel (horizontally)
@@ -90,13 +90,18 @@
     - [CTRL+p]: Select word text
     - [CTRL+Shift+a]: Select all context text
 - Tabs:
-    - Preffix: [Leader+t]
-    - [Preffix+n]: Open new tab
-    - [Preffix+q]: Close current tab
-    - [CTRL+CMD+[PageUp|PageDown]]: Navigate between tabs
-    - [CTRL+CMD+Shift[PageUp|PageDown]]: Move tabs
-    - [CTRL+CMD+[1-9]]|[Preffix+[1-9]]: Select the N(th) tab
+    - Prefix: [Leader+t]
+    - [Prefix+n]: Open new tab
+    - [Prefix+q]: Close current tab
+    - [CTRL+[PageUp|PageDown]]: Navigate between tabs
+    - [CTRL+CMD+Shift+[PageUp|PageDown]]: Move current tab [Backward|Forward]
+    - [CTRL+CMD+[1-9]]|[Prefix+[1-9]]: Select the N(th) tab
 - Tools/Helpers:
     - [Leader+e|CTRL+e]: File explorer
     - [Leader+z]: Toggle code folding
     - [Leader+Z]: Toggle all code foldings
+- Selection:
+    - [Shift+[Arrows|Home|End]]: Start/extend visual selection
+    - [Shift+CTRL+[Arrows|Home|End]]: Word/document selection
+- Telescope:
+    - [Leader+ff|fg|fs|fb|fr|fc|fh]: Files, grep, word, buffers, recent, git, help

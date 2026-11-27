@@ -44,14 +44,14 @@ vim.o.confirm = true
 -- Autocompĺete
 vim.o.autocomplete = true
 
--- Folding
+-- Folding (Treesitter + fallback indent)
 vim.o.foldenable = true
-vim.o.foldmethod = "manual"
+vim.o.foldmethod = "expr"
+vim.o.foldexpr = "vim.treesitter.foldexpr()"
+vim.o.foldtext = "vim.treesitter.foldtext()"
 vim.o.foldopen = "all"
 vim.o.foldclose = "all"
-vim.o.foldlevel = 99 -- All opened
-vim.o.foldlevelstart = 0 -- All closed at startup
-vim.o.foldtext = "getline(v:foldstart)" -- "foldtext()", "getline(v:foldstart)"
+vim.o.foldlevelstart = 0 -- Fechados por padrão
 vim.o.foldcolumn = "1"
 
 -- Mouse

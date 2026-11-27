@@ -110,15 +110,15 @@ expand_variables() {
 # Parameters:
 # @repo_name: Repository name like "<user>/<repo>".
 # @version: Version.
-# @$asset_pattern: Pattern to filter URL's to download the package.
 # @bin_name: Name of the main binary of the app and also used to name the ~/Apps/<app_name> folder.
 # @strip_components: Number of "root folders" inside compressed file before real root level.
+# @asset_pattern: Regex única usada para selecionar o asset de release.
 install_bin_from_github() {
     local repository="${1:-}"
     local version="${2:-'latest'}"
-    local filename_pattern="${3:?"Missing asset pattern for github binary"}"
-    local binary_name="${4:-"${repository#*/}"}"
-    local strip_components="${5:-0}"
+    local binary_name="${3:-"${repository#*/}"}"
+    local strip_components="${4:-0}"
+    local filename_pattern="${5:?"Missing asset pattern for github binary"}"
 
     local release_api_url="https://api.github.com/repos/${repository}/releases/${version}"
     local install_dir="$CUSTOM_USER_APPS_DIR/$binary_name"
@@ -135,21 +135,27 @@ install_bin_from_github() {
         return 1
     fi
 
+    local cached_pattern=""
     if [[ -f "$binary_download_url_cache_file" ]]; then
-        binary_download_url=$(cat "$binary_download_url_cache_file")
-    else
+        cached_pattern="$(head -n 1 "$binary_download_url_cache_file")"
+        if [[ "$cached_pattern" == "$filename_pattern" ]]; then
+            binary_download_url="$(tail -n +2 "$binary_download_url_cache_file")"
+        fi
+    fi
+
+    if [[ -z "$binary_download_url" ]]; then
         if ! binary_download_url="$(
             curl --fail --silent --show-error --location \
                 --header "Accept: application/vnd.github+json" "$release_api_url" |
                 jq -er --arg pattern "$filename_pattern" \
-                    '[.assets[].browser_download_url | select(test($pattern))] |
+                    '[.assets[].browser_download_url | select(test($pattern; "i"))] |
                     if length == 1 then .[0] else empty end'
         )"; then
             printf "Installation of '%s' failed.\nExpected one matching release asset.\n" "$binary_name" >&2
             return 1
-        else
-            echo "$binary_download_url" > "$binary_download_url_cache_file"
         fi
+
+        printf '%s\n%s\n' "$filename_pattern" "$binary_download_url" > "$binary_download_url_cache_file"
     fi
 
     # Backup current.

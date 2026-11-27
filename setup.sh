@@ -9,6 +9,9 @@
 # `-o pipefail` - Raise errors inside a chain of commands (`cmdA | cmdB | cmdC`) instead of by default use the last command status code.
 set -Eeuo pipefail
 
+# Regex única para selecionar assets de release (Linux x86_64/amd64/x64).
+readonly BINARY_ASSET_PATTERN='(x86_64|amd64|x64).*\.(tar\.gz|txz|zip)$'
+
 install_docker() {
     local apt_source_template="${SCRIPT_DIR:-$HOME}/.config/docker/docker.sources"
     local code_name=""
@@ -67,13 +70,26 @@ install_docker() {
         docker-sbx
 
     # Permissions.
-    # TODO: Verify if this is working.
     sudo groupadd -f docker
     sudo usermod -aG docker,kvm "$(whoami)"
 
     # Services.
-    # TODO: Verify if this is working.
     sudo systemctl enable --now docker.service containerd.service
+
+    # Group membership only applies to new sessions.
+    if ! id -nG "$(whoami)" | grep -qw docker; then
+        printf '%s\n' \
+            "Docker instalado, mas o grupo 'docker' ainda não está ativo nesta sessão." \
+            "Faça logout/login ou execute: newgrp docker kvm" >&2
+    fi
+
+    if [[ -S /var/run/docker.sock ]]; then
+        local socket_group
+        socket_group="$(stat -c '%G' /var/run/docker.sock 2>/dev/null || true)"
+        if [[ "$socket_group" != "docker" ]]; then
+            printf "Atenção: /var/run/docker.sock pertence ao grupo '%s' (esperado: docker).\n" "$socket_group" >&2
+        fi
+    fi
 
     return 0
 }
@@ -120,11 +136,10 @@ main_install() {
         local bin_name="$(jq -r ".bin_name" <<< "$binary_object")"
         local version="$(jq -r ".version" <<< "$binary_object")"
         local strip_components="$(jq -r ".strip_components" <<< "$binary_object")"
-        local asset_pattern="$(jq -r ".asset_pattern" <<< "$binary_object")"
         local catppuccin_flavor="$(jq -r ".catppuccin.flavor" <<< "$binary_object")"
         local catppuccin_variant="$(jq -r ".catppuccin.variant" <<< "$binary_object")"
 
-        install_bin_from_github "$repo_name" "$version" "$asset_pattern" "$bin_name" "$strip_components"
+        install_bin_from_github "$repo_name" "$version" "$bin_name" "$strip_components" "$BINARY_ASSET_PATTERN"
 
         while IFS= read -r command; do
             local parsed_command=""
@@ -260,7 +275,7 @@ main() {
 
     # Finalize.
     echo "Finish!"
-    echo "Remember to login to docker with: sbx login."
+    echo "Docker: use 'sbx login' e, se necessário, 'newgrp docker kvm' (ou faça logout/login)."
 }
 
 cleanup_temp_paths() {

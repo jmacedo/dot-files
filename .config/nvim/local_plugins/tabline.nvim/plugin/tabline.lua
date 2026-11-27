@@ -33,6 +33,21 @@ vim.api.nvim_create_user_command("TablineRename", function()
     Tabline.rename_tab()
 end, { desc = "Rename current tab", })
 
+vim.api.nvim_create_user_command("TablineSelect", function(opts)
+    local index = tonumber(opts.args)
+    if index then
+        Tabline.select_tab(index)
+    end
+end, { desc = "Select tab by index", nargs = 1 })
+
+vim.api.nvim_create_user_command("TablineMoveForward", function()
+    Tabline.move_tab("forward")
+end, { desc = "Move current tab forward" })
+
+vim.api.nvim_create_user_command("TablineMoveBackward", function()
+    Tabline.move_tab("backward")
+end, { desc = "Move current tab backward" })
+
 --[[
 AUTO COMMANDS
 ]]--

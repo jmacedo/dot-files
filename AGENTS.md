@@ -13,12 +13,10 @@
   - Entusiasta de tecnologia relacionada a PC e programação.
   - Não tem saldo financeiro para nenhum investimento em ferramentas.
   - Tenho interesse em projetos DIY.
- 
-## Autorização explícita
+ ## Autorização explícita
 Toda ação de escrita e execução deve pedir autorização de acesso, e deve ser feita da mesma forma:
 - Um menu com opções de respostas para eu escolher, sendo uma delas para eu digitar a resposta.
 - Execução de comandos com a finalidade de ler o conteúdo de arquivos de texto não precisam de autorização obrigatória.
-
 ## Objetivos de utilização da LLM
 - Quero ajuda para implementar o roadmap definido no README.md da raiz do projeto, de acordo com o que eu for requisitando.
 - Os objetivos do roadmap não devem ser adiantados por decisão exclusiva da LLM.

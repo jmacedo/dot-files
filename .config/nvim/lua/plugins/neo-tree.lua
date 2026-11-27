@@ -5,9 +5,17 @@ return {
         event_handlers = {
             {
                 event = "file_opened",
-                handler = function(_)
+                handler = function(args)
+                    local path = (args.filedata and args.filedata.path) or vim.fn.expand("%:p")
+
+                    if path == "" then
+                        return
+                    end
+
+                    local dir = vim.fs.dirname and vim.fs.dirname(path) or vim.fn.fnamemodify(path, ":h")
+
                     vim.schedule(function()
-                        vim.cmd("Neotree focus")
+                        vim.cmd("Neotree dir=" .. vim.fn.fnameescape(dir) .. " focus")
                     end)
                 end,
             },

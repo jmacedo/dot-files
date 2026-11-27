@@ -51,27 +51,54 @@ vim.keymap.set({"n", "i"}, "<C-S-a>", function()
     })
 end, { desc = "Select syntatic context." })
 
+-- Seleção com SHIFT / SHIFT+CTRL (normal + visual).
+local selection_motions = {
+    { "<S-Left>", "<Left>" },
+    { "<S-Right>", "<Right>" },
+    { "<S-Up>", "<Up>" },
+    { "<S-Down>", "<Down>" },
+    { "<S-C-Left>", "<C-Left>" },
+    { "<S-C-Right>", "<C-Right>" },
+    { "<S-Home>", "<Home>" },
+    { "<S-End>", "<End>" },
+    { "<S-C-Home>", "<C-Home>" },
+    { "<S-C-End>", "<C-End>" },
+}
+
+for _, motion in ipairs(selection_motions) do
+    local key, move = motion[1], motion[2]
+    vim.keymap.set("n", key, "v" .. move, { desc = "Start visual selection: " .. key })
+    vim.keymap.set("v", key, move, { desc = "Extend visual selection: " .. key })
+end
+
 -- Toggle folding - Leader + z (lowercase)
 vim.keymap.set("n", "<leader>z", "za", { desc = "Toggle folding" })
 
 -- Toggle all foldings - Leader + Z (uppercase)
 vim.keymap.set("n", "<leader>Z", function()
-    if vim.wo.foldlevel == 0 then
-        vim.cmd("normal! zR")
-    else
+    if vim.wo.foldlevel > 0 then
         vim.cmd("normal! zM")
+    else
+        vim.cmd("normal! zR")
     end
 end, { desc = "Toggle all foldings." })
 
--- Abas (buffers)
-vim.keymap.set("n", "<leader>tn", "<cmd>TablineNew<CR>")
-vim.keymap.set("n", "<leader>tq", "<cmd>TablineClose<CR>")
-vim.keymap.set("n", "<leader>tr", "<cmd>TablineRename<CR>")
-vim.keymap.set("n", "<C-D-PageUp>", "<cmd>TablinePrevious<CR>")
-vim.keymap.set("n", "<C-D-PageDown>", "<cmd>TablineNext<CR>")
+-- Abas (tabs)
+vim.keymap.set("n", "<leader>tn", "<cmd>TablineNew<CR>", { desc = "New tab" })
+vim.keymap.set("n", "<leader>tq", "<cmd>TablineClose<CR>", { desc = "Close tab" })
+vim.keymap.set("n", "<leader>tr", "<cmd>TablineRename<CR>", { desc = "Rename tab" })
 
---for i = 1, 9 do
---    vim.keymap.set("n", "<S-D>" .. i, function()
---        require("bufferline").go_to(i, true)
---    end, { desc = "Go to tab " .. i })
---end
+-- Navegação (kitty → nvim): CTRL + PageUp/PageDown.
+vim.keymap.set("n", "<C-PageUp>", "<cmd>TablinePrevious<CR>", { desc = "Previous tab" })
+vim.keymap.set("n", "<C-PageDown>", "<cmd>TablineNext<CR>", { desc = "Next tab" })
+
+-- Movimentação: CTRL + SHIFT + CMD + PageUp/PageDown.
+vim.keymap.set("n", "<C-D-S-PageUp>", "<cmd>TablineMoveBackward<CR>", { desc = "Move tab backward" })
+vim.keymap.set("n", "<C-D-S-PageDown>", "<cmd>TablineMoveForward<CR>", { desc = "Move tab forward" })
+
+-- Seleção direta: CTRL + CMD + [1-9] ou <leader>t[1-9].
+for i = 1, 9 do
+    local desc = "Go to tab " .. i
+    vim.keymap.set("n", "<C-D-" .. i .. ">", "<cmd>TablineSelect " .. i .. "<CR>", { desc = desc })
+    vim.keymap.set("n", "<leader>t" .. i, "<cmd>TablineSelect " .. i .. "<CR>", { desc = desc })
+end

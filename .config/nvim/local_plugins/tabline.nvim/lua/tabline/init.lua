@@ -6,20 +6,7 @@ M.config = {
         modified_char = " +",
         close_tab_char = " X",
     },
-    theme = {
-        current_tab = {
-            fg = "#ffffff",
-            bg = "#444444",
-        },
-        inactive_tabs = {
-            fg = "#888888",
-            bg = "#202020",
-        },
-        fill = {
-            fg = "#666666",
-            bg = "#181818",
-        },
-    },
+    theme = nil, -- Definido por require("tabline").setup({ theme = ... })
     event_listeners = {
         autocmd_group = "TablineListeners",
     },
@@ -47,12 +34,21 @@ function M.setup(custom_configs)
         custom_configs or {}
     )
 
-    vim.api.nvim_set_hl(0, "TabLine", { fg = M.config.theme.inactive_tabs.fg, bg = M.config.theme.inactive_tabs.bg, })
-    vim.api.nvim_set_hl(0, "TabLineSel", { fg = M.config.theme.current_tab.fg, bg = M.config.theme.current_tab.bg, bold = true, })
-    vim.api.nvim_set_hl(0, "TabLineFill", { fg = M.config.theme.fill.fg, bg = M.config.theme.fill.bg, })
+    M.apply_highlights()
 
     _G.NativeTabline = M._render
     vim.o.tabline = "%!v:lua.NativeTabline()"
+end
+
+function M.apply_highlights()
+    local theme = M.config.theme
+    if not theme then
+        return
+    end
+
+    vim.api.nvim_set_hl(0, "TabLine", { fg = theme.inactive_tabs.fg, bg = theme.inactive_tabs.bg })
+    vim.api.nvim_set_hl(0, "TabLineSel", { fg = theme.current_tab.fg, bg = theme.current_tab.bg, bold = true })
+    vim.api.nvim_set_hl(0, "TabLineFill", { fg = theme.fill.fg, bg = theme.fill.bg })
 end
 
 function M.set_default_config(cfg)
@@ -292,6 +288,27 @@ end
 
 function M.move_previous_tab()
     vim.cmd("tabprevious")
+
+    return vim.api.nvim_get_current_tabpage()
+end
+
+function M.select_tab(index)
+    local tabpage = vim.api.nvim_list_tabpages()[index]
+
+    if not tabpage then
+        vim.notify("Tab " .. index .. " does not exist.", vim.log.levels.WARN)
+        return nil
+    end
+
+    vim.api.nvim_set_current_tabpage(tabpage)
+    return tabpage
+end
+
+function M.move_tab(direction)
+    local step = direction == "forward" and "+1" or "-1"
+
+    vim.cmd("tabmove " .. step)
+    vim.cmd("redrawtabline")
 
     return vim.api.nvim_get_current_tabpage()
 end

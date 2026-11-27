@@ -40,10 +40,10 @@ Personal desktop setup for Debian-based `x86_64` Linux systems.
   - [ ] Install, if not exists, Firefox browser.
   - [ ] Finalize nvim base configs
     - [ ] LSP with visual completion.
-    - [ ] Tabs.
+    - [x] Tabs.
     - [x] File explorer with CTRL+O mapped.
     - [ ] Fuzzy finding (CTRL+F) and definitions search (CTRL+ALT+F ???).
-    - [ ] Code folding.
+    - [x] Code folding.
   - [ ] Study about AI agent development to structure my environment and projects.
 - Roadmap 2.0 (totally brainstorming):
   - [ ] Implement "pill style" in ps1 blocks.
