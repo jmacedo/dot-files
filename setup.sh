@@ -10,7 +10,7 @@
 set -Eeuo pipefail
 
 # Regex única para selecionar assets de release (Linux x86_64/amd64/x64).
-readonly BINARY_ASSET_PATTERN='(x86_64|amd64|x64).*\.(tar\.gz|txz|zip)$'
+readonly BINARY_ASSET_PATTERN='linux.*(x86_64|amd64|x64).*\.(tar\.gz|txz|zip)$|(x86_64|amd64|x64).*linux.*\.(tar\.gz|txz|zip)$'
 
 install_docker() {
     local apt_source_template="${SCRIPT_DIR:-$HOME}/.config/docker/docker.sources"
@@ -138,8 +138,18 @@ main_install() {
         local strip_components="$(jq -r ".strip_components" <<< "$binary_object")"
         local catppuccin_flavor="$(jq -r ".catppuccin.flavor" <<< "$binary_object")"
         local catppuccin_variant="$(jq -r ".catppuccin.variant" <<< "$binary_object")"
+        local asset_pattern="$BINARY_ASSET_PATTERN"
 
-        install_bin_from_github "$repo_name" "$version" "$bin_name" "$strip_components" "$BINARY_ASSET_PATTERN"
+        case "$bin_name" in
+            kitty)
+                asset_pattern='kitty-.*x86_64\.txz$'
+                ;;
+            yazi)
+                asset_pattern='x86_64.*linux-gnu\.zip$'
+                ;;
+        esac
+
+        install_bin_from_github "$repo_name" "$version" "$bin_name" "$strip_components" "$asset_pattern"
 
         while IFS= read -r command; do
             local parsed_command=""
