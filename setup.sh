@@ -10,7 +10,7 @@
 set -Eeuo pipefail
 
 # Regex única para selecionar assets de release (Linux x86_64/amd64/x64).
-readonly BINARY_ASSET_PATTERN='linux.*(x86_64|amd64|x64).*\.(tar\.gz|txz|zip)$|(x86_64|amd64|x64).*linux.*\.(tar\.gz|txz|zip)$'
+readonly BINARY_ASSET_PATTERN='.*((unknown-)?linux(-gnu)?).*(x86_64|amd64|x64).*\.(tar\.gz|txz|zip)$|.*(x86_64|amd64|x64).*((unknown-)?linux(-gnu)?).*\.(tar\.gz|txz|zip)$'
 
 install_docker() {
     local apt_source_template="${SCRIPT_DIR:-$HOME}/.config/docker/docker.sources"
