@@ -147,6 +147,9 @@ main_install() {
             yazi)
                 asset_pattern='x86_64.*linux-gnu\.zip$'
                 ;;
+            eza)
+                asset_pattern='eza_x86_64-unknown-linux-gnu\.tar\.gz$'
+                ;;
         esac
 
         install_bin_from_github "$repo_name" "$version" "$bin_name" "$strip_components" "$asset_pattern"
