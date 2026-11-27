@@ -27,6 +27,11 @@ M.runtime = {
         tabpage = nil,
         buffer = nil,
     },
+    autocmd = {
+        list = {
+            { id = nil, autocmd_id = nil },
+        },
+    },
 }
 
 function M.setup(custom_configs)
@@ -86,6 +91,37 @@ function M.runtime.startup_buffer_is_empty()
         and vim.api.nvim_buf_get_lines(M.runtime.startup.buffer, 0, 1, false)[1] == ""
 end
 
+function M.runtime.autocmd.add(autocmd)
+    table.insert(M.runtime.autocmd,
+        vim.tbl_extend("force",
+            { id = nil, autocmd_id = nil, },
+            autocmd or {}
+        )
+    )
+end
+
+function M.runtime.autocmd.remove(id)
+    for autocmd_index, autocmd in ipairs(M.runtime.autocmd.list) do
+        if id == autocmd.id then
+            table.remove(M.runtime.autocmd.list, autocmd_index)
+
+            return true
+        end
+    end
+
+    return false
+end
+
+function M.runtime.autocmd.get(id)
+    for _, autocmd in ipairs(M.runtime.autocmd.list) do
+        if autocmd.id == id then
+            return autocmd
+        end
+    end
+
+    return nil
+end
+
 function M._render()
     local current_tabpage = vim.api.nvim_get_current_tabpage()
     local tabpages_list = vim.api.nvim_list_tabpages()
@@ -128,9 +164,28 @@ function M._get_buffer_name(buffer_id)
     return vim.fn.fnamemodify(name, ":t")
 end
 
+function M._get_tab_buffer(tabpage)
+    local current_window = vim.api.nvim_tabpage_get_win(tabpage)
+    local current_buffer = vim.api.nvim_win_get_buf(current_window)
+
+    if vim.bo[current_buffer].filetype ~= "neo-tree" then
+        return current_buffer
+    end
+
+    for _, window in ipairs(vim.api.nvim_tabpage_list_wins(tabpage)) do
+        local buffer = vim.api.nvim_win_get_buf(window)
+
+        if vim.bo[buffer].filetype ~= "neo-tree"
+            and vim.bo[buffer].buftype == "" then
+            return buffer
+        end
+    end
+
+    return current_buffer
+end
+
 function M._get_tab_label(tabpage)
-    local window = vim.api.nvim_tabpage_get_win(tabpage)
-    local buffer_id = vim.api.nvim_win_get_buf(window)
+    local buffer_id = M._get_tab_buffer(tabpage)
 
     local buffer_name = M._get_buffer_name(buffer_id)
     local modified_str = vim.bo[buffer_id].modified and M.config.indicators.modified_char or ""

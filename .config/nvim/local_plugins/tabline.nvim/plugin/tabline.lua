@@ -41,8 +41,8 @@ Arguments passed to the autocmd event (args):
 ]]--
 
 -- Closes startup tab when empty and a new tab was opened.
-vim.api.nvim_create_autocmd("BufEnter", { callback = function(args)
-    if not Tabline.startup.tabpage then
+local autocmd_startup = vim.api.nvim_create_autocmd("BufEnter", { callback = function(args)
+    if not Tabline.runtime.startup.tabpage then
         return
     end
 
@@ -50,16 +50,12 @@ vim.api.nvim_create_autocmd("BufEnter", { callback = function(args)
         return
     end
 
-    if vim.api.nvim_buf_get_name(args.buf) == "" then
-        return
-    end
-
     vim.schedule(function()
-        if not vim.api.nvim_tabpage_is_valid(Tabline.startup.tabpage) then
+        if not vim.api.nvim_tabpage_is_valid(Tabline.runtime.startup.tabpage) then
             return
         end
 
-        if Tabline.startup.tabpage == vim.api.nvim_get_current_tabpage() then
+        if Tabline.runtime.startup.tabpage == vim.api.nvim_get_current_tabpage() then
             return
         end
 
@@ -71,10 +67,19 @@ vim.api.nvim_create_autocmd("BufEnter", { callback = function(args)
             return
         end
 
-        if not Tabline.runtime.startup_buffer_is_empty() then
-            return
+        local autocmd_startup = Tabline.runtime.autocmd.get("autocmd_startup")
+
+        if autocmd_startup ~= nil then
+            vim.api.nvim_del_autocmd(autocmd_startup.autocmd_id)
+            Tabline.runtime.autocmd.remove("autocmd_startup")
+            Tabline.set_runtime({ startup = { tabpage = nil, buffer = nil, }, })
         end
 
-        vim.api.nvim_tabpage_close(Tabline.startup.tabpage, false)
+        vim.api.nvim_set_current_tabpage(Tabline.runtime.startup.tabpage)
+        vim.cmd("tabclose")
     end)
 end, })
+Tabline.runtime.autocmd.add({
+    id = "autocmd_startup",
+    autocmd_id = autocmd_startup,
+})
