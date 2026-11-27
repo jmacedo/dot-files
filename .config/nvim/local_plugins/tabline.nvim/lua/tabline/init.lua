@@ -98,7 +98,7 @@ function M.runtime.startup_buffer_is_empty()
 end
 
 function M.runtime.autocmd.add(autocmd)
-    table.insert(M.runtime.autocmd,
+    table.insert(M.runtime.autocmd.list,
         vim.tbl_extend("force",
             { id = nil, autocmd_id = nil, },
             autocmd or {}
@@ -233,7 +233,7 @@ function M.select_tab(buffer_id)
     end
 
     for _, tabpage in ipairs(vim.api.nvim_list_tabpages()) do
-        for _, window in ipairs(vim.api.nvim_tabpage_list_wins()) do
+        for _, window in ipairs(vim.api.nvim_tabpage_list_wins(tabpage)) do
             if vim.api.nvim_win_get_buf(window) == buffer_id then
                 vim.api.nvim_set_current_tabpage(tabpage)
 
