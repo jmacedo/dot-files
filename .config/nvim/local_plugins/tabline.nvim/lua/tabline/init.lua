@@ -229,7 +229,11 @@ end
 
 function M.close_tab(buffer_id)
     if buffer_id == nil then
-        vim.cmd("tabclose")
+        if #vim.api.nvim_list_tabpages() == 1 then
+            vim.cmd("quit")
+        else
+            vim.cmd("tabclose")
+        end
     else
         local tabpages_list = vim.api.nvim_list_tabpages()
 
