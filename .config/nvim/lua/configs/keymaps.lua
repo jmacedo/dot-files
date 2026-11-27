@@ -8,8 +8,9 @@ vim.keymap.set("n", "<leader>pp", ":Lazy<CR>", { desc = "Open lazy nvim screen."
 vim.keymap.set("n", "<leader>pm", ":Mason<CR>", { desc = "Open mason screen." })
 
 -- Neotree
-vim.keymap.set("n", "<leader>e", ":Neotree toggle<CR>", { desc = "Toggle Neotree visualization." })
-vim.keymap.set({"n", "i"}, "<C-e>", ":Neotree toggle<CR>", { desc = "Toggle Neotree visualization." })
+vim.keymap.set("n", "<leader>eo", ":Neotree<CR>", { desc = "Open neotree visualization." })
+vim.keymap.set("n", "<leader>ec", ":Neotree close<CR>", { desc = "Close neotree visualization." })
+vim.keymap.set({"n", "i"}, "<C-e>", ":Neotree toggle<CR>", { desc = "Toggle neotree visualization." })
 
 -- Save - CTRL + S
 vim.keymap.set({ "n", "i" }, "<C-s>", "<Esc>:w<CR>", { desc = "Save document." })

@@ -1,6 +1,18 @@
 return {
     "nvim-neo-tree/neo-tree.nvim",
     lazy = false,
+    opts = {
+        event_handlers = {
+            {
+                event = "file_opened",
+                handler = function(_)
+                    vim.schedule(function()
+                        vim.cmd("Neotree focus")
+                    end)
+                end,
+            },
+        },
+    },
     dependencies = {
         { "MunifTanjim/nui.nvim", },
         { "nvim-lua/plenary.nvim", },

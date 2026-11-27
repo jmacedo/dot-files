@@ -4,6 +4,7 @@ M.config = {
     indicators = {
         empty_name = "[No name]",
         modified_char = " +",
+        close_tab_char = " X",
     },
     theme = {
         current_tab = {
@@ -21,6 +22,13 @@ M.config = {
     },
 }
 
+M.runtime = {
+    startup = {
+        tabpage = nil,
+        buffer = nil,
+    },
+}
+
 function M.setup(custom_configs)
     M.config = vim.tbl_extend("force",
         {},
@@ -34,6 +42,48 @@ function M.setup(custom_configs)
 
     _G.NativeTabline = M._render
     vim.o.tabline = "%!v:lua.NativeTabline()"
+end
+
+function M.set_default_config(cfg)
+    M.config = vim.tbl_extend("force",
+        {},
+        M.config,
+        cfg or {}
+    )
+end
+
+function M.set_runtime(custom_runtime)
+    M.runtime = vim.tbl_extend("force",
+        {},
+        M.runtime,
+        custom_runtime or {}
+    )
+end
+
+function M.runtime.startup_buffer_is_still_present()
+    if not vim.api.nvim_tabpage_is_valid(M.runtime.startup.tabpage) then
+        return false
+    end
+
+    for _, window in ipairs(vim.api.nvim_tabpage_list_wins(M.runtime.startup.tabpage)) do
+        if vim.api.nvim_win_get_buf(window) == M.runtime.startup.buffer then
+            return true
+        end
+    end
+
+    return false
+end
+
+function M.runtime.startup_buffer_is_empty()
+    if not vim.api.nvim_buf_is_valid(M.runtime.startup.buffer) then
+        return false
+    end
+
+    return vim.bo[M.runtime.startup.buffer].buftype == ""
+        and vim.api.nvim_buf_get_name(M.runtime.startup.buffer) == ""
+        and not vim.bo[M.runtime.startup.buffer].modified
+        and vim.api.nvim_buf_line_count(M.runtime.startup.buffer) == 1
+        and vim.api.nvim_buf_get_lines(M.runtime.startup.buffer, 0, 1, false)[1] == ""
 end
 
 function M._render()
@@ -59,7 +109,7 @@ function M._render()
         table.insert(result, string.format("%s", M._get_tab_label(tabpage)))
 
         -- Tab closing
-        table.insert(result, "%=%#TabLine#%999X X%T")
+        table.insert(result, string.format("%%=%%#TabLine#%%999X %s%%T", M.config.indicators.close_tab_char))
     end
 
     table.insert(result, "%#TabLineFill#")
@@ -93,17 +143,60 @@ function M._get_tab_label(tabpage)
     -- Escapes tabline escapes.
     buffer_name = buffer_name:gsub("%%", "%%%%")
 
-    return buffer_name .. modified_str .. window_count_str
+    return string.format("%s%s%s", buffer_name, modified_str, window_count_str)
 end
 
-function M.new_tab()
-    vim.cmd("tabnew")
+function M.new_tab(buffer_id)
+    if buffer_id == nil then
+        vim.cmd("tabnew")
+    else
+        vim.cmd("tab sbuffer " .. buffer_id)
+    end
 
     return vim.api.nvim_get_current_tabpage()
 end
 
-function M.close_tab()
-    vim.cmd("tabclose")
+function M.select_tab(buffer_id)
+    if buffer_id == nil then
+        return
+    end
+
+    for _, tabpage in ipairs(vim.api.nvim_list_tabpages()) do
+        for _, window in ipairs(vim.api.nvim_tabpage_list_wins()) do
+            if vim.api.nvim_win_get_buf(window) == buffer_id then
+                vim.api.nvim_set_current_tabpage(tabpage)
+
+                return vim.api.nvim_get_current_tabpage()
+            end
+        end
+    end
+end
+
+function M.close_tab(buffer_id)
+    if buffer_id == nil then
+        vim.cmd("tabclose")
+    else
+        local tabpages_list = vim.api.nvim_list_tabpages()
+
+        for _, tabpage in ipairs(tabpages_list) do
+            local windows_list = vim.api.nvim_tabpage_list_wins(tabpage)
+
+            for _, window in ipairs(windows_list) do
+                if vim.api.nvim_win_get_buf(window) == buffer_id then
+                    if #windows_list > 1 then
+                        vim.api.nvim_win_close(window, true)
+                    else
+                        if #tabpages_list == 1 then
+                            vim.cmd("quit")
+                        else
+                            vim.api.nvim_set_current_tabpage(tabpage)
+                            vim.cmd("tabclose")
+                        end
+                    end
+                end
+            end
+        end
+    end
 end
 
 function M.move_next_tab()

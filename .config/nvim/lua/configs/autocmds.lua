@@ -6,6 +6,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   end,
 })
 
+-- Applies color gradient on dashboard ascii art.
 vim.api.nvim_create_autocmd("User", {
   pattern = "DashboardLoaded",
   callback = function(args)
